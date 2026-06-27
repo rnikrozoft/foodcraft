@@ -74,8 +74,11 @@ func play_celebration(display: Dictionary, burst_origin: Vector2) -> void:
 
 
 func _finish_celebration() -> void:
+	_kill_tween()
+	_snap_fade_out()
 	set_process_unhandled_input(false)
 	_stop_particles()
+	_reset_visual_state()
 	visible = false
 	_playing = false
 	_skip_requested = false
@@ -87,7 +90,6 @@ func _request_skip() -> void:
 	if not _playing or _skip_requested:
 		return
 	_skip_requested = true
-	_kill_tween()
 	_stop_particles()
 
 
@@ -127,13 +129,33 @@ func _play_hold_phase() -> void:
 
 
 func _play_fade_phase(fast: bool = false) -> void:
+	if _skip_requested:
+		_snap_fade_out()
+		return
+
 	var duration := SKIP_FADE_SECONDS if fast else FADE_SECONDS
+	_kill_tween()
 	var fade := create_tween()
 	_active_tween = fade
 	fade.set_parallel(true)
+	fade.tween_property(_dim, "modulate:a", 0.0, duration).set_ease(Tween.EASE_IN)
+	fade.tween_property(_content, "modulate:a", 0.0, duration).set_ease(Tween.EASE_IN)
 	fade.tween_property(_celebration_stack, "modulate:a", 0.0, duration).set_ease(Tween.EASE_IN)
 	fade.tween_property(_particles_root, "modulate:a", 0.0, duration).set_ease(Tween.EASE_IN)
-	await fade.finished
+	while fade.is_valid() and fade.is_running():
+		if _skip_requested:
+			_snap_fade_out()
+			_kill_tween()
+			return
+		await get_tree().process_frame
+
+
+func _snap_fade_out() -> void:
+	_dim.modulate.a = 0.0
+	_content.modulate.a = 0.0
+	_flash.modulate.a = 0.0
+	_celebration_stack.modulate.a = 0.0
+	_particles_root.modulate.a = 0.0
 
 
 func _reset_visual_state() -> void:

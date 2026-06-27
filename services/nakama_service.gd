@@ -68,7 +68,7 @@ func _discover_recipe_async(item_id: String, from_ids: PackedStringArray) -> Dic
 		GameData.queue_discovery(item_id, from_ids)
 		return {}
 	discovery_synced.emit(data)
-	GameData.apply_server_state(data)
+	GameData.apply_server_state(data, true)
 	return data
 
 

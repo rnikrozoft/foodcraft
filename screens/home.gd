@@ -14,7 +14,7 @@ func _ready() -> void:
 func _enter_game() -> void:
 	_set_buttons_enabled(false)
 	await NakamaService.authenticate_guest()
-	get_tree().change_scene_to_packed(MAIN_SCENE)
+	await SceneTransition.fade_to_scene(MAIN_SCENE)
 
 
 func _set_buttons_enabled(enabled: bool) -> void:

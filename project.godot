@@ -20,6 +20,7 @@ config/icon="res://icon.svg"
 GameData="*res://data/game_data.gd"
 NakamaConfig="*res://services/nakama_config.gd"
 NakamaService="*res://services/nakama_service.gd"
+SceneTransition="*res://components/scene_transition.tscn"
 
 [display]
 

@@ -40,8 +40,22 @@ func _refresh() -> void:
 		_display_items = GameData.get_panel_ingredients()
 	else:
 		_title.text = "ค้นพบล่าสุด"
-		_display_items = recent
+		_display_items = _merge_recent_with_ingredients(recent)
 	_show_items(_display_items)
+
+
+func _merge_recent_with_ingredients(recent: Array) -> Array:
+	var merged: Array = recent.duplicate()
+	var seen := {}
+	for item in recent:
+		seen[String(item.get("id", ""))] = true
+	for item in GameData.get_panel_ingredients():
+		var item_id := String(item.get("id", ""))
+		if item_id.is_empty() or seen.has(item_id):
+			continue
+		seen[item_id] = true
+		merged.append(item)
+	return merged
 
 
 func _input(event: InputEvent) -> void:

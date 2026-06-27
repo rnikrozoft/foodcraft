@@ -144,6 +144,25 @@ func apply_reward(reward: Dictionary) -> void:
 	wallet_changed.emit()
 
 
+var _staged_reward: Dictionary = {}
+
+
+func stage_reward(reward: Dictionary) -> void:
+	var amount := int(reward.get("amount", 0))
+	if amount <= 0 or String(reward.get("type", "")).is_empty():
+		_staged_reward = {}
+		return
+	_staged_reward = reward.duplicate()
+
+
+func commit_staged_reward() -> void:
+	if _staged_reward.is_empty():
+		return
+	var reward := _staged_reward.duplicate()
+	_staged_reward = {}
+	apply_reward(reward)
+
+
 func get_coins() -> int:
 	return _coins
 
@@ -232,19 +251,26 @@ func get_item_discovery_points(id: String) -> int:
 	return tier * 10 + bonus
 
 
-func apply_server_state(data: Dictionary) -> void:
+func apply_server_state(data: Dictionary, defer_reward_wallet: bool = false) -> void:
 	var discovered: Array = data.get("discovered", [])
 	for id in discovered:
 		_discovered_ids[String(id)] = true
 	_discovery_points = int(data.get("discovery_points", _discovery_points))
 	_craft_count = int(data.get("craft_count", _craft_count))
-	if data.has("coins"):
-		_coins = int(data.get("coins", 0))
-	if data.has("stars"):
-		_stars = int(data.get("stars", 0))
+	var reward_type := String(data.get("reward_type", ""))
+	var reward_amount := int(data.get("reward_amount", 0))
+	var defer_wallet := defer_reward_wallet and reward_amount > 0 and not reward_type.is_empty()
+	if defer_wallet:
+		stage_reward({"type": reward_type, "amount": reward_amount})
+	else:
+		if data.has("coins"):
+			_coins = int(data.get("coins", 0))
+		if data.has("stars"):
+			_stars = int(data.get("stars", 0))
 	_save_local_progress()
 	progress_changed.emit()
-	wallet_changed.emit()
+	if not defer_wallet:
+		wallet_changed.emit()
 
 
 func _count_branch_factor(item_id: String) -> int:

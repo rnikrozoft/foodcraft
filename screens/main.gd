@@ -215,6 +215,7 @@ func _play_pending_reward_fly() -> void:
 		target = _currency_display.get_star_icon_global_center()
 
 	await _reward_fly.play(reward, origin, target)
+	GameData.commit_staged_reward()
 	_update_currency_display()
 	_currency_display.pulse_reward(reward_type)
 

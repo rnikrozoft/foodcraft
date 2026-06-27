@@ -185,7 +185,7 @@ func _grant_discovery_reward(result_id: String, from_ids: PackedStringArray) -> 
 		if data.is_empty():
 			GameData.queue_discovery(result_id, from_ids)
 	var reward := GameData.roll_discovery_reward(result_id)
-	GameData.apply_reward(reward)
+	GameData.stage_reward(reward)
 	if not NakamaService.is_online:
 		GameData.queue_discovery(result_id, from_ids)
 	return reward

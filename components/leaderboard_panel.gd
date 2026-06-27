@@ -48,12 +48,14 @@ var _in_tier_menu := true
 func _ready() -> void:
 	_records_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_NEVER
 	_records_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	_tier_menu_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_NEVER
+	_tier_menu_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	_tier_menu_list.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_apply_owner_panel_style()
 	_back.pressed.connect(_back_to_tier_menu)
 	NakamaService.leaderboard_loaded.connect(_on_leaderboard_loaded)
 	NakamaService.leaderboards_loaded.connect(_on_boards_loaded)
 	NakamaService.hall_of_fame_loaded.connect(_on_hall_of_fame_loaded)
+	_tier_menu_scroll.resized.connect(_sync_tier_menu_layout)
 	_build_tier_menu()
 
 
@@ -61,9 +63,10 @@ func show_panel() -> void:
 	visible = true
 	_show_tier_menu()
 	if not NakamaService.is_online:
-		return
-	if _boards.is_empty():
+		_boards = NakamaConfig.get_fallback_boards()
+	elif _boards.is_empty():
 		await NakamaService.fetch_leaderboard_list()
+	_sync_tier_menu_layout()
 
 
 func hide_panel() -> void:
@@ -76,76 +79,142 @@ func _build_tier_menu() -> void:
 	for tier in [1, 2, 3, 4, 5]:
 		var meta: Dictionary = TIER_META[tier]
 		_tier_menu_list.add_child(_make_tier_menu_card(tier, meta))
+	call_deferred("_sync_tier_menu_layout")
 
 
-func _make_tier_menu_card(tier: int, meta: Dictionary) -> PanelContainer:
+func _sync_tier_menu_layout() -> void:
+	if not _in_tier_menu:
+		return
+	var area_h := _tier_menu_scroll.size.y
+	if area_h <= 0.0:
+		return
+	_tier_menu_list.custom_minimum_size.y = area_h
+	var sep := float(_tier_menu_list.get_theme_constant("separation"))
+	var card_h := (area_h - sep * 4.0) / 5.0
+	_apply_tier_card_scale(card_h)
+
+
+func _make_tier_menu_card(tier: int, meta: Dictionary) -> Control:
+	var root := Control.new()
+	root.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	root.size_flags_vertical = Control.SIZE_EXPAND_FILL
+
 	var panel := PanelContainer.new()
-	panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	panel.custom_minimum_size.y = 82
-	panel.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	panel.set_anchors_preset(Control.PRESET_FULL_RECT)
+	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	panel.add_theme_stylebox_override("panel", _make_menu_card_style())
-	panel.gui_input.connect(_on_tier_card_gui_input.bind(tier))
+	root.add_child(panel)
 
 	var margin := MarginContainer.new()
-	margin.add_theme_constant_override("margin_left", 12)
-	margin.add_theme_constant_override("margin_right", 12)
+	margin.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	margin.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	margin.add_theme_constant_override("margin_left", 16)
+	margin.add_theme_constant_override("margin_right", 16)
 	margin.add_theme_constant_override("margin_top", 10)
 	margin.add_theme_constant_override("margin_bottom", 10)
+	margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	panel.add_child(margin)
 
 	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", 12)
+	row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	row.add_theme_constant_override("separation", 18)
+	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	margin.add_child(row)
 
 	var icon_box := PanelContainer.new()
-	icon_box.custom_minimum_size = Vector2(52, 52)
+	icon_box.custom_minimum_size = Vector2(96, 96)
+	icon_box.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	icon_box.add_theme_stylebox_override("panel", _make_icon_box_style())
 	row.add_child(icon_box)
 
 	var icon_center := CenterContainer.new()
+	icon_center.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	icon_box.add_child(icon_center)
 
 	var icon := Label.new()
+	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	icon.text = String(meta.get("emoji", "🏆"))
-	icon.add_theme_font_size_override("font_size", 26)
+	icon.add_theme_font_size_override("font_size", 48)
 	icon_center.add_child(icon)
 
 	var info := VBoxContainer.new()
 	info.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	info.add_theme_constant_override("separation", 2)
+	info.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	info.add_theme_constant_override("separation", 6)
+	info.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	row.add_child(info)
 
 	var title := Label.new()
+	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	title.text = String(meta.get("title", ""))
-	title.add_theme_font_size_override("font_size", 18)
+	title.add_theme_font_size_override("font_size", 30)
 	title.add_theme_color_override("font_color", Color(0.22, 0.14, 0.08, 1))
 	info.add_child(title)
 
 	var desc := Label.new()
+	desc.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	desc.text = String(meta.get("desc", ""))
-	desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	desc.add_theme_font_size_override("font_size", 13)
+	desc.autowrap_mode = TextServer.AUTOWRAP_WORD
+	desc.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	desc.add_theme_font_size_override("font_size", 20)
 	desc.add_theme_color_override("font_color", Color(0.48, 0.36, 0.26, 1))
 	info.add_child(desc)
 
 	var chevron := Label.new()
+	chevron.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	chevron.text = "›"
-	chevron.add_theme_font_size_override("font_size", 28)
+	chevron.custom_minimum_size = Vector2(32, 0)
+	chevron.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	chevron.add_theme_font_size_override("font_size", 46)
 	chevron.add_theme_color_override("font_color", Color(0.62, 0.48, 0.3, 1))
 	chevron.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	row.add_child(chevron)
-	return panel
+
+	var hit := Button.new()
+	hit.focus_mode = Control.FOCUS_NONE
+	hit.flat = true
+	hit.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	hit.set_anchors_preset(Control.PRESET_FULL_RECT)
+	var empty_style := StyleBoxEmpty.new()
+	hit.add_theme_stylebox_override("normal", empty_style)
+	hit.add_theme_stylebox_override("hover", empty_style)
+	hit.add_theme_stylebox_override("pressed", empty_style)
+	hit.add_theme_stylebox_override("disabled", empty_style)
+	hit.add_theme_stylebox_override("focus", empty_style)
+	hit.pressed.connect(_open_tier.bind(tier))
+	root.add_child(hit)
+
+	root.set_meta("tier_icon_box", icon_box)
+	root.set_meta("tier_icon", icon)
+	root.set_meta("tier_title", title)
+	root.set_meta("tier_desc", desc)
+	root.set_meta("tier_chevron", chevron)
+
+	return root
 
 
-func _on_tier_card_gui_input(tier: int, event: InputEvent) -> void:
-	if event is InputEventMouseButton:
-		var mouse_event := event as InputEventMouseButton
-		if mouse_event.pressed and mouse_event.button_index == MOUSE_BUTTON_LEFT:
-			_open_tier(tier)
-	elif event is InputEventScreenTouch:
-		var touch_event := event as InputEventScreenTouch
-		if touch_event.pressed:
-			_open_tier(tier)
+func _apply_tier_card_scale(card_h: float) -> void:
+	var icon_sz := clampf(card_h * 0.58, 80.0, 112.0)
+	var title_sz := int(clampf(card_h * 0.2, 26, 36))
+	var desc_sz := int(clampf(card_h * 0.13, 17, 24))
+	var emoji_sz := int(clampf(icon_sz * 0.54, 40, 60))
+	var chevron_sz := int(clampf(card_h * 0.3, 36, 56))
+
+	for child in _tier_menu_list.get_children():
+		if not child.has_meta("tier_icon_box"):
+			continue
+		var icon_box: PanelContainer = child.get_meta("tier_icon_box")
+		icon_box.custom_minimum_size = Vector2(icon_sz, icon_sz)
+		var icon: Label = child.get_meta("tier_icon")
+		icon.add_theme_font_size_override("font_size", emoji_sz)
+		var title: Label = child.get_meta("tier_title")
+		title.add_theme_font_size_override("font_size", title_sz)
+		var desc: Label = child.get_meta("tier_desc")
+		desc.add_theme_font_size_override("font_size", desc_sz)
+		var chevron: Label = child.get_meta("tier_chevron")
+		chevron.add_theme_font_size_override("font_size", chevron_sz)
 
 
 func _open_tier(tier: int) -> void:
@@ -157,7 +226,10 @@ func _open_tier(tier: int) -> void:
 	_back.visible = true
 	_header_spacer.visible = true
 	_title.text = String(TIER_META.get(tier, {}).get("title", "อันดับ"))
-	_refresh_tier_view()
+	if NakamaService.is_online and _boards.is_empty():
+		_show_status("กำลังโหลด...")
+		await NakamaService.fetch_leaderboard_list()
+	await _refresh_tier_view()
 
 
 func _back_to_tier_menu() -> void:
@@ -174,6 +246,7 @@ func _show_tier_menu() -> void:
 	_owner_panel.visible = false
 	_clear_podium()
 	_clear_rows()
+	call_deferred("_sync_tier_menu_layout")
 
 
 func _refresh_tier_view() -> void:
@@ -182,6 +255,12 @@ func _refresh_tier_view() -> void:
 	_clear_podium()
 	_clear_rows()
 	_hide_owner()
+
+	if not NakamaService.is_online:
+		_board_tabs.visible = false
+		_podium.visible = false
+		_show_status("ออฟไลน์ — ไม่สามารถโหลดอันดับได้")
+		return
 
 	if _showing_hall:
 		_desc.text = String(TIER_META[4].get("desc", ""))
@@ -250,12 +329,17 @@ func _board_meta(board_id: String) -> Dictionary:
 
 
 func _load_active_board() -> void:
+	if not NakamaService.is_online:
+		_show_status("ออฟไลน์ — ไม่สามารถโหลดอันดับได้")
+		return
 	_show_status("กำลังโหลด...")
 	_clear_podium()
 	_clear_rows()
 	_hide_owner()
 	var data := await NakamaService.fetch_leaderboard(_active_board)
-	if not data.is_empty():
+	if data.is_empty():
+		_show_status("โหลดไม่สำเร็จ — ลองใหม่อีกครั้ง")
+	else:
 		_apply_leaderboard(data)
 
 
@@ -577,6 +661,11 @@ func _apply_tab_style(btn: Button, active: bool) -> void:
 	)
 
 
+func _update_board_buttons() -> void:
+	for board_id in _board_buttons:
+		_apply_tab_style(_board_buttons[board_id], board_id == _active_board)
+
+
 func _make_menu_card_style() -> StyleBoxFlat:
 	var box := StyleBoxFlat.new()
 	box.bg_color = Color(0.94, 0.88, 0.76, 1)
@@ -678,11 +767,6 @@ func _format_score(score: int, board_id: String, score_unit: String) -> String:
 	if not score_unit.is_empty():
 		return "%d %s" % [score, score_unit]
 	return str(score)
-
-
-func _update_board_buttons() -> void:
-	for board_id in _board_buttons:
-		_apply_tab_style(_board_buttons[board_id], board_id == _active_board)
 
 
 func _show_owner(rank: int, username: String, score_text: String) -> void:
