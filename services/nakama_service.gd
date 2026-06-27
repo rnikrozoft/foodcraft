@@ -3,6 +3,8 @@ extends Node
 signal session_ready(profile: Dictionary)
 signal session_failed(message: String)
 signal leaderboard_loaded(data: Dictionary)
+signal leaderboards_loaded(boards: Array)
+signal hall_of_fame_loaded(data: Dictionary)
 signal discovery_synced(data: Dictionary)
 
 const DEVICE_ID_PATH := "user://device_id.txt"
@@ -85,17 +87,37 @@ func sync_discoveries(queue: Array, craft_count: int) -> Dictionary:
 	return data
 
 
-func record_craft() -> void:
+func record_craft(is_new_discovery: bool = false) -> void:
 	if not is_online:
 		return
-	await call_rpc("record_craft", "")
+	var payload := JSON.stringify({"is_new_discovery": is_new_discovery})
+	await call_rpc("record_craft", payload)
+
+
+func fetch_leaderboard_list() -> Array:
+	var data := await call_rpc("list_leaderboards", "")
+	var boards: Array
+	if data.is_empty():
+		boards = NakamaConfig.get_fallback_boards()
+	else:
+		boards = data.get("boards", [])
+		if boards.is_empty():
+			boards = NakamaConfig.get_fallback_boards()
+	leaderboards_loaded.emit(boards)
+	return boards
+
+
+func fetch_hall_of_fame() -> Dictionary:
+	var payload := JSON.stringify({"limit": 30})
+	var data := await call_rpc("get_hall_of_fame", payload)
+	hall_of_fame_loaded.emit(data)
+	return data
 
 
 func fetch_leaderboard(board_id: String) -> Dictionary:
 	var payload := JSON.stringify({"board_id": board_id, "limit": 20})
 	var data := await call_rpc("get_leaderboard", payload)
-	if not data.is_empty():
-		leaderboard_loaded.emit(data)
+	leaderboard_loaded.emit(data)
 	return data
 
 

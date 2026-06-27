@@ -109,10 +109,9 @@ func _show_result_async(result_id: String) -> void:
 		return
 
 	GameData.record_craft_local()
-	if NakamaService.is_online:
-		NakamaService.record_craft()
-
 	var is_new := GameData.mark_discovered(result_id)
+	if NakamaService.is_online:
+		NakamaService.record_craft(is_new)
 	var reward := {}
 	if is_new:
 		reward = await _grant_discovery_reward(result_id)

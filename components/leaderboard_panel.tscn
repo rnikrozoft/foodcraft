@@ -40,7 +40,7 @@ theme_override_constants/margin_bottom = 16
 
 [node name="VBox" type="VBoxContainer" parent="Margin"]
 layout_mode = 2
-theme_override_constants/separation = 14
+theme_override_constants/separation = 10
 
 [node name="HeaderRow" type="HBoxContainer" parent="Margin/VBox"]
 layout_mode = 2
@@ -49,22 +49,31 @@ layout_mode = 2
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(1, 0.92, 0.45, 1)
-theme_override_font_sizes/font_size = 30
+theme_override_font_sizes/font_size = 28
 text = "อันดับ"
 horizontal_alignment = 1
 
-[node name="BoardTabs" type="HBoxContainer" parent="Margin/VBox"]
+[node name="TierTabs" type="HBoxContainer" parent="Margin/VBox"]
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 8
 alignment = 1
 
-[node name="FameButton" type="Button" parent="Margin/VBox/BoardTabs"]
+[node name="BoardScroll" type="ScrollContainer" parent="Margin/VBox"]
+custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
-text = "ชื่อเสียง"
+horizontal_scroll_mode = 2
+vertical_scroll_mode = 0
 
-[node name="ExplorerButton" type="Button" parent="Margin/VBox/BoardTabs"]
+[node name="BoardTabs" type="HBoxContainer" parent="Margin/VBox/BoardScroll"]
 layout_mode = 2
-text = "นักสำรวจ"
+theme_override_constants/separation = 8
+
+[node name="DescLabel" type="Label" parent="Margin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.78, 0.7, 1)
+theme_override_font_sizes/font_size = 14
+horizontal_alignment = 1
+autowrap_mode = 3
 
 [node name="Scroll" type="ScrollContainer" parent="Margin/VBox"]
 layout_mode = 2

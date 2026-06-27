@@ -2,6 +2,7 @@ extends CanvasLayer
 
 const HOLD_SECONDS := 3.0
 const FADE_SECONDS := 0.8
+const SKIP_FADE_SECONDS := 0.25
 const FLASH_FADE_IN := 0.22
 const FLASH_HOLD := 0.18
 const FLASH_FADE_OUT := 0.75
@@ -25,6 +26,7 @@ var _star_bursts: Array[CPUParticles2D] = []
 var _sparkle_burst: CPUParticles2D
 var _flash_burst: CPUParticles2D
 var _playing := false
+var _skip_requested := false
 var _active_tween: Tween
 
 
@@ -34,6 +36,15 @@ func _ready() -> void:
 	_build_particles()
 	_reset_visual_state()
 	get_viewport().size_changed.connect(_fit_root)
+	_dim.gui_input.connect(_on_dismiss_input)
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if not _playing:
+		return
+	if _is_dismiss_input(event):
+		_request_skip()
+		get_viewport().set_input_as_handled()
 
 
 func play_celebration(display: Dictionary, burst_origin: Vector2) -> void:
@@ -41,9 +52,11 @@ func play_celebration(display: Dictionary, burst_origin: Vector2) -> void:
 		return
 
 	_playing = true
+	_skip_requested = false
 	_kill_tween()
 	_reset_visual_state()
 	_fit_root()
+	set_process_unhandled_input(true)
 
 	_header.text = "ค้นพบสูตรใหม่!"
 	_emoji.text = display.get("emoji", "")
@@ -53,29 +66,73 @@ func play_celebration(display: Dictionary, burst_origin: Vector2) -> void:
 	_play_screen_flash()
 	_start_particles(burst_origin)
 
+	await _play_intro_phase()
+	if not _skip_requested:
+		await _play_hold_phase()
+	await _play_fade_phase(_skip_requested)
+	_finish_celebration()
+
+
+func _finish_celebration() -> void:
+	set_process_unhandled_input(false)
+	_stop_particles()
+	visible = false
+	_playing = false
+	_skip_requested = false
+	_active_tween = null
+	celebration_finished.emit()
+
+
+func _request_skip() -> void:
+	if not _playing or _skip_requested:
+		return
+	_skip_requested = true
+	_kill_tween()
+	_stop_particles()
+
+
+func _on_dismiss_input(event: InputEvent) -> void:
+	if _is_dismiss_input(event):
+		_request_skip()
+
+
+func _is_dismiss_input(event: InputEvent) -> bool:
+	if event is InputEventMouseButton:
+		return event.pressed and event.button_index == MOUSE_BUTTON_LEFT
+	if event is InputEventScreenTouch:
+		return event.pressed
+	return false
+
+
+func _play_intro_phase() -> void:
 	var intro := create_tween()
 	_active_tween = intro
 	intro.set_parallel(true)
 	intro.tween_property(_dim, "modulate:a", DIM_ALPHA, 0.28).set_ease(Tween.EASE_OUT)
 	intro.tween_property(_content, "modulate:a", 1.0, 0.22).set_ease(Tween.EASE_OUT)
 	intro.tween_property(_content, "scale", Vector2.ONE, 0.38).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
-	await intro.finished
-
-	await get_tree().create_timer(HOLD_SECONDS).timeout
-	await _play_fade_phase()
-
-	_stop_particles()
-	visible = false
-	_playing = false
-	_active_tween = null
-	celebration_finished.emit()
+	while intro.is_valid() and intro.is_running():
+		if _skip_requested:
+			_kill_tween()
+			return
+		await get_tree().process_frame
 
 
-func _play_fade_phase() -> void:
+func _play_hold_phase() -> void:
+	var remaining := HOLD_SECONDS
+	while remaining > 0.0 and not _skip_requested:
+		var step := minf(0.05, remaining)
+		await get_tree().create_timer(step).timeout
+		remaining -= step
+
+
+func _play_fade_phase(fast: bool = false) -> void:
+	var duration := SKIP_FADE_SECONDS if fast else FADE_SECONDS
 	var fade := create_tween()
 	_active_tween = fade
 	fade.set_parallel(true)
-	fade.tween_property(_celebration_stack, "modulate:a", 0.0, FADE_SECONDS).set_ease(Tween.EASE_IN)
+	fade.tween_property(_celebration_stack, "modulate:a", 0.0, duration).set_ease(Tween.EASE_IN)
+	fade.tween_property(_particles_root, "modulate:a", 0.0, duration).set_ease(Tween.EASE_IN)
 	await fade.finished
 
 
@@ -84,6 +141,7 @@ func _reset_visual_state() -> void:
 	_content.modulate = Color(1, 1, 1, 0)
 	_content.scale = Vector2(0.45, 0.45)
 	_celebration_stack.modulate = Color(1, 1, 1, 1)
+	_particles_root.modulate = Color(1, 1, 1, 1)
 	_dim.modulate = Color(1, 1, 1, 0)
 	_flash.modulate = Color(1, 1, 1, 0)
 	_stop_particles()
