@@ -1,0 +1,97 @@
+[gd_scene load_steps=2 format=3 uid="uid://fc2discoveryburst01"]
+
+[ext_resource type="Script" path="res://components/discovery_burst.gd" id="1_script"]
+
+[node name="DiscoveryBurst" type="CanvasLayer"]
+layer = 100
+script = ExtResource("1_script")
+
+[node name="CelebrationStack" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Dim" type="ColorRect" parent="CelebrationStack"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+modulate = Color(1, 1, 1, 0)
+color = Color(0.02, 0.04, 0.1, 1)
+
+[node name="ParticlesRoot" type="Node2D" parent="CelebrationStack"]
+
+[node name="Root" type="Control" parent="CelebrationStack"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Flash" type="ColorRect" parent="CelebrationStack/Root"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+modulate = Color(1, 1, 1, 0)
+color = Color(1, 0.92, 0.45, 1)
+
+[node name="Center" type="CenterContainer" parent="CelebrationStack/Root"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Content" type="Control" parent="CelebrationStack/Root/Center"]
+custom_minimum_size = Vector2(520, 360)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="VBox" type="VBoxContainer" parent="CelebrationStack/Root/Center/Content"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="Header" type="Label" parent="CelebrationStack/Root/Center/Content/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.92, 0.45, 1)
+theme_override_colors/font_outline_color = Color(0.35, 0.18, 0, 0.95)
+theme_override_constants/outline_size = 10
+theme_override_font_sizes/font_size = 44
+text = "ค้นพบสูตรใหม่!"
+horizontal_alignment = 1
+
+[node name="Emoji" type="Label" parent="CelebrationStack/Root/Center/Content/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 156
+text = "🍚"
+horizontal_alignment = 1
+
+[node name="Title" type="Label" parent="CelebrationStack/Root/Center/Content/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.75)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 52
+text = "ข้าวผัด"
+horizontal_alignment = 1

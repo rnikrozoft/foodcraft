@@ -1,0 +1,139 @@
+[gd_scene format=3 uid="uid://c8profile001"]
+
+[ext_resource type="Script" uid="uid://opdlyi4c8cx3" path="res://components/profile_panel.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://cniigpw374okg" path="res://assets/Hyper_Casual_UI/Sprites/Panel_Sprites/1 lvl.png" id="2_avatar_frame"]
+[ext_resource type="Texture2D" uid="uid://c6t33vxms5dt0" path="res://assets/Hyper_Casual_UI/Sprites/Panel_Sprites/profile placeeholder.png" id="3_avatar_bg"]
+[ext_resource type="Texture2D" uid="uid://cnq3p85jbwpdi" path="res://assets/Hyper_Casual_UI/Sprites/Icons/character2.png" id="4_avatar"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_exp_bg"]
+bg_color = Color(0.12, 0.32, 0.33, 1)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+corner_radius_bottom_left = 9
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_exp_fill"]
+bg_color = Color(1, 0.82, 0.22, 1)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+corner_radius_bottom_left = 9
+
+[node name="ProfilePanel" type="Control" unique_id=533021469]
+custom_minimum_size = Vector2(220, 64)
+layout_mode = 3
+anchors_preset = 0
+size_flags_horizontal = 0
+size_flags_vertical = 4
+script = ExtResource("1_script")
+avatar_texture = ExtResource("4_avatar")
+
+[node name="HBox" type="HBoxContainer" parent="." unique_id=1626019879]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="Avatar" type="Control" parent="HBox" unique_id=1755476618]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="Frame" type="TextureRect" parent="HBox/Avatar" unique_id=872143201]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("2_avatar_frame")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="AvatarBg" type="TextureRect" parent="HBox/Avatar" unique_id=1391739071]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -22.0
+offset_top = -22.0
+offset_right = 22.0
+offset_bottom = 22.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("3_avatar_bg")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="AvatarIcon" type="TextureRect" parent="HBox/Avatar" unique_id=593204406]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -18.0
+offset_top = -18.0
+offset_right = 18.0
+offset_bottom = 18.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("4_avatar")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Info" type="VBoxContainer" parent="HBox" unique_id=57308643]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 2
+alignment = 1
+
+[node name="PlayerName" type="Label" parent="HBox/Info" unique_id=302502650]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.65)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 18
+text = "Food Crafter"
+
+[node name="ExpWrap" type="Control" parent="HBox/Info" unique_id=1962826195]
+custom_minimum_size = Vector2(148, 18)
+layout_mode = 2
+size_flags_horizontal = 0
+
+[node name="ExpBar" type="ProgressBar" parent="HBox/Info/ExpWrap" unique_id=796909833]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_exp_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_exp_fill")
+value = 65.0
+show_percentage = false
+
+[node name="ExpLabel" type="Label" parent="HBox/Info/ExpWrap" unique_id=1671146286]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.75)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 11
+text = "650 / 1,000"
+horizontal_alignment = 1
+vertical_alignment = 1

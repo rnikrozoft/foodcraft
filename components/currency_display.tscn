@@ -1,0 +1,31 @@
+[gd_scene format=3 uid="uid://c8currdisp001"]
+
+[ext_resource type="Script" path="res://components/currency_display.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://c8currrow001" path="res://components/currency_row.tscn" id="2_row"]
+[ext_resource type="Texture2D" uid="uid://db74g3wguj4h4" path="res://assets/Hyper_Casual_UI/Sprites/Icons/rataing star.png" id="3_star"]
+
+[node name="CurrencyDisplay" type="Control"]
+custom_minimum_size = Vector2(168, 78)
+layout_mode = 3
+size_flags_horizontal = 0
+size_flags_vertical = 0
+script = ExtResource("1_script")
+coins = 12345
+gems = 1250
+
+[node name="VBox" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 6
+
+[node name="CoinRow" parent="VBox" instance=ExtResource("2_row")]
+layout_mode = 2
+
+[node name="GemRow" parent="VBox" instance=ExtResource("2_row")]
+layout_mode = 2
+icon = ExtResource("3_star")
+amount = 1250

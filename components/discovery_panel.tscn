@@ -1,0 +1,67 @@
+[gd_scene format=3 uid="uid://c8discpanel01"]
+
+[ext_resource type="Script" uid="uid://dpm8mhmlepsfs" path="res://components/discovery_panel.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://cu64wdi5k24g1" path="res://assets/Hyper_Casual_UI/Sprites/Panel_Sprites/Rectangle 363 (1).png" id="2_panel"]
+[ext_resource type="Texture2D" uid="uid://bcyp0ar5oaq34" path="res://assets/Hyper_Casual_UI/Sprites/Icons/rank.png" id="3_rank"]
+
+[node name="DiscoveryPanel" type="Control" unique_id=1769782423]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 3
+anchors_preset = 0
+size_flags_horizontal = 4
+size_flags_vertical = 0
+script = ExtResource("1_script")
+
+[node name="Background" type="NinePatchRect" parent="." unique_id=4259967]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -30.0
+offset_right = 30.0
+offset_bottom = 7.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_panel")
+patch_margin_left = 30
+patch_margin_top = 14
+patch_margin_right = 30
+patch_margin_bottom = 14
+
+[node name="Margin" type="MarginContainer" parent="." unique_id=1496862393]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 4
+
+[node name="HBox" type="HBoxContainer" parent="Margin" unique_id=1594051796]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="Icon" type="TextureRect" parent="Margin/HBox" unique_id=1654010167]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("3_rank")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="DiscoveredLabel" type="RichTextLabel" parent="Margin/HBox" unique_id=1557059024]
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+theme_override_colors/default_color = Color(1, 0.95, 0.85, 1)
+theme_override_font_sizes/normal_font_size = 18
+bbcode_enabled = true
+text = "ค้นพบแล้ว 158 / 5000"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0

@@ -1,0 +1,121 @@
+[gd_scene format=3 uid="uid://dbj5gw0htu8rb"]
+
+[ext_resource type="Script" uid="uid://df813kod7fcma" path="res://components/popular_ingredients_panel.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://cu64wdi5k24g1" path="res://assets/Hyper_Casual_UI/Sprites/Panel_Sprites/Rectangle 363 (1).png" id="2_panel"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_search"]
+content_margin_left = 14.0
+content_margin_top = 10.0
+content_margin_right = 14.0
+content_margin_bottom = 10.0
+bg_color = Color(0.35, 0.24, 0.17, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_search_focus"]
+content_margin_left = 14.0
+content_margin_top = 10.0
+content_margin_right = 14.0
+content_margin_bottom = 10.0
+bg_color = Color(0.4, 0.28, 0.2, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 0.82, 0.28, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[node name="PopularIngredientsPanel" type="Control" unique_id=1249708824]
+custom_minimum_size = Vector2(0, 224)
+layout_mode = 3
+size_flags_horizontal = 3
+script = ExtResource("1_script")
+
+[node name="Background" type="NinePatchRect" parent="." unique_id=1683483843]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_panel")
+patch_margin_left = 30
+patch_margin_top = 14
+patch_margin_right = 30
+patch_margin_bottom = 14
+
+[node name="Margin" type="MarginContainer" parent="." unique_id=684610053]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 12
+
+[node name="VBox" type="VBoxContainer" parent="Margin" unique_id=1970946197]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Header" type="HBoxContainer" parent="Margin/VBox" unique_id=1585177357]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Margin/VBox/Header" unique_id=1310758133]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 0.95, 0.85, 1)
+theme_override_font_sizes/font_size = 22
+text = "วัตถุดิบยอดนิยม"
+
+[node name="SeeAll" type="Button" parent="Margin/VBox/Header" unique_id=923762635]
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(1, 0.82, 0.28, 1)
+theme_override_colors/font_hover_color = Color(1, 0.92, 0.45, 1)
+theme_override_font_sizes/font_size = 16
+text = "ดูทั้งหมด >"
+flat = true
+
+[node name="Scroll" type="ScrollContainer" parent="Margin/VBox" unique_id=1869231245]
+custom_minimum_size = Vector2(0, 108)
+layout_mode = 2
+size_flags_vertical = 0
+horizontal_scroll_mode = 3
+vertical_scroll_mode = 0
+
+[node name="CardRow" type="HBoxContainer" parent="Margin/VBox/Scroll" unique_id=1562007714]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="SearchBox" type="Control" parent="Margin/VBox" unique_id=304969767]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="SearchInput" type="LineEdit" parent="Margin/VBox/SearchBox" unique_id=652961160]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 12.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 0.95, 0.85, 1)
+theme_override_colors/font_placeholder_color = Color(0.75, 0.68, 0.58, 1)
+theme_override_colors/caret_color = Color(1, 0.82, 0.28, 1)
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxFlat_search")
+theme_override_styles/focus = SubResource("StyleBoxFlat_search_focus")
+placeholder_text = "ค้นหาชื่ออาหาร..."
+clear_button_enabled = true
+caret_blink = true

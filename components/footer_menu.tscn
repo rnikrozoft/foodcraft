@@ -1,0 +1,69 @@
+[gd_scene load_steps=9 format=3 uid="uid://b7ftrmenu001"]
+
+[ext_resource type="Script" path="res://components/footer_menu.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://d8ftr2tab001" path="res://components/footer_tab.tscn" id="2_tab"]
+[ext_resource type="Texture2D" uid="uid://tgetj6qcvl51" path="res://assets/Hyper_Casual_UI/Sprites/Panel_Sprites/Rectangle 361.png" id="3_bar"]
+[ext_resource type="Texture2D" uid="uid://cf2jkebt6bpq4" path="res://assets/Hyper_Casual_UI/Sprites/Icons/home_icon.png" id="4_icon_experiment"]
+[ext_resource type="Texture2D" uid="uid://b1vhwxy7bylic" path="res://assets/Hyper_Casual_UI/Sprites/Icons/character.png" id="5_icon_recipes"]
+[ext_resource type="Texture2D" uid="uid://cot7sypaw44yl" path="res://assets/Hyper_Casual_UI/Sprites/Icons/flag.png" id="6_icon_missions"]
+[ext_resource type="Texture2D" uid="uid://c6k43cw7ovaj2" path="res://assets/Hyper_Casual_UI/Sprites/Icons/leaderboard.png" id="7_icon_rank"]
+[ext_resource type="Texture2D" uid="uid://b7is7qnpou6gd" path="res://assets/Hyper_Casual_UI/Sprites/Icons/setting.png" id="8_icon_more"]
+
+[node name="FooterMenu" type="Control"]
+custom_minimum_size = Vector2(0, 108)
+layout_mode = 3
+size_flags_horizontal = 3
+script = ExtResource("1_script")
+
+[node name="Background" type="NinePatchRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("3_bar")
+patch_margin_left = 43
+patch_margin_top = 16
+patch_margin_right = 43
+patch_margin_bottom = 16
+
+[node name="HBox" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 6.0
+offset_right = -8.0
+offset_bottom = -6.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 0
+alignment = 1
+
+[node name="TabExperiment" parent="HBox" instance=ExtResource("2_tab")]
+layout_mode = 2
+title = "ทดลอง"
+icon = ExtResource("4_icon_experiment")
+
+[node name="TabRecipes" parent="HBox" instance=ExtResource("2_tab")]
+layout_mode = 2
+title = "สูตรของฉัน"
+icon = ExtResource("5_icon_recipes")
+
+[node name="TabMissions" parent="HBox" instance=ExtResource("2_tab")]
+layout_mode = 2
+title = "ภารกิจ"
+icon = ExtResource("6_icon_missions")
+
+[node name="TabRank" parent="HBox" instance=ExtResource("2_tab")]
+layout_mode = 2
+title = "อันดับ"
+icon = ExtResource("7_icon_rank")
+
+[node name="TabMore" parent="HBox" instance=ExtResource("2_tab")]
+layout_mode = 2
+title = "เพิ่มเติม"
+icon = ExtResource("8_icon_more")

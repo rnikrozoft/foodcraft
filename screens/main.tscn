@@ -1,0 +1,120 @@
+[gd_scene format=3 uid="uid://du3b04ovm5ryb"]
+
+[ext_resource type="Script" uid="uid://mbyq7l5pebqb" path="res://screens/main.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://b7ftrmenu001" path="res://components/footer_menu.tscn" id="2_footer"]
+[ext_resource type="PackedScene" uid="uid://fc2nxda8ii5o" path="res://components/craft_zone.tscn" id="3_craft"]
+[ext_resource type="PackedScene" uid="uid://dbj5gw0htu8rb" path="res://components/popular_ingredients_panel.tscn" id="4_ingredients"]
+[ext_resource type="PackedScene" uid="uid://c8currdisp001" path="res://components/currency_display.tscn" id="5_currency"]
+[ext_resource type="PackedScene" uid="uid://c8discpanel01" path="res://components/discovery_panel.tscn" id="6_discovery"]
+[ext_resource type="PackedScene" uid="uid://c8profile001" path="res://components/profile_panel.tscn" id="7_profile"]
+[ext_resource type="PackedScene" uid="uid://fc2leaderboard01" path="res://components/leaderboard_panel.tscn" id="8_leaderboard"]
+
+[node name="Main" type="Control" unique_id=232349281]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="Background" type="ColorRect" parent="." unique_id=1848474570]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.12, 0.16, 0.22, 1)
+
+[node name="ScreenVBox" type="VBoxContainer" parent="." unique_id=958644911]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 0
+
+[node name="Header" type="Control" parent="ScreenVBox" unique_id=-447676240]
+custom_minimum_size = Vector2(0, 96)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 0
+
+[node name="HeaderMargin" type="MarginContainer" parent="ScreenVBox/Header" unique_id=-1447774240]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 4
+
+[node name="HeaderHBox" type="HBoxContainer" parent="ScreenVBox/Header/HeaderMargin" unique_id=1847293056]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 12
+
+[node name="ProfilePanel" parent="ScreenVBox/Header/HeaderMargin/HeaderHBox" unique_id=-1037608832 instance=ExtResource("7_profile")]
+layout_mode = 2
+
+[node name="Spacer" type="Control" parent="ScreenVBox/Header/HeaderMargin/HeaderHBox" unique_id=1257358464]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CurrencyDisplay" parent="ScreenVBox/Header/HeaderMargin/HeaderHBox" unique_id=-1742641536 instance=ExtResource("5_currency")]
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="DiscoveryMargin" type="MarginContainer" parent="ScreenVBox" unique_id=-742641536]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 0
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 8
+
+[node name="DiscoveryCenter" type="CenterContainer" parent="ScreenVBox/DiscoveryMargin" unique_id=1059259721]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="DiscoveryPanel" parent="ScreenVBox/DiscoveryMargin/DiscoveryCenter" unique_id=257358464 instance=ExtResource("6_discovery")]
+custom_minimum_size = Vector2(320, 60)
+layout_mode = 2
+size_flags_vertical = 1
+
+[node name="CraftZone" parent="ScreenVBox" unique_id=942679277 instance=ExtResource("3_craft")]
+layout_mode = 2
+
+[node name="LeaderboardPanel" parent="ScreenVBox" instance=ExtResource("8_leaderboard")]
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="BottomMargin" type="MarginContainer" parent="ScreenVBox" unique_id=577238671]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 0
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 20
+
+[node name="BottomVBox" type="VBoxContainer" parent="ScreenVBox/BottomMargin" unique_id=921850186]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 30
+
+[node name="PopularIngredientsPanel" parent="ScreenVBox/BottomMargin/BottomVBox" unique_id=1249708824 instance=ExtResource("4_ingredients")]
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="FooterMenu" parent="ScreenVBox/BottomMargin/BottomVBox" unique_id=1683483843 instance=ExtResource("2_footer")]
+layout_mode = 2
+size_flags_vertical = 0
