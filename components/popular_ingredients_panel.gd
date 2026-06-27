@@ -6,22 +6,42 @@ signal ingredient_selected(data: Dictionary)
 
 const CARD_SCENE := preload("res://components/ingredient_card.tscn")
 
+@onready var _title: Label = $Margin/VBox/Header/Title
 @onready var _see_all: Button = $Margin/VBox/Header/SeeAll
 @onready var _scroll: ScrollContainer = $Margin/VBox/Scroll
 @onready var _cards_row: HBoxContainer = $Margin/VBox/Scroll/CardRow
 @onready var _search: LineEdit = $Margin/VBox/SearchBox/SearchInput
 
 var _cards: Array = []
-var _all_ingredients: Array = []
+var _display_items: Array = []
+var _search_pool: Array = []
 
 
 func _ready() -> void:
 	_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_NEVER
 	_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	_all_ingredients = GameData.get_panel_ingredients()
+	_search_pool = GameData.get_craft_pick_items()
 	_search.text_changed.connect(_on_search_changed)
 	_see_all.pressed.connect(func() -> void: see_all_pressed.emit())
-	_show_ingredients(_all_ingredients)
+	GameData.progress_changed.connect(_on_progress_changed)
+	_refresh()
+
+
+func _on_progress_changed() -> void:
+	_search_pool = GameData.get_craft_pick_items()
+	if _search.text.strip_edges().is_empty():
+		_refresh()
+
+
+func _refresh() -> void:
+	var recent := GameData.get_recent_discoveries()
+	if recent.is_empty():
+		_title.text = "วัตถุดิบยอดนิยม"
+		_display_items = GameData.get_panel_ingredients()
+	else:
+		_title.text = "ค้นพบล่าสุด"
+		_display_items = recent
+	_show_items(_display_items)
 
 
 func _input(event: InputEvent) -> void:
@@ -43,17 +63,17 @@ func _input(event: InputEvent) -> void:
 func _on_search_changed(query: String) -> void:
 	var trimmed := query.strip_edges()
 	if trimmed.is_empty():
-		_show_ingredients(_all_ingredients)
+		_refresh()
 		return
 
 	var results: Array = []
-	for item in _all_ingredients:
+	for item in _search_pool:
 		if String(item.get("title", "")).contains(trimmed):
 			results.append(item)
-	_show_ingredients(results)
+	_show_items(results)
 
 
-func _show_ingredients(items: Array) -> void:
+func _show_items(items: Array) -> void:
 	for card in _cards:
 		card.queue_free()
 	_cards.clear()

@@ -7,11 +7,13 @@ signal progress_changed
 signal wallet_changed
 
 const STAR_DROP_PERCENT := 28
+const MAX_RECENT_DISCOVERIES := 20
 
 var _items_by_id: Dictionary = {}
 var _recipes_by_key: Dictionary = {}
 var _discoverable_total: int = 0
 var _discovered_ids: Dictionary = {}
+var _recent_discovered_ids: Array = []
 var _discovery_points: int = 0
 var _craft_count: int = 0
 var _pending_sync: Array = []
@@ -102,6 +104,7 @@ func mark_discovered(id: String) -> bool:
 	_discovered_ids[id] = true
 	if is_new:
 		_discovery_points += get_item_discovery_points(id)
+		_push_recent_discovery(id)
 	_save_local_progress()
 	progress_changed.emit()
 	return is_new
@@ -164,6 +167,38 @@ func get_discovered_items() -> Array:
 		return String(a.get("title", "")) < String(b.get("title", ""))
 	)
 	return results
+
+
+func get_recent_discoveries() -> Array:
+	var results: Array = []
+	for id in _recent_discovered_ids:
+		var display := to_display_dict(String(id))
+		if not display.is_empty():
+			results.append(display)
+	return results
+
+
+func get_craft_pick_items() -> Array:
+	return _merge_display_items(get_panel_ingredients(), get_discovered_items())
+
+
+func _push_recent_discovery(id: String) -> void:
+	_recent_discovered_ids.erase(id)
+	_recent_discovered_ids.insert(0, id)
+	if _recent_discovered_ids.size() > MAX_RECENT_DISCOVERIES:
+		_recent_discovered_ids.resize(MAX_RECENT_DISCOVERIES)
+
+
+func _merge_display_items(primary: Array, extra: Array) -> Array:
+	var merged: Array = []
+	var seen := {}
+	for data in primary + extra:
+		var item_id := String(data.get("id", ""))
+		if item_id.is_empty() or seen.has(item_id):
+			continue
+		seen[item_id] = true
+		merged.append(data)
+	return merged
 
 
 func get_discovery_points() -> int:
@@ -239,6 +274,13 @@ func _load_local_progress() -> void:
 	_pending_sync = parsed.get("pending_sync", []).duplicate()
 	_coins = int(parsed.get("coins", 0))
 	_stars = int(parsed.get("stars", 0))
+	_recent_discovered_ids = []
+	for id in parsed.get("recent_discovered", []):
+		_recent_discovered_ids.append(String(id))
+	if _recent_discovered_ids.is_empty() and not _discovered_ids.is_empty():
+		_backfill_recent_discoveries()
+		if not _recent_discovered_ids.is_empty():
+			_save_local_progress()
 	if _discovery_points == 0 and not _discovered_ids.is_empty():
 		_recalculate_points()
 
@@ -250,6 +292,7 @@ func _save_local_progress() -> void:
 	discovered.sort()
 	var payload := {
 		"discovered": discovered,
+		"recent_discovered": _recent_discovered_ids.duplicate(),
 		"discovery_points": _discovery_points,
 		"craft_count": _craft_count,
 		"pending_sync": _pending_sync,
@@ -259,6 +302,19 @@ func _save_local_progress() -> void:
 	var file := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
 	if file:
 		file.store_string(JSON.stringify(payload))
+
+
+func _backfill_recent_discoveries() -> void:
+	var items: Array = get_discovered_items()
+	items.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
+		var tier_a := int(a.get("tier", 0))
+		var tier_b := int(b.get("tier", 0))
+		if tier_a != tier_b:
+			return tier_a > tier_b
+		return String(a.get("title", "")) > String(b.get("title", ""))
+	)
+	for item in items.slice(0, MAX_RECENT_DISCOVERIES):
+		_recent_discovered_ids.append(String(item.get("id", "")))
 
 
 func _recalculate_points() -> void:
