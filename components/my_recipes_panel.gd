@@ -73,7 +73,7 @@ func _refresh() -> void:
 func _get_items_for_mode() -> Array:
 	if _pick_mode:
 		return _merge_items(GameData.get_panel_ingredients(), GameData.get_discovered_items())
-	return GameData.get_discovered_items()
+	return GameData.get_collection_items()
 
 
 func _merge_items(primary: Array, extra: Array) -> Array:
@@ -173,7 +173,7 @@ func _show_grid(items: Array) -> void:
 	if items.is_empty():
 		_status.visible = true
 		if _all_items.is_empty():
-			_status.text = "ยังไม่มีสูตรที่ค้นพบ — ลองผสมวัตถุดิบดูสิ!"
+			_status.text = "ยังไม่มีสูตรหรือวัตถุดิบ — ลองผสมวัตถุดิบดูสิ!"
 		elif not _search.text.strip_edges().is_empty() or not _active_category.is_empty():
 			_status.text = "ไม่พบรายการในหมวดนี้"
 		else:

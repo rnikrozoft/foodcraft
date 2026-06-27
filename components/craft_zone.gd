@@ -43,6 +43,10 @@ func _ready() -> void:
 
 
 func add_ingredient(data: Dictionary) -> bool:
+	var id := String(data.get("id", ""))
+	if not GameData.can_use_in_craft(id):
+		_set_status("ยังใช้วัตถุดิบนี้ไม่ได้ — ปลดล็อกจากร้านค้าหรือค้นพบสูตรก่อน")
+		return false
 	if not _slot_data[0].is_empty() and not _slot_data[1].is_empty():
 		if _slot_locked[0] and _slot_locked[1]:
 			_shake_input_slots()
@@ -137,6 +141,10 @@ func _check_recipe() -> void:
 		_slot_data[0].get("id", ""),
 		_slot_data[1].get("id", ""),
 	])
+	for ingredient_id in from_ids:
+		if not GameData.can_use_in_craft(String(ingredient_id)):
+			_show_unknown_result()
+			return
 	var result_id := GameData.lookup_recipe(from_ids[0], from_ids[1])
 	if result_id.is_empty():
 		_show_unknown_result()
@@ -151,7 +159,9 @@ func _show_result_async(result_id: String, from_ids: PackedStringArray) -> void:
 		return
 
 	GameData.record_craft_local()
-	var is_new := GameData.mark_discovered(result_id)
+	var outcome := GameData.process_craft_result(result_id)
+	var is_new := bool(outcome.get("is_new", false))
+	var result_kind := String(outcome.get("result_kind", ""))
 	if NakamaService.is_online:
 		NakamaService.record_craft(is_new)
 	var reward := {}
@@ -165,7 +175,7 @@ func _show_result_async(result_id: String, from_ids: PackedStringArray) -> void:
 	_result_glow.visible = false
 	_result_empty.visible = false
 	_new_badge.visible = is_new
-	_set_status(_format_result_status(is_new, reward))
+	_set_status(_format_result_status(is_new, result_kind, reward))
 	_arrow.modulate = Color(1, 0.85, 0.35, 1)
 	if is_new and not reward.is_empty():
 		reward_granted.emit(reward, get_result_burst_origin())
@@ -191,8 +201,13 @@ func _grant_discovery_reward(result_id: String, from_ids: PackedStringArray) -> 
 	return reward
 
 
-func _format_result_status(is_new: bool, reward: Dictionary) -> String:
-	var headline := "ค้นพบโดยคุณเมื่อสักครู่" if is_new else "สูตรที่รู้จักแล้ว"
+func _format_result_status(is_new: bool, result_kind: String, reward: Dictionary) -> String:
+	var headline := ""
+	match result_kind:
+		"ingredient":
+			headline = "ปลดล็อกวัตถุดิบใหม่!" if is_new else "ได้วัตถุดิบ — มีอยู่แล้ว"
+		_:
+			headline = "ค้นพบโดยคุณเมื่อสักครู่" if is_new else "สูตรที่รู้จักแล้ว"
 	var amount := int(reward.get("amount", 0))
 	if amount <= 0:
 		return headline

@@ -34,28 +34,14 @@ func _on_progress_changed() -> void:
 
 
 func _refresh() -> void:
-	var recent := GameData.get_recent_discoveries()
-	if recent.is_empty():
+	var collection := GameData.get_collection_items()
+	if collection.is_empty():
 		_title.text = "วัตถุดิบยอดนิยม"
 		_display_items = GameData.get_panel_ingredients()
 	else:
 		_title.text = "ค้นพบล่าสุด"
-		_display_items = _merge_recent_with_ingredients(recent)
+		_display_items = GameData.get_craft_bar_items()
 	_show_items(_display_items)
-
-
-func _merge_recent_with_ingredients(recent: Array) -> Array:
-	var merged: Array = recent.duplicate()
-	var seen := {}
-	for item in recent:
-		seen[String(item.get("id", ""))] = true
-	for item in GameData.get_panel_ingredients():
-		var item_id := String(item.get("id", ""))
-		if item_id.is_empty() or seen.has(item_id):
-			continue
-		seen[item_id] = true
-		merged.append(item)
-	return merged
 
 
 func _input(event: InputEvent) -> void:
@@ -104,6 +90,7 @@ func _show_items(items: Array) -> void:
 
 	if _cards.size() > 0:
 		_select_card(0)
+	_scroll.scroll_horizontal = 0
 
 
 func _on_card_pressed(data: Dictionary) -> void:

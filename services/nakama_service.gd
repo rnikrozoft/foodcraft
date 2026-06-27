@@ -2,6 +2,7 @@ extends Node
 
 signal session_ready(profile: Dictionary)
 signal session_failed(message: String)
+signal game_config_loaded(config: Dictionary)
 signal leaderboard_loaded(data: Dictionary)
 signal leaderboards_loaded(boards: Array)
 signal hall_of_fame_loaded(data: Dictionary)
@@ -40,6 +41,9 @@ func authenticate_guest(display_name: String = "") -> bool:
 	is_online = true
 	username = guest_name
 	await refresh_profile()
+	await fetch_game_config()
+	await sync_wallet()
+	await fetch_shop_state()
 	session_ready.emit(profile)
 	return true
 
@@ -52,6 +56,46 @@ func refresh_profile() -> void:
 	username = String(profile.get("username", username))
 	user_id = String(profile.get("user_id", user_id))
 	GameData.apply_server_state(profile)
+
+
+func fetch_game_config() -> Dictionary:
+	var data := await call_rpc("get_game_config", "")
+	if data.is_empty():
+		return {}
+	var shop: Variant = data.get("shop", {})
+	if typeof(shop) == TYPE_DICTIONARY and not shop.is_empty():
+		GameData.apply_shop_config(shop)
+	game_config_loaded.emit(data)
+	return data
+
+
+func fetch_shop_state() -> Dictionary:
+	var data := await call_rpc("get_shop_state", "")
+	if bool(data.get("rpc_error", false)):
+		return data
+	if not data.is_empty():
+		GameData.apply_shop_state_from_server(data)
+	return data
+
+
+func reset_shop(payment_type: String) -> Dictionary:
+	var payload := JSON.stringify({"payment_type": payment_type})
+	var data := await call_rpc("reset_shop", payload)
+	if bool(data.get("rpc_error", false)):
+		return data
+	if not data.is_empty():
+		GameData.apply_shop_state_from_server(data)
+	return data
+
+
+func purchase_shop_ingredient(ingredient_id: String) -> Dictionary:
+	var payload := JSON.stringify({"ingredient_id": ingredient_id})
+	var data := await call_rpc("purchase_shop_ingredient", payload)
+	if bool(data.get("rpc_error", false)):
+		return data
+	if not data.is_empty():
+		GameData.apply_shop_state_from_server(data)
+	return data
 
 
 func discover_recipe(item_id: String, from_ids: PackedStringArray) -> Dictionary:
@@ -123,16 +167,60 @@ func fetch_leaderboard(board_id: String) -> Dictionary:
 
 func call_rpc(rpc_id: String, payload: String) -> Dictionary:
 	if session_token.is_empty():
-		return {}
+		return {"rpc_error": true, "error_message": "ไม่ได้เข้าสู่ระบบ"}
 	var url := "%s/v2/rpc/%s" % [_config.get_base_url(), rpc_id]
 	var body := JSON.stringify(payload)
 	var response := await _request(HTTPClient.METHOD_POST, url, body, true)
 	if response.is_empty():
-		return {}
+		return {"rpc_error": true, "error_message": "เชื่อมต่อเซิร์ฟเวอร์ไม่ได้"}
+	if bool(response.get("rpc_error", false)):
+		return response
 	if response.has("payload") and typeof(response["payload"]) == TYPE_STRING:
 		var parsed: Variant = JSON.parse_string(response["payload"])
 		return parsed if typeof(parsed) == TYPE_DICTIONARY else {}
 	return response
+
+
+func format_rpc_error(data: Dictionary) -> String:
+	var message := String(data.get("error_message", ""))
+	match message:
+		"insufficient coins":
+			return "เหรียญบนเซิร์ฟเวอร์ไม่พอ (มี %d เหรียญ)" % GameData.get_coins()
+		"ingredient not available":
+			return "วัตถุดิบนี้หมดเวลาขายแล้ว — รีเซ็ตร้านหรือรอรอบถัดไป"
+		"already unlocked":
+			return "ปลดล็อกวัตถุดิบนี้แล้ว"
+		"free reset already used":
+			return "ใช้รีเซ็ตฟรีไปแล้ว — รอครบ 24 ชม. หรือใช้เหรียญรีเซ็ต"
+	if message.is_empty():
+		return "เกิดข้อผิดพลาด — ลองใหม่อีกครั้ง"
+	return message
+
+
+func adjust_wallet(coins_delta: int = 0, stars_delta: int = 0) -> Dictionary:
+	var payload := JSON.stringify({
+		"coins_delta": coins_delta,
+		"stars_delta": stars_delta,
+	})
+	var data := await call_rpc("adjust_wallet", payload)
+	if bool(data.get("rpc_error", false)):
+		return data
+	if not data.is_empty():
+		GameData.apply_wallet_from_server(data)
+	return data
+
+
+func sync_wallet() -> Dictionary:
+	var payload := JSON.stringify({
+		"coins": GameData.get_coins(),
+		"stars": GameData.get_stars(),
+	})
+	var data := await call_rpc("sync_wallet", payload)
+	if bool(data.get("rpc_error", false)):
+		return data
+	if not data.is_empty():
+		GameData.apply_wallet_from_server(data)
+	return data
 
 
 func _request(method: int, url: String, body: String, use_session: bool) -> Dictionary:
@@ -157,7 +245,13 @@ func _request(method: int, url: String, body: String, use_session: bool) -> Dict
 	var response_body: String = result[3].get_string_from_utf8()
 	if response_code < 200 or response_code >= 300:
 		push_warning("Nakama HTTP %s -> %s" % [url, response_body])
-		return {}
+		var parsed: Variant = JSON.parse_string(response_body)
+		if typeof(parsed) == TYPE_DICTIONARY:
+			return {
+				"rpc_error": true,
+				"error_message": String(parsed.get("message", parsed.get("error", "RPC failed"))),
+			}
+		return {"rpc_error": true, "error_message": "RPC failed (%d)" % response_code}
 
 	if response_body.is_empty():
 		return {}

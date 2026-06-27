@@ -1,0 +1,109 @@
+[gd_scene format=3 uid="uid://c0t6p786sh3oe"]
+
+[ext_resource type="Script" path="res://components/shop_panel.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/Hyper_Casual_UI/Sprites/Panel_Sprites/Rectangle 359.png" id="2_panel"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_header"]
+bg_color = Color(0.22, 0.14, 0.08, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.55, 0.4, 0.22, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+content_margin_left = 12.0
+content_margin_top = 10.0
+content_margin_right = 12.0
+content_margin_bottom = 10.0
+
+[node name="ShopPanel" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="Background" type="NinePatchRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("2_panel")
+patch_margin_left = 24
+patch_margin_top = 20
+patch_margin_right = 24
+patch_margin_bottom = 20
+
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 12
+
+[node name="VBox" type="VBoxContainer" parent="Margin"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+
+[node name="HeaderPanel" type="PanelContainer" parent="Margin/VBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_header")
+
+[node name="HeaderVBox" type="VBoxContainer" parent="Margin/VBox/HeaderPanel"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="TitleLabel" type="Label" parent="Margin/VBox/HeaderPanel/HeaderVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.92, 0.45, 1)
+theme_override_font_sizes/font_size = 22
+text = "ร้านค้า"
+horizontal_alignment = 1
+
+[node name="SubtitleLabel" type="Label" parent="Margin/VBox/HeaderPanel/HeaderVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.92, 0.86, 0.72, 1)
+theme_override_font_sizes/font_size = 12
+text = "เติมเหรียญปลดล็อกวัตถุดิบ"
+horizontal_alignment = 1
+
+[node name="TabRow" type="HBoxContainer" parent="Margin/VBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="Scroll" type="ScrollContainer" parent="Margin/VBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+vertical_scroll_mode = 3
+
+[node name="Content" type="VBoxContainer" parent="Margin/VBox/Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="StatusLabel" type="Label" parent="Margin/VBox"]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.72, 0.42, 1)
+theme_override_font_sizes/font_size = 15
+horizontal_alignment = 1

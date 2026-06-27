@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://b7ftrmenu001"]
+[gd_scene load_steps=8 format=3 uid="uid://b7ftrmenu001"]
 
 [ext_resource type="Script" path="res://components/footer_menu.gd" id="1_script"]
 [ext_resource type="PackedScene" uid="uid://d8ftr2tab001" path="res://components/footer_tab.tscn" id="2_tab"]
@@ -7,7 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://b1vhwxy7bylic" path="res://assets/Hyper_Casual_UI/Sprites/Icons/character.png" id="5_icon_recipes"]
 [ext_resource type="Texture2D" uid="uid://cot7sypaw44yl" path="res://assets/Hyper_Casual_UI/Sprites/Icons/flag.png" id="6_icon_missions"]
 [ext_resource type="Texture2D" uid="uid://c6k43cw7ovaj2" path="res://assets/Hyper_Casual_UI/Sprites/Icons/leaderboard.png" id="7_icon_rank"]
-[ext_resource type="Texture2D" uid="uid://b7is7qnpou6gd" path="res://assets/Hyper_Casual_UI/Sprites/Icons/setting.png" id="8_icon_more"]
+[ext_resource type="Texture2D" path="res://assets/Hyper_Casual_UI/Sprites/Icons/shop.png" id="8_icon_shop"]
 
 [node name="FooterMenu" type="Control"]
 custom_minimum_size = Vector2(0, 108)
@@ -65,5 +65,5 @@ icon = ExtResource("7_icon_rank")
 
 [node name="TabMore" parent="HBox" instance=ExtResource("2_tab")]
 layout_mode = 2
-title = "เพิ่มเติม"
-icon = ExtResource("8_icon_more")
+title = "ร้านค้า"
+icon = ExtResource("8_icon_shop")

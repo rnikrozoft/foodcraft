@@ -4,7 +4,7 @@ const DISCOVERY_BURST_SCENE := preload("res://components/discovery_burst.tscn")
 const REWARD_FLY_SCENE := preload("res://components/reward_fly_effect.tscn")
 const SLIDE_DURATION := 0.3
 
-enum Page { CRAFT, RECIPES, LEADERBOARD }
+enum Page { CRAFT, RECIPES, LEADERBOARD, SHOP }
 
 @onready var _content_host: Control = $ScreenVBox/ContentHost
 @onready var _craft_page: Control = $ScreenVBox/ContentHost/CraftPage
@@ -15,6 +15,7 @@ enum Page { CRAFT, RECIPES, LEADERBOARD }
 @onready var _currency_display: Control = $ScreenVBox/Header/HeaderMargin/HeaderHBox/CurrencyDisplay
 @onready var _leaderboard_panel: Control = $ScreenVBox/ContentHost/LeaderboardPanel
 @onready var _my_recipes_panel: Control = $ScreenVBox/ContentHost/MyRecipesPanel
+@onready var _shop_panel: Control = $ScreenVBox/ContentHost/ShopPanel
 @onready var _footer_menu: Control = $ScreenVBox/BottomMargin/BottomVBox/FooterMenu
 
 var _discovery_burst
@@ -24,6 +25,7 @@ var _pending_reward_origin := Vector2.ZERO
 var _current_page: Page = Page.CRAFT
 var _transitioning := false
 var _page_tween: Tween
+var _pending_shop_tab: int = ShopPanel.Tab.GENERAL
 
 
 func _ready() -> void:
@@ -42,6 +44,9 @@ func _ready() -> void:
 	_craft_zone.new_recipe_discovered.connect(_on_new_recipe_discovered)
 	_craft_zone.reward_granted.connect(_on_reward_granted)
 	_footer_menu.tab_changed.connect(_on_tab_changed)
+	_currency_display.add_coins_pressed.connect(_on_add_coins_pressed)
+	_currency_display.add_gems_pressed.connect(_on_add_gems_pressed)
+	_shop_panel.purchase_completed.connect(_update_currency_display)
 	GameData.progress_changed.connect(_update_discovery_panel)
 	GameData.wallet_changed.connect(_update_currency_display)
 	NakamaService.session_ready.connect(_on_session_ready)
@@ -49,6 +54,7 @@ func _ready() -> void:
 
 	_my_recipes_panel.visible = false
 	_leaderboard_panel.visible = false
+	_shop_panel.visible = false
 	_craft_page.visible = true
 	_ingredients_panel.visible = true
 
@@ -62,7 +68,7 @@ func _layout_pages() -> void:
 	if _transitioning:
 		return
 	var host_size := _content_host.size
-	for page in [_craft_page, _my_recipes_panel, _leaderboard_panel]:
+	for page in [_craft_page, _my_recipes_panel, _leaderboard_panel, _shop_panel]:
 		page.size = host_size
 		page.position = Vector2.ZERO
 
@@ -101,12 +107,31 @@ func _on_my_recipes_ingredient_picked(data: Dictionary) -> void:
 	_go_to_page(Page.CRAFT)
 
 
+func _on_add_coins_pressed() -> void:
+	_open_shop(ShopPanel.Tab.GENERAL)
+
+
+func _on_add_gems_pressed() -> void:
+	_open_shop(ShopPanel.Tab.GENERAL)
+
+
+func _open_shop(tab: int = ShopPanel.Tab.GENERAL) -> void:
+	_footer_menu.set_active_tab(4, false)
+	if _current_page == Page.SHOP:
+		_shop_panel.show_tab(tab)
+		return
+	_pending_shop_tab = tab
+	_go_to_page(Page.SHOP)
+
+
 func _tab_to_page(tab_index: int) -> Page:
 	match tab_index:
 		1:
 			return Page.RECIPES
 		3:
 			return Page.LEADERBOARD
+		4:
+			return Page.SHOP
 		_:
 			return Page.CRAFT
 
@@ -117,6 +142,8 @@ func _page_node(page: Page) -> Control:
 			return _my_recipes_panel
 		Page.LEADERBOARD:
 			return _leaderboard_panel
+		Page.SHOP:
+			return _shop_panel
 		_:
 			return _craft_page
 
@@ -128,7 +155,6 @@ func _go_to_page(page: Page, pick_for_craft: bool = false) -> void:
 	if page == _current_page or _transitioning:
 		return
 
-	_prepare_page(page, pick_for_craft)
 	_ingredients_panel.visible = page == Page.CRAFT
 
 	var from_node := _page_node(_current_page)
@@ -150,18 +176,23 @@ func _go_to_page(page: Page, pick_for_craft: bool = false) -> void:
 
 	_deactivate_page(_current_page)
 	from_node.visible = false
-	from_node.position.x = 0.0
-	to_node.position.x = 0.0
+	from_node.position = Vector2.ZERO
+	to_node.position = Vector2.ZERO
 	_current_page = page
 	_transitioning = false
+	_activate_page(page, pick_for_craft)
+	_layout_pages()
 
 
-func _prepare_page(page: Page, pick_for_craft: bool) -> void:
+func _activate_page(page: Page, pick_for_craft: bool) -> void:
 	match page:
 		Page.RECIPES:
 			_my_recipes_panel.show_panel(pick_for_craft)
 		Page.LEADERBOARD:
 			_leaderboard_panel.show_panel()
+		Page.SHOP:
+			_shop_panel.show_panel(_pending_shop_tab)
+			_pending_shop_tab = ShopPanel.Tab.GENERAL
 
 
 func _deactivate_page(page: Page) -> void:
@@ -170,6 +201,8 @@ func _deactivate_page(page: Page) -> void:
 			_my_recipes_panel.hide_panel()
 		Page.LEADERBOARD:
 			_leaderboard_panel.hide_panel()
+		Page.SHOP:
+			_shop_panel.hide_panel()
 
 
 func _update_discovery_panel() -> void:
