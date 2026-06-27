@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://c0s3xscakphoe"]
+
+[ext_resource type="Script" path="res://components/reward_fly_effect.gd" id="1_script"]
+
+[node name="RewardFlyEffect" type="CanvasLayer"]
+layer = 110
+script = ExtResource("1_script")
+
+[node name="Particles" type="Node2D" parent="."]

@@ -52,11 +52,11 @@ func refresh_profile() -> void:
 	GameData.apply_server_state(profile)
 
 
-func discover_recipe(item_id: String, from_ids: PackedStringArray) -> void:
-	_discover_recipe_async(item_id, from_ids)
+func discover_recipe(item_id: String, from_ids: PackedStringArray) -> Dictionary:
+	return await _discover_recipe_async(item_id, from_ids)
 
 
-func _discover_recipe_async(item_id: String, from_ids: PackedStringArray) -> void:
+func _discover_recipe_async(item_id: String, from_ids: PackedStringArray) -> Dictionary:
 	var payload := {
 		"item_id": item_id,
 		"from": [from_ids[0], from_ids[1]],
@@ -64,9 +64,10 @@ func _discover_recipe_async(item_id: String, from_ids: PackedStringArray) -> voi
 	var data := await call_rpc("discover_recipe", JSON.stringify(payload))
 	if data.is_empty():
 		GameData.queue_discovery(item_id, from_ids)
-		return
+		return {}
 	discovery_synced.emit(data)
 	GameData.apply_server_state(data)
+	return data
 
 
 func sync_discoveries(queue: Array, craft_count: int) -> Dictionary:

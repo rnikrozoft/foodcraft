@@ -5,6 +5,7 @@ const RESULT_EMOJI_SIZE := 120
 
 signal recipe_crafted(result_id: String, is_new: bool)
 signal new_recipe_discovered(display: Dictionary)
+signal reward_granted(reward: Dictionary, origin: Vector2)
 
 @onready var _slot_a: Control = $Center/VBox/InputRow/SlotA
 @onready var _slot_b: Control = $Center/VBox/InputRow/SlotB
@@ -98,10 +99,10 @@ func _check_recipe() -> void:
 	if result_id.is_empty():
 		_show_unknown_result()
 	else:
-		_show_result(result_id)
+		_show_result_async(result_id)
 
 
-func _show_result(result_id: String) -> void:
+func _show_result_async(result_id: String) -> void:
 	var display := GameData.to_display_dict(result_id)
 	if display.is_empty():
 		_show_unknown_result()
@@ -112,8 +113,9 @@ func _show_result(result_id: String) -> void:
 		NakamaService.record_craft()
 
 	var is_new := GameData.mark_discovered(result_id)
+	var reward := {}
 	if is_new:
-		_sync_discovery(result_id)
+		reward = await _grant_discovery_reward(result_id)
 	_result_icon.visible = false
 	_result_emoji.text = display.get("emoji", "")
 	_result_emoji.visible = true
@@ -122,11 +124,44 @@ func _show_result(result_id: String) -> void:
 	_result_glow.visible = false
 	_result_empty.visible = false
 	_new_badge.visible = is_new
-	_set_status("ค้นพบโดยคุณเมื่อสักครู่" if is_new else "สูตรที่รู้จักแล้ว")
+	_set_status(_format_result_status(is_new, reward))
 	_arrow.modulate = Color(1, 0.85, 0.35, 1)
+	if is_new and not reward.is_empty():
+		reward_granted.emit(reward, get_result_burst_origin())
 	if is_new:
 		new_recipe_discovered.emit(display)
 	recipe_crafted.emit(result_id, is_new)
+
+
+func _grant_discovery_reward(result_id: String) -> Dictionary:
+	var from_ids := PackedStringArray([
+		_slot_data[0].get("id", ""),
+		_slot_data[1].get("id", ""),
+	])
+	if NakamaService.is_online:
+		var data := await NakamaService.discover_recipe(result_id, from_ids)
+		if not data.is_empty() and String(data.get("reward_type", "")) != "":
+			return {
+				"type": String(data.get("reward_type", "")),
+				"amount": int(data.get("reward_amount", 0)),
+			}
+		if data.is_empty():
+			GameData.queue_discovery(result_id, from_ids)
+	var reward := GameData.roll_discovery_reward(result_id)
+	GameData.apply_reward(reward)
+	if not NakamaService.is_online:
+		GameData.queue_discovery(result_id, from_ids)
+	return reward
+
+
+func _format_result_status(is_new: bool, reward: Dictionary) -> String:
+	var headline := "ค้นพบโดยคุณเมื่อสักครู่" if is_new else "สูตรที่รู้จักแล้ว"
+	var amount := int(reward.get("amount", 0))
+	if amount <= 0:
+		return headline
+	if String(reward.get("type", "")) == "star":
+		return "%s  |  +%d ดาว" % [headline, amount]
+	return "%s  |  +%d เหรียญ" % [headline, amount]
 
 
 func _show_unknown_result() -> void:
@@ -180,17 +215,6 @@ func _stop_result_shake() -> void:
 
 func get_result_burst_origin() -> Vector2:
 	return _result_slot.get_global_rect().get_center()
-
-
-func _sync_discovery(result_id: String) -> void:
-	var from_ids := PackedStringArray([
-		_slot_data[0].get("id", ""),
-		_slot_data[1].get("id", ""),
-	])
-	if NakamaService.is_online:
-		NakamaService.discover_recipe(result_id, from_ids)
-	else:
-		GameData.queue_discovery(result_id, from_ids)
 
 
 func _ensure_emoji_label(slot: Control, font_size: int) -> Label:

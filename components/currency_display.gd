@@ -32,6 +32,21 @@ func set_gems(value: int) -> void:
 	gems = value
 
 
+func get_coin_icon_global_center() -> Vector2:
+	return _coin_row.get_icon_global_center()
+
+
+func get_star_icon_global_center() -> Vector2:
+	return _gem_row.get_icon_global_center()
+
+
+func pulse_reward(reward_type: String) -> void:
+	if reward_type == "coin":
+		_coin_row.pulse_icon()
+	else:
+		_gem_row.pulse_icon()
+
+
 func _update_coins() -> void:
 	if not is_node_ready():
 		return

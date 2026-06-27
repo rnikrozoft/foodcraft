@@ -4,6 +4,9 @@ const DATA_PATH := "res://data/game_data.json"
 const SAVE_PATH := "user://player_progress.json"
 
 signal progress_changed
+signal wallet_changed
+
+const STAR_DROP_PERCENT := 28
 
 var _items_by_id: Dictionary = {}
 var _recipes_by_key: Dictionary = {}
@@ -12,6 +15,8 @@ var _discovered_ids: Dictionary = {}
 var _discovery_points: int = 0
 var _craft_count: int = 0
 var _pending_sync: Array = []
+var _coins: int = 0
+var _stars: int = 0
 
 
 func _ready() -> void:
@@ -115,6 +120,35 @@ func record_craft_local() -> void:
 	_save_local_progress()
 
 
+func roll_discovery_reward(item_id: String) -> Dictionary:
+	var tier := maxi(1, int(get_item(item_id).get("tier", 1)))
+	if randi() % 100 < STAR_DROP_PERCENT:
+		return {"type": "star", "amount": _star_amount(tier)}
+	return {"type": "coin", "amount": _coin_amount(tier)}
+
+
+func apply_reward(reward: Dictionary) -> void:
+	var reward_type := String(reward.get("type", ""))
+	var amount := int(reward.get("amount", 0))
+	if amount <= 0:
+		return
+	match reward_type:
+		"coin":
+			_coins += amount
+		"star":
+			_stars += amount
+	_save_local_progress()
+	wallet_changed.emit()
+
+
+func get_coins() -> int:
+	return _coins
+
+
+func get_stars() -> int:
+	return _stars
+
+
 func get_discovered_count() -> int:
 	return _discovered_ids.size()
 
@@ -156,8 +190,13 @@ func apply_server_state(data: Dictionary) -> void:
 		_discovered_ids[String(id)] = true
 	_discovery_points = int(data.get("discovery_points", _discovery_points))
 	_craft_count = int(data.get("craft_count", _craft_count))
+	if data.has("coins"):
+		_coins = int(data.get("coins", 0))
+	if data.has("stars"):
+		_stars = int(data.get("stars", 0))
 	_save_local_progress()
 	progress_changed.emit()
+	wallet_changed.emit()
 
 
 func _count_branch_factor(item_id: String) -> int:
@@ -185,6 +224,8 @@ func _load_local_progress() -> void:
 	_discovery_points = int(parsed.get("discovery_points", 0))
 	_craft_count = int(parsed.get("craft_count", 0))
 	_pending_sync = parsed.get("pending_sync", []).duplicate()
+	_coins = int(parsed.get("coins", 0))
+	_stars = int(parsed.get("stars", 0))
 	if _discovery_points == 0 and not _discovered_ids.is_empty():
 		_recalculate_points()
 
@@ -199,6 +240,8 @@ func _save_local_progress() -> void:
 		"discovery_points": _discovery_points,
 		"craft_count": _craft_count,
 		"pending_sync": _pending_sync,
+		"coins": _coins,
+		"stars": _stars,
 	}
 	var file := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
 	if file:
@@ -215,3 +258,14 @@ func _recipe_key(id_a: String, id_b: String) -> String:
 	var pair := [id_a, id_b]
 	pair.sort()
 	return "%s|%s" % [pair[0], pair[1]]
+
+
+func _coin_amount(tier: int) -> int:
+	var base := 10 + tier * 12
+	return base + randi() % (tier * 8 + 1)
+
+
+func _star_amount(tier: int) -> int:
+	if tier <= 2:
+		return 1
+	return 2

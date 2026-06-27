@@ -10,8 +10,8 @@ layout_mode = 3
 size_flags_horizontal = 0
 size_flags_vertical = 0
 script = ExtResource("1_script")
-coins = 12345
-gems = 1250
+coins = 0
+gems = 0
 
 [node name="VBox" type="VBoxContainer" parent="."]
 layout_mode = 1
@@ -28,4 +28,4 @@ layout_mode = 2
 [node name="GemRow" parent="VBox" instance=ExtResource("2_row")]
 layout_mode = 2
 icon = ExtResource("3_star")
-amount = 1250
+amount = 0

@@ -23,10 +23,30 @@ func _ready() -> void:
 	_add_icon.self_modulate = add_tint
 	_update_amount()
 	_add_button.pressed.connect(func() -> void: add_pressed.emit())
+	call_deferred("_center_icon_pivot")
 
 
 func set_amount(value: int) -> void:
 	amount = value
+
+
+func get_icon_global_center() -> Vector2:
+	if not is_node_ready():
+		return Vector2.ZERO
+	return _icon.get_global_rect().get_center()
+
+
+func pulse_icon() -> void:
+	if not is_node_ready():
+		return
+	_center_icon_pivot()
+	var tween := create_tween()
+	tween.tween_property(_icon, "scale", Vector2(1.22, 1.22), 0.08).set_trans(Tween.TRANS_BACK)
+	tween.tween_property(_icon, "scale", Vector2.ONE, 0.14).set_ease(Tween.EASE_OUT)
+
+
+func _center_icon_pivot() -> void:
+	_icon.pivot_offset = _icon.size * 0.5
 
 
 func _update_amount() -> void:
