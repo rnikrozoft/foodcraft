@@ -14,6 +14,7 @@ const TIER_LABELS := {
 @onready var _tier_tabs: HBoxContainer = $Margin/VBox/TierTabs
 @onready var _board_scroll: ScrollContainer = $Margin/VBox/BoardScroll
 @onready var _board_tabs: HBoxContainer = $Margin/VBox/BoardScroll/BoardTabs
+@onready var _records_scroll: ScrollContainer = $Margin/VBox/Scroll
 @onready var _desc: Label = $Margin/VBox/DescLabel
 @onready var _rows: VBoxContainer = $Margin/VBox/Scroll/Rows
 @onready var _owner_row: Label = $Margin/VBox/OwnerRow
@@ -28,6 +29,10 @@ var _showing_hall := false
 
 
 func _ready() -> void:
+	_board_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_NEVER
+	_board_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	_records_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_NEVER
+	_records_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	NakamaService.leaderboard_loaded.connect(_on_leaderboard_loaded)
 	NakamaService.leaderboards_loaded.connect(_on_boards_loaded)
 	NakamaService.hall_of_fame_loaded.connect(_on_hall_of_fame_loaded)

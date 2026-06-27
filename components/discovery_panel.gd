@@ -10,6 +10,8 @@ extends Control
 		total = value
 		_update_text()
 
+var _title_text := "ค้นพบแล้ว"
+
 @onready var _margin: MarginContainer = $Margin
 @onready var _hbox: HBoxContainer = $Margin/HBox
 @onready var _discovered_label: RichTextLabel = $Margin/HBox/DiscoveredLabel
@@ -24,13 +26,18 @@ func set_progress(current: int, max_total: int) -> void:
 	total = max_total
 
 
+func set_title(title: String) -> void:
+	_title_text = title
+	_update_text()
+
+
 func _update_text() -> void:
 	if not is_node_ready():
 		return
 	var current_text := _format_number(discovered)
 	var total_text := _format_number(total)
 	_discovered_label.text = (
-		"[color=#FFF5E8]ค้นพบแล้ว[/color] "
+		"[color=#FFF5E8]%s[/color] " % _title_text
 		+ "[color=#FFD147]%s[/color]" % current_text
 		+ "[color=#FFF5E8] / %s[/color]" % total_text
 	)

@@ -2,20 +2,28 @@ extends Control
 
 const DISCOVERY_BURST_SCENE := preload("res://components/discovery_burst.tscn")
 const REWARD_FLY_SCENE := preload("res://components/reward_fly_effect.tscn")
+const SLIDE_DURATION := 0.3
 
-@onready var _craft_zone = $ScreenVBox/CraftZone
-@onready var _discovery_margin: Control = $ScreenVBox/DiscoveryMargin
+enum Page { CRAFT, RECIPES, LEADERBOARD }
+
+@onready var _content_host: Control = $ScreenVBox/ContentHost
+@onready var _craft_page: Control = $ScreenVBox/ContentHost/CraftPage
+@onready var _craft_zone = $ScreenVBox/ContentHost/CraftPage/CraftZone
+@onready var _discovery_panel: Control = $ScreenVBox/ContentHost/CraftPage/DiscoveryMargin/DiscoveryCenter/DiscoveryPanel
 @onready var _ingredients_panel: Control = $ScreenVBox/BottomMargin/BottomVBox/PopularIngredientsPanel
-@onready var _discovery_panel: Control = $ScreenVBox/DiscoveryMargin/DiscoveryCenter/DiscoveryPanel
 @onready var _profile_panel: Control = $ScreenVBox/Header/HeaderMargin/HeaderHBox/ProfilePanel
 @onready var _currency_display: Control = $ScreenVBox/Header/HeaderMargin/HeaderHBox/CurrencyDisplay
-@onready var _leaderboard_panel: Control = $ScreenVBox/LeaderboardPanel
+@onready var _leaderboard_panel: Control = $ScreenVBox/ContentHost/LeaderboardPanel
+@onready var _my_recipes_panel: Control = $ScreenVBox/ContentHost/MyRecipesPanel
 @onready var _footer_menu: Control = $ScreenVBox/BottomMargin/BottomVBox/FooterMenu
 
 var _discovery_burst
 var _reward_fly
 var _pending_reward: Dictionary = {}
 var _pending_reward_origin := Vector2.ZERO
+var _current_page: Page = Page.CRAFT
+var _transitioning := false
+var _page_tween: Tween
 
 
 func _ready() -> void:
@@ -24,7 +32,12 @@ func _ready() -> void:
 	_reward_fly = REWARD_FLY_SCENE.instantiate()
 	add_child(_reward_fly)
 
+	_content_host.resized.connect(_layout_pages)
+	_layout_pages()
+
 	_ingredients_panel.ingredient_selected.connect(_on_ingredient_selected)
+	_ingredients_panel.see_all_pressed.connect(_on_see_all_pressed)
+	_my_recipes_panel.ingredient_picked.connect(_on_my_recipes_ingredient_picked)
 	_craft_zone.recipe_crafted.connect(_on_recipe_crafted)
 	_craft_zone.new_recipe_discovered.connect(_on_new_recipe_discovered)
 	_craft_zone.reward_granted.connect(_on_reward_granted)
@@ -34,12 +47,24 @@ func _ready() -> void:
 	NakamaService.session_ready.connect(_on_session_ready)
 	NakamaService.discovery_synced.connect(_on_discovery_synced)
 
-	_leaderboard_panel.hide_panel()
-	_show_craft_view()
+	_my_recipes_panel.visible = false
+	_leaderboard_panel.visible = false
+	_craft_page.visible = true
+	_ingredients_panel.visible = true
+
 	_update_discovery_panel()
 	_update_profile_panel()
 	_update_currency_display()
 	await _sync_pending_progress()
+
+
+func _layout_pages() -> void:
+	if _transitioning:
+		return
+	var host_size := _content_host.size
+	for page in [_craft_page, _my_recipes_panel, _leaderboard_panel]:
+		page.size = host_size
+		page.position = Vector2.ZERO
 
 
 func _on_ingredient_selected(data: Dictionary) -> void:
@@ -62,24 +87,89 @@ func _on_new_recipe_discovered(display: Dictionary) -> void:
 
 
 func _on_tab_changed(index: int) -> void:
-	if index == 3:
-		_show_leaderboard_view()
-	else:
-		_show_craft_view()
+	_go_to_page(_tab_to_page(index))
 
 
-func _show_craft_view() -> void:
-	_discovery_margin.visible = true
-	_craft_zone.visible = true
-	_ingredients_panel.visible = true
-	_leaderboard_panel.hide_panel()
+func _on_see_all_pressed() -> void:
+	_footer_menu.set_active_tab(1, false)
+	_go_to_page(Page.RECIPES, true)
 
 
-func _show_leaderboard_view() -> void:
-	_discovery_margin.visible = false
-	_craft_zone.visible = false
-	_ingredients_panel.visible = false
-	_leaderboard_panel.show_panel()
+func _on_my_recipes_ingredient_picked(data: Dictionary) -> void:
+	_craft_zone.add_ingredient(data)
+	_footer_menu.set_active_tab(0, false)
+	_go_to_page(Page.CRAFT)
+
+
+func _tab_to_page(tab_index: int) -> Page:
+	match tab_index:
+		1:
+			return Page.RECIPES
+		3:
+			return Page.LEADERBOARD
+		_:
+			return Page.CRAFT
+
+
+func _page_node(page: Page) -> Control:
+	match page:
+		Page.RECIPES:
+			return _my_recipes_panel
+		Page.LEADERBOARD:
+			return _leaderboard_panel
+		_:
+			return _craft_page
+
+
+func _go_to_page(page: Page, pick_for_craft: bool = false) -> void:
+	if page == Page.RECIPES and page == _current_page:
+		_my_recipes_panel.show_panel(pick_for_craft)
+		return
+	if page == _current_page or _transitioning:
+		return
+
+	_prepare_page(page, pick_for_craft)
+	_ingredients_panel.visible = page == Page.CRAFT
+
+	var from_node := _page_node(_current_page)
+	var to_node := _page_node(page)
+	var direction := 1 if int(page) > int(_current_page) else -1
+	var width := maxf(_content_host.size.x, 1.0)
+
+	to_node.visible = true
+	to_node.position.x = direction * width
+	from_node.position.x = 0.0
+
+	_transitioning = true
+	if _page_tween != null and _page_tween.is_valid():
+		_page_tween.kill()
+	_page_tween = create_tween().set_parallel(true).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	_page_tween.tween_property(from_node, "position:x", -direction * width, SLIDE_DURATION)
+	_page_tween.tween_property(to_node, "position:x", 0.0, SLIDE_DURATION)
+	await _page_tween.finished
+
+	_deactivate_page(_current_page)
+	from_node.visible = false
+	from_node.position.x = 0.0
+	to_node.position.x = 0.0
+	_current_page = page
+	_transitioning = false
+
+
+func _prepare_page(page: Page, pick_for_craft: bool) -> void:
+	match page:
+		Page.RECIPES:
+			_my_recipes_panel.show_panel(pick_for_craft)
+		Page.LEADERBOARD:
+			_leaderboard_panel.show_panel()
+
+
+func _deactivate_page(page: Page) -> void:
+	match page:
+		Page.RECIPES:
+			_my_recipes_panel.hide_panel()
+		Page.LEADERBOARD:
+			_leaderboard_panel.hide_panel()
 
 
 func _update_discovery_panel() -> void:

@@ -153,6 +153,19 @@ func get_discovered_count() -> int:
 	return _discovered_ids.size()
 
 
+func get_discovered_items() -> Array:
+	var results: Array = []
+	for id in _discovered_ids.keys():
+		var display := to_display_dict(String(id))
+		if not display.is_empty():
+			results.append(display)
+
+	results.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
+		return String(a.get("title", "")) < String(b.get("title", ""))
+	)
+	return results
+
+
 func get_discovery_points() -> int:
 	return _discovery_points
 

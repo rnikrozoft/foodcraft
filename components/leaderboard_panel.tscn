@@ -61,7 +61,7 @@ alignment = 1
 [node name="BoardScroll" type="ScrollContainer" parent="Margin/VBox"]
 custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
-horizontal_scroll_mode = 2
+horizontal_scroll_mode = 3
 vertical_scroll_mode = 0
 
 [node name="BoardTabs" type="HBoxContainer" parent="Margin/VBox/BoardScroll"]
@@ -78,6 +78,8 @@ autowrap_mode = 3
 [node name="Scroll" type="ScrollContainer" parent="Margin/VBox"]
 layout_mode = 2
 size_flags_vertical = 3
+horizontal_scroll_mode = 0
+vertical_scroll_mode = 3
 
 [node name="Rows" type="VBoxContainer" parent="Margin/VBox/Scroll"]
 layout_mode = 2

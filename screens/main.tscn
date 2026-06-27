@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://c8discpanel01" path="res://components/discovery_panel.tscn" id="6_discovery"]
 [ext_resource type="PackedScene" uid="uid://c8profile001" path="res://components/profile_panel.tscn" id="7_profile"]
 [ext_resource type="PackedScene" uid="uid://fc2leaderboard01" path="res://components/leaderboard_panel.tscn" id="8_leaderboard"]
+[ext_resource type="PackedScene" uid="uid://fc2myrecipes01" path="res://components/my_recipes_panel.tscn" id="9_myrecipes"]
 
 [node name="Main" type="Control" unique_id=232349281]
 layout_mode = 3
@@ -71,7 +72,22 @@ size_flags_horizontal = 3
 layout_mode = 2
 size_flags_vertical = 4
 
-[node name="DiscoveryMargin" type="MarginContainer" parent="ScreenVBox" unique_id=-742641536]
+[node name="ContentHost" type="Control" parent="ScreenVBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+clip_contents = true
+
+[node name="CraftPage" type="VBoxContainer" parent="ScreenVBox/ContentHost"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 0
+
+[node name="DiscoveryMargin" type="MarginContainer" parent="ScreenVBox/ContentHost/CraftPage" unique_id=-742641536]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 0
@@ -80,22 +96,36 @@ theme_override_constants/margin_top = 20
 theme_override_constants/margin_right = 16
 theme_override_constants/margin_bottom = 8
 
-[node name="DiscoveryCenter" type="CenterContainer" parent="ScreenVBox/DiscoveryMargin" unique_id=1059259721]
+[node name="DiscoveryCenter" type="CenterContainer" parent="ScreenVBox/ContentHost/CraftPage/DiscoveryMargin" unique_id=1059259721]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="DiscoveryPanel" parent="ScreenVBox/DiscoveryMargin/DiscoveryCenter" unique_id=257358464 instance=ExtResource("6_discovery")]
+[node name="DiscoveryPanel" parent="ScreenVBox/ContentHost/CraftPage/DiscoveryMargin/DiscoveryCenter" unique_id=257358464 instance=ExtResource("6_discovery")]
 custom_minimum_size = Vector2(320, 60)
 layout_mode = 2
 size_flags_vertical = 1
 
-[node name="CraftZone" parent="ScreenVBox" unique_id=942679277 instance=ExtResource("3_craft")]
-layout_mode = 2
-
-[node name="LeaderboardPanel" parent="ScreenVBox" instance=ExtResource("8_leaderboard")]
-visible = false
+[node name="CraftZone" parent="ScreenVBox/ContentHost/CraftPage" unique_id=942679277 instance=ExtResource("3_craft")]
 layout_mode = 2
 size_flags_vertical = 3
+
+[node name="MyRecipesPanel" parent="ScreenVBox/ContentHost" instance=ExtResource("9_myrecipes")]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="LeaderboardPanel" parent="ScreenVBox/ContentHost" instance=ExtResource("8_leaderboard")]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="BottomMargin" type="MarginContainer" parent="ScreenVBox" unique_id=577238671]
 layout_mode = 2

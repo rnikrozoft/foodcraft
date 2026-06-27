@@ -1,9 +1,13 @@
 extends Control
 
+signal see_all_pressed
+
 signal ingredient_selected(data: Dictionary)
 
 const CARD_SCENE := preload("res://components/ingredient_card.tscn")
 
+@onready var _see_all: Button = $Margin/VBox/Header/SeeAll
+@onready var _scroll: ScrollContainer = $Margin/VBox/Scroll
 @onready var _cards_row: HBoxContainer = $Margin/VBox/Scroll/CardRow
 @onready var _search: LineEdit = $Margin/VBox/SearchBox/SearchInput
 
@@ -12,8 +16,11 @@ var _all_ingredients: Array = []
 
 
 func _ready() -> void:
+	_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_NEVER
+	_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	_all_ingredients = GameData.get_panel_ingredients()
 	_search.text_changed.connect(_on_search_changed)
+	_see_all.pressed.connect(func() -> void: see_all_pressed.emit())
 	_show_ingredients(_all_ingredients)
 
 

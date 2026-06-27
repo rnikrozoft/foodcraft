@@ -19,8 +19,9 @@ func _ready() -> void:
 	set_active_tab(0)
 
 
-func set_active_tab(index: int) -> void:
+func set_active_tab(index: int, notify: bool = true) -> void:
 	_active_index = index
 	for i in _tabs.size():
 		_tabs[i].set_active(i == index)
-	tab_changed.emit(index)
+	if notify:
+		tab_changed.emit(index)

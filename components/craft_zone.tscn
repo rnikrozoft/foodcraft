@@ -1,12 +1,15 @@
-[gd_scene load_steps=6 format=3 uid="uid://fc2nxda8ii5o"]
+[gd_scene load_steps=9 format=3 uid="uid://fc2nxda8ii5o"]
 
 [ext_resource type="Script" uid="uid://d1vseigp20tse" path="res://components/craft_zone.gd" id="1_script"]
 [ext_resource type="Texture2D" uid="uid://c2hq8do60s75u" path="res://assets/Hyper_Casual_UI/Sprites/Panel_Sprites/New Loot! box.png" id="2_card"]
 [ext_resource type="Texture2D" uid="uid://b0837qlfyagds" path="res://assets/Hyper_Casual_UI/Sprites/Buttons/empty_buttons/GOLDEN.png" id="3_golden"]
 [ext_resource type="Texture2D" uid="uid://lb8g7b7xyuep" path="res://assets/Hyper_Casual_UI/Sprites/Icons/Close.png" id="4_close"]
 [ext_resource type="Texture2D" uid="uid://cs2da5re1j3jc" path="res://assets/Hyper_Casual_UI/Sprites/Icons/offer badge.png" id="5_badge"]
+[ext_resource type="Texture2D" path="res://assets/Hyper_Casual_UI/Sprites/Icons/lock.png" id="6_lock"]
+[ext_resource type="Texture2D" path="res://assets/Icons/PictoIcon_64/Icon_PictoIcon_Unlock.Png" id="7_unlock"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_remove"]
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_lock"]
 
 [node name="CraftZone" type="Control"]
 layout_mode = 3
@@ -149,6 +152,27 @@ theme_override_styles/focus = SubResource("StyleBoxEmpty_remove")
 icon = ExtResource("4_close")
 expand_icon = true
 
+[node name="LockButton" type="Button" parent="Center/VBox/InputRow/SlotA"]
+visible = false
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -44.0
+offset_top = 48.0
+offset_right = -4.0
+offset_bottom = 88.0
+grow_horizontal = 0
+focus_mode = 0
+flat = true
+theme_override_styles/normal = SubResource("StyleBoxEmpty_lock")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_lock")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_lock")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_lock")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_lock")
+icon = ExtResource("7_unlock")
+expand_icon = true
+
 [node name="PlusLabel" type="Label" parent="Center/VBox/InputRow"]
 custom_minimum_size = Vector2(48, 250)
 layout_mode = 2
@@ -274,6 +298,27 @@ theme_override_styles/pressed = SubResource("StyleBoxEmpty_remove")
 theme_override_styles/disabled = SubResource("StyleBoxEmpty_remove")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_remove")
 icon = ExtResource("4_close")
+expand_icon = true
+
+[node name="LockButton" type="Button" parent="Center/VBox/InputRow/SlotB"]
+visible = false
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -44.0
+offset_top = 48.0
+offset_right = -4.0
+offset_bottom = 88.0
+grow_horizontal = 0
+focus_mode = 0
+flat = true
+theme_override_styles/normal = SubResource("StyleBoxEmpty_lock")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_lock")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_lock")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_lock")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_lock")
+icon = ExtResource("7_unlock")
 expand_icon = true
 
 [node name="ArrowLabel" type="Label" parent="Center/VBox"]
