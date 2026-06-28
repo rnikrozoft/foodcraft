@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://reconnect_overlay01"]
+[gd_scene load_steps=4 format=3 uid="uid://reconnect_overlay01"]
 
 [ext_resource type="Script" path="res://components/reconnect_overlay.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://pmu66lcl8yd8" path="res://components/button.tscn" id="2_button"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card"]
 bg_color = Color(0.14, 0.2, 0.3, 0.98)
@@ -72,7 +73,14 @@ text = "ตรวจสอบอินเทอร์เน็ตแล้วล
 horizontal_alignment = 1
 autowrap_mode = 3
 
-[node name="RetrySlot" type="Control" parent="Center/Card/Margin/VBox"]
-custom_minimum_size = Vector2(0, 96)
+[node name="RetryCenter" type="CenterContainer" parent="Center/Card/Margin/VBox"]
+custom_minimum_size = Vector2(0, 88)
 layout_mode = 2
 size_flags_horizontal = 3
+
+[node name="RetryButton" parent="Center/Card/Margin/VBox/RetryCenter" instance=ExtResource("2_button")]
+custom_minimum_size = Vector2(260, 80)
+layout_mode = 2
+
+[node name="Label" parent="Center/Card/Margin/VBox/RetryCenter/RetryButton" index="2"]
+text = "เชื่อมต่อใหม่"

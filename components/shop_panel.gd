@@ -61,7 +61,7 @@ var _cooldown_timer: Timer
 var _pending_burst_origin := Vector2.ZERO
 var _daily_reward_status: Dictionary = {
 	"can_claim": true,
-	"coins": 120,
+	"coins": 0,
 	"next_claim_sec": 0,
 }
 
@@ -220,7 +220,7 @@ func _build_general_tab() -> void:
 	))
 	special_grid.add_child(_make_special_card(
 		"ดูโฆษณา",
-		"รับ 80 เหรียญจากโฆษณา",
+		"รับ %d เหรียญจากโฆษณา" % GameData.get_ad_reward_coins(),
 		"📺",
 		"ดูโฆษณา",
 		BTN_YELLOW,
@@ -230,7 +230,7 @@ func _build_general_tab() -> void:
 
 	_content.add_child(_make_feature_banner(
 		"แพ็กเริ่มต้น",
-		"500 เหรียญ + วัตถุดิบหายาก 1 ชิ้น",
+		"%d เหรียญ + วัตถุดิบหายาก 1 ชิ้น" % GameData.get_starter_pack_coins(),
 		"฿49",
 		BTN_PURPLE,
 		_on_starter_pack_pressed
@@ -978,6 +978,8 @@ func _on_ingredient_pressed(id: String, _cost: int) -> void:
 func _purchase_ingredient_online(id: String) -> void:
 	var data := await NakamaService.purchase_shop_ingredient(id)
 	if bool(data.get("rpc_error", false)):
+		if NakamaService.is_rate_limit_error(data):
+			return
 		_show_status(NakamaService.format_rpc_error(data))
 		return
 	if data.is_empty():
@@ -1044,7 +1046,7 @@ func _on_starter_pack_pressed() -> void:
 		_play_purchase_burst()
 		purchase_completed.emit()
 		_refresh()
-	_simulate_iap("แพ็กเริ่มต้น", on_success, 500, 0)
+	_simulate_iap("แพ็กเริ่มต้น", on_success, GameData.get_starter_pack_coins(), 0)
 
 
 func _on_daily_coins_pressed() -> void:
@@ -1053,6 +1055,8 @@ func _on_daily_coins_pressed() -> void:
 		return
 	var data := await NakamaService.claim_daily_reward()
 	if bool(data.get("rpc_error", false)):
+		if NakamaService.is_rate_limit_error(data):
+			return
 		_show_status(NakamaService.format_rpc_error(data))
 		_refresh()
 		return
@@ -1073,9 +1077,9 @@ func _on_watch_ad_pressed() -> void:
 	if GameData.is_ads_removed():
 		var on_success := func() -> void:
 			_play_purchase_burst()
-			_show_status("ได้รับ 80 เหรียญ!")
+			_show_status("ได้รับ %d เหรียญ!" % GameData.get_ad_reward_coins())
 			purchase_completed.emit()
-		_simulate_iap("ดูโฆษณา", on_success, 80, 0)
+		_simulate_iap("ดูโฆษณา", on_success, GameData.get_ad_reward_coins(), 0)
 		return
 	_show_status("โฆษณาจะแสดงที่นี่ (ยังไม่เชื่อม AdMob)")
 

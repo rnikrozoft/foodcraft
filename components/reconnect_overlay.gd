@@ -1,14 +1,10 @@
 extends CanvasLayer
 
-const BUTTON_SCENE := preload("res://components/button.tscn")
-
 @onready var _backdrop: ColorRect = $Backdrop
 @onready var _card: PanelContainer = $Center/Card
 @onready var _title: Label = $Center/Card/Margin/VBox/TitleLabel
 @onready var _message: Label = $Center/Card/Margin/VBox/MessageLabel
-@onready var _retry_slot: Control = $Center/Card/Margin/VBox/RetrySlot
-
-var _retry_button: Control
+@onready var _retry_button: Control = $Center/Card/Margin/VBox/RetryCenter/RetryButton
 
 
 func _ready() -> void:
@@ -19,10 +15,6 @@ func _ready() -> void:
 	get_viewport().size_changed.connect(_fit_viewport)
 	_fit_viewport()
 
-	_retry_button = BUTTON_SCENE.instantiate()
-	_retry_slot.add_child(_retry_button)
-	var retry_label: Label = _retry_button.get_node("Label")
-	retry_label.text = "เชื่อมต่อใหม่"
 	_retry_button.pressed.connect(_on_retry_pressed)
 
 	NakamaService.connection_lost.connect(_on_connection_lost)

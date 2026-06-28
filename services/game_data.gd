@@ -20,6 +20,8 @@ var _starter_item_ids: Dictionary = {}
 var _ads_removed: bool = false
 var _catalog_loaded: bool = false
 var _daily_reward_coins: int = 0
+var _ad_reward_coins: int = 0
+var _starter_pack_coins: int = 0
 
 var _shop_config: Dictionary = {}
 var _shop_last_auto_reset_unix: int = 0
@@ -58,6 +60,11 @@ func apply_catalog_from_server(data: Dictionary) -> void:
 	if data.has("daily_reward_coins"):
 		_daily_reward_coins = int(data.get("daily_reward_coins", 0))
 
+	var monetization: Variant = data.get("monetization", {})
+	if typeof(monetization) == TYPE_DICTIONARY:
+		_ad_reward_coins = int(monetization.get("ad_reward_coins", 0))
+		_starter_pack_coins = int(monetization.get("starter_pack_coins", 0))
+
 	var shop: Dictionary = data.get("shop", {})
 	if typeof(shop) == TYPE_DICTIONARY and not shop.is_empty():
 		apply_shop_config(shop, false)
@@ -70,6 +77,14 @@ func apply_catalog_from_server(data: Dictionary) -> void:
 
 func get_daily_reward_coins() -> int:
 	return _daily_reward_coins
+
+
+func get_ad_reward_coins() -> int:
+	return _ad_reward_coins
+
+
+func get_starter_pack_coins() -> int:
+	return _starter_pack_coins
 
 
 func apply_shop_config(shop: Dictionary, emit_signal: bool = true) -> void:

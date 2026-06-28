@@ -175,6 +175,9 @@ func _attempt_craft(from_ids: PackedStringArray) -> void:
 		return
 
 	if bool(data.get("rpc_error", false)):
+		if NakamaService.is_rate_limit_error(data):
+			_reset_result()
+			return
 		if NakamaService.is_unknown_recipe_error(data):
 			_show_unknown_result()
 		else:

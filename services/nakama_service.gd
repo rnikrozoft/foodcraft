@@ -170,6 +170,10 @@ func call_rpc(rpc_id: String, payload: String) -> Dictionary:
 	return response
 
 
+func is_rate_limit_error(data: Dictionary) -> bool:
+	return String(data.get("error_message", "")) == "too many requests"
+
+
 func is_unknown_recipe_error(data: Dictionary) -> bool:
 	var message := String(data.get("error_message", ""))
 	return message in ["invalid recipe combination", "item is not a valid craft result"]
@@ -188,8 +192,6 @@ func format_rpc_error(data: Dictionary) -> String:
 			return "รับเหรียญรายวันแล้ว — กลับมาพรุ่งนี้นะ"
 		"เชื่อมต่อเซิร์ฟเวอร์ไม่ได้", "ไม่ได้เข้าสู่ระบบ", "เซสชันหมดอายุ — กดเชื่อมต่อใหม่":
 			return message
-		"too many requests":
-			return "เร็วเกินไป — รอสักครู่แล้วลองใหม่"
 		"invalid recipe combination":
 			return "ยังไม่พบสูตรนี้ ลองผสมอย่างอื่นดู"
 	if message.is_empty():
