@@ -17,6 +17,7 @@ config/icon="res://icon.svg"
 
 [autoload]
 
+FoodIcons="*res://services/food_icons.gd"
 GameData="*res://services/game_data.gd"
 NakamaConfig="*res://services/nakama_config.gd"
 NakamaService="*res://services/nakama_service.gd"

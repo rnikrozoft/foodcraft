@@ -12,15 +12,14 @@ const MARQUEE_PAUSE := 1.4
 		if is_node_ready():
 			_apply_title()
 
-@export var emoji: String = "":
+@export var food_id: String = "":
 	set(value):
-		emoji = value
+		food_id = value
 		if is_node_ready():
-			_emoji.text = emoji
-			_emoji.visible = not emoji.is_empty()
+			_apply_icon()
 
 @onready var _highlight: NinePatchRect = $Highlight
-@onready var _emoji: Label = $Emoji
+@onready var _icon: TextureRect = $Icon
 @onready var _title_clip: Control = $TitleClip
 @onready var _title: Label = $TitleClip/Title
 @onready var _click: Button = $ClickArea
@@ -30,16 +29,24 @@ var _marquee_tween: Tween
 
 func _ready() -> void:
 	_apply_title()
-	_emoji.text = emoji
-	_emoji.visible = not emoji.is_empty()
+	_apply_icon()
 	_click.pressed.connect(func() -> void: pressed.emit())
 	_title_clip.resized.connect(_update_title_marquee)
 	set_selected(false)
 	call_deferred("_update_title_marquee")
 
 
+func apply_display(data: Dictionary) -> void:
+	title = String(data.get("title", ""))
+	food_id = String(data.get("id", ""))
+
+
 func set_selected(selected: bool) -> void:
 	_highlight.visible = selected
+
+
+func _apply_icon() -> void:
+	FoodIcons.apply_to(_icon, food_id)
 
 
 func _apply_title() -> void:

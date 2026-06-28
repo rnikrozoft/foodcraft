@@ -33,6 +33,7 @@ corner_radius_bottom_left = 12
 [node name="PopularIngredientsPanel" type="Control" unique_id=1249708824]
 custom_minimum_size = Vector2(0, 224)
 layout_mode = 3
+anchors_preset = 0
 size_flags_horizontal = 3
 script = ExtResource("1_script")
 

@@ -1,23 +1,24 @@
-[gd_scene load_steps=9 format=3 uid="uid://fc2nxda8ii5o"]
+[gd_scene format=3 uid="uid://fc2nxda8ii5o"]
 
 [ext_resource type="Script" uid="uid://d1vseigp20tse" path="res://components/craft_zone.gd" id="1_script"]
 [ext_resource type="Texture2D" uid="uid://c2hq8do60s75u" path="res://assets/Hyper_Casual_UI/Sprites/Panel_Sprites/New Loot! box.png" id="2_card"]
 [ext_resource type="Texture2D" uid="uid://b0837qlfyagds" path="res://assets/Hyper_Casual_UI/Sprites/Buttons/empty_buttons/GOLDEN.png" id="3_golden"]
 [ext_resource type="Texture2D" uid="uid://lb8g7b7xyuep" path="res://assets/Hyper_Casual_UI/Sprites/Icons/Close.png" id="4_close"]
 [ext_resource type="Texture2D" uid="uid://cs2da5re1j3jc" path="res://assets/Hyper_Casual_UI/Sprites/Icons/offer badge.png" id="5_badge"]
-[ext_resource type="Texture2D" path="res://assets/Hyper_Casual_UI/Sprites/Icons/lock.png" id="6_lock"]
-[ext_resource type="Texture2D" path="res://assets/Icons/PictoIcon_64/Icon_PictoIcon_Unlock.Png" id="7_unlock"]
+[ext_resource type="Texture2D" uid="uid://c8yaxh4n3flfh" path="res://assets/Icons/PictoIcon_64/Icon_PictoIcon_Unlock.Png" id="7_unlock"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_remove"]
+
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_lock"]
 
-[node name="CraftZone" type="Control"]
+[node name="CraftZone" type="Control" unique_id=606767267]
 layout_mode = 3
+anchors_preset = 0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("1_script")
 
-[node name="Center" type="CenterContainer" parent="."]
+[node name="Center" type="CenterContainer" parent="." unique_id=108490615]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -25,37 +26,36 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBox" type="VBoxContainer" parent="Center"]
+[node name="VBox" type="VBoxContainer" parent="Center" unique_id=2010442577]
 layout_mode = 2
 theme_override_constants/separation = 16
 alignment = 1
 
-[node name="InputRow" type="HBoxContainer" parent="Center/VBox"]
+[node name="InputRow" type="HBoxContainer" parent="Center/VBox" unique_id=141718027]
 layout_mode = 2
 theme_override_constants/separation = 20
 alignment = 1
 
-[node name="SlotA" type="Control" parent="Center/VBox/InputRow"]
+[node name="SlotA" type="Control" parent="Center/VBox/InputRow" unique_id=285701037]
 custom_minimum_size = Vector2(250, 250)
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 
-[node name="Background" type="NinePatchRect" parent="Center/VBox/InputRow/SlotA"]
+[node name="Background" type="NinePatchRect" parent="Center/VBox/InputRow/SlotA" unique_id=1491842304]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 2
 texture = ExtResource("2_card")
 patch_margin_left = 16
 patch_margin_top = 14
 patch_margin_right = 16
 patch_margin_bottom = 14
 
-[node name="Glow" type="NinePatchRect" parent="Center/VBox/InputRow/SlotA"]
+[node name="Glow" type="NinePatchRect" parent="Center/VBox/InputRow/SlotA" unique_id=227908424]
 visible = false
 layout_mode = 1
 anchors_preset = 15
@@ -67,32 +67,30 @@ offset_right = 8.0
 offset_bottom = 8.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 2
 texture = ExtResource("3_golden")
 patch_margin_left = 36
 patch_margin_top = 16
 patch_margin_right = 36
 patch_margin_bottom = 16
 
-[node name="Icon" type="TextureRect" parent="Center/VBox/InputRow/SlotA"]
-visible = false
+[node name="Icon" type="TextureRect" parent="Center/VBox/InputRow/SlotA" unique_id=1876032982]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -70.0
-offset_top = -80.0
-offset_right = 70.0
-offset_bottom = 30.0
+offset_left = -100.0
+offset_top = -110.0
+offset_right = 100.0
+offset_bottom = 90.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Title" type="Label" parent="Center/VBox/InputRow/SlotA"]
+[node name="Title" type="Label" parent="Center/VBox/InputRow/SlotA" unique_id=720611493]
 visible = false
 layout_mode = 1
 anchors_preset = 12
@@ -103,7 +101,6 @@ offset_top = -58.0
 offset_bottom = -12.0
 grow_horizontal = 2
 grow_vertical = 0
-mouse_filter = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 0.55)
 theme_override_constants/outline_size = 5
@@ -111,7 +108,7 @@ theme_override_font_sizes/font_size = 34
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="EmptyHint" type="Label" parent="Center/VBox/InputRow/SlotA"]
+[node name="EmptyHint" type="Label" parent="Center/VBox/InputRow/SlotA" unique_id=690650713]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -124,14 +121,13 @@ offset_right = 50.0
 offset_bottom = 30.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 2
 theme_override_colors/font_color = Color(0.65, 0.58, 0.48, 0.8)
 theme_override_font_sizes/font_size = 48
 text = "+"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="RemoveButton" type="Button" parent="Center/VBox/InputRow/SlotA"]
+[node name="RemoveButton" type="Button" parent="Center/VBox/InputRow/SlotA" unique_id=1174599739]
 visible = false
 layout_mode = 1
 anchors_preset = 1
@@ -143,16 +139,16 @@ offset_right = -4.0
 offset_bottom = 44.0
 grow_horizontal = 0
 focus_mode = 0
-flat = true
 theme_override_styles/normal = SubResource("StyleBoxEmpty_remove")
-theme_override_styles/hover = SubResource("StyleBoxEmpty_remove")
 theme_override_styles/pressed = SubResource("StyleBoxEmpty_remove")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_remove")
 theme_override_styles/disabled = SubResource("StyleBoxEmpty_remove")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_remove")
 icon = ExtResource("4_close")
+flat = true
 expand_icon = true
 
-[node name="LockButton" type="Button" parent="Center/VBox/InputRow/SlotA"]
+[node name="LockButton" type="Button" parent="Center/VBox/InputRow/SlotA" unique_id=639220775]
 visible = false
 layout_mode = 1
 anchors_preset = 1
@@ -164,46 +160,44 @@ offset_right = -4.0
 offset_bottom = 88.0
 grow_horizontal = 0
 focus_mode = 0
-flat = true
 theme_override_styles/normal = SubResource("StyleBoxEmpty_lock")
-theme_override_styles/hover = SubResource("StyleBoxEmpty_lock")
 theme_override_styles/pressed = SubResource("StyleBoxEmpty_lock")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_lock")
 theme_override_styles/disabled = SubResource("StyleBoxEmpty_lock")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_lock")
 icon = ExtResource("7_unlock")
+flat = true
 expand_icon = true
 
-[node name="PlusLabel" type="Label" parent="Center/VBox/InputRow"]
+[node name="PlusLabel" type="Label" parent="Center/VBox/InputRow" unique_id=813440445]
 custom_minimum_size = Vector2(48, 250)
 layout_mode = 2
-size_flags_vertical = 4
 theme_override_colors/font_color = Color(1, 0.9, 0.55, 1)
 theme_override_font_sizes/font_size = 48
 text = "+"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="SlotB" type="Control" parent="Center/VBox/InputRow"]
+[node name="SlotB" type="Control" parent="Center/VBox/InputRow" unique_id=1209405755]
 custom_minimum_size = Vector2(250, 250)
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 
-[node name="Background" type="NinePatchRect" parent="Center/VBox/InputRow/SlotB"]
+[node name="Background" type="NinePatchRect" parent="Center/VBox/InputRow/SlotB" unique_id=264006173]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 2
 texture = ExtResource("2_card")
 patch_margin_left = 16
 patch_margin_top = 14
 patch_margin_right = 16
 patch_margin_bottom = 14
 
-[node name="Glow" type="NinePatchRect" parent="Center/VBox/InputRow/SlotB"]
+[node name="Glow" type="NinePatchRect" parent="Center/VBox/InputRow/SlotB" unique_id=1966756413]
 visible = false
 layout_mode = 1
 anchors_preset = 15
@@ -215,14 +209,13 @@ offset_right = 8.0
 offset_bottom = 8.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 2
 texture = ExtResource("3_golden")
 patch_margin_left = 36
 patch_margin_top = 16
 patch_margin_right = 36
 patch_margin_bottom = 16
 
-[node name="Icon" type="TextureRect" parent="Center/VBox/InputRow/SlotB"]
+[node name="Icon" type="TextureRect" parent="Center/VBox/InputRow/SlotB" unique_id=939883565]
 visible = false
 layout_mode = 1
 anchors_preset = 8
@@ -230,17 +223,17 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -70.0
-offset_top = -80.0
-offset_right = 70.0
-offset_bottom = 30.0
+offset_left = -100.0
+offset_top = -110.0
+offset_right = 100.0
+offset_bottom = 90.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Title" type="Label" parent="Center/VBox/InputRow/SlotB"]
+[node name="Title" type="Label" parent="Center/VBox/InputRow/SlotB" unique_id=410371176]
 visible = false
 layout_mode = 1
 anchors_preset = 12
@@ -251,7 +244,6 @@ offset_top = -58.0
 offset_bottom = -12.0
 grow_horizontal = 2
 grow_vertical = 0
-mouse_filter = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 0.55)
 theme_override_constants/outline_size = 5
@@ -259,7 +251,7 @@ theme_override_font_sizes/font_size = 34
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="EmptyHint" type="Label" parent="Center/VBox/InputRow/SlotB"]
+[node name="EmptyHint" type="Label" parent="Center/VBox/InputRow/SlotB" unique_id=1004915549]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -272,14 +264,13 @@ offset_right = 50.0
 offset_bottom = 30.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 2
 theme_override_colors/font_color = Color(0.65, 0.58, 0.48, 0.8)
 theme_override_font_sizes/font_size = 48
 text = "+"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="RemoveButton" type="Button" parent="Center/VBox/InputRow/SlotB"]
+[node name="RemoveButton" type="Button" parent="Center/VBox/InputRow/SlotB" unique_id=1926720890]
 visible = false
 layout_mode = 1
 anchors_preset = 1
@@ -291,16 +282,16 @@ offset_right = -4.0
 offset_bottom = 44.0
 grow_horizontal = 0
 focus_mode = 0
-flat = true
 theme_override_styles/normal = SubResource("StyleBoxEmpty_remove")
-theme_override_styles/hover = SubResource("StyleBoxEmpty_remove")
 theme_override_styles/pressed = SubResource("StyleBoxEmpty_remove")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_remove")
 theme_override_styles/disabled = SubResource("StyleBoxEmpty_remove")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_remove")
 icon = ExtResource("4_close")
+flat = true
 expand_icon = true
 
-[node name="LockButton" type="Button" parent="Center/VBox/InputRow/SlotB"]
+[node name="LockButton" type="Button" parent="Center/VBox/InputRow/SlotB" unique_id=838626371]
 visible = false
 layout_mode = 1
 anchors_preset = 1
@@ -312,16 +303,16 @@ offset_right = -4.0
 offset_bottom = 88.0
 grow_horizontal = 0
 focus_mode = 0
-flat = true
 theme_override_styles/normal = SubResource("StyleBoxEmpty_lock")
-theme_override_styles/hover = SubResource("StyleBoxEmpty_lock")
 theme_override_styles/pressed = SubResource("StyleBoxEmpty_lock")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_lock")
 theme_override_styles/disabled = SubResource("StyleBoxEmpty_lock")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_lock")
 icon = ExtResource("7_unlock")
+flat = true
 expand_icon = true
 
-[node name="ArrowLabel" type="Label" parent="Center/VBox"]
+[node name="ArrowLabel" type="Label" parent="Center/VBox" unique_id=545662584]
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_colors/font_color = Color(0.55, 0.55, 0.55, 0.8)
@@ -329,27 +320,26 @@ theme_override_font_sizes/font_size = 36
 text = "↓"
 horizontal_alignment = 1
 
-[node name="ResultSlot" type="Control" parent="Center/VBox"]
+[node name="ResultSlot" type="Control" parent="Center/VBox" unique_id=525037510]
 custom_minimum_size = Vector2(250, 250)
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 
-[node name="Background" type="NinePatchRect" parent="Center/VBox/ResultSlot"]
+[node name="Background" type="NinePatchRect" parent="Center/VBox/ResultSlot" unique_id=850199371]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 2
 texture = ExtResource("2_card")
 patch_margin_left = 16
 patch_margin_top = 14
 patch_margin_right = 16
 patch_margin_bottom = 14
 
-[node name="Glow" type="NinePatchRect" parent="Center/VBox/ResultSlot"]
+[node name="Glow" type="NinePatchRect" parent="Center/VBox/ResultSlot" unique_id=808422706]
 visible = false
 layout_mode = 1
 anchors_preset = 15
@@ -367,7 +357,7 @@ patch_margin_top = 16
 patch_margin_right = 36
 patch_margin_bottom = 16
 
-[node name="Icon" type="TextureRect" parent="Center/VBox/ResultSlot"]
+[node name="Icon" type="TextureRect" parent="Center/VBox/ResultSlot" unique_id=192854079]
 visible = false
 layout_mode = 1
 anchors_preset = 8
@@ -375,17 +365,17 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -80.0
-offset_top = -90.0
-offset_right = 80.0
-offset_bottom = 30.0
+offset_left = -100.0
+offset_top = -110.0
+offset_right = 100.0
+offset_bottom = 90.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Title" type="Label" parent="Center/VBox/ResultSlot"]
+[node name="Title" type="Label" parent="Center/VBox/ResultSlot" unique_id=1539168830]
 visible = false
 layout_mode = 1
 anchors_preset = 12
@@ -403,7 +393,7 @@ theme_override_font_sizes/font_size = 36
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="EmptyHint" type="Label" parent="Center/VBox/ResultSlot"]
+[node name="EmptyHint" type="Label" parent="Center/VBox/ResultSlot" unique_id=882579673]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -422,7 +412,7 @@ text = "ผลลัพธ์"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="NewBadge" type="TextureRect" parent="Center/VBox/ResultSlot"]
+[node name="NewBadge" type="TextureRect" parent="Center/VBox/ResultSlot" unique_id=278059419]
 visible = false
 layout_mode = 1
 anchors_preset = 1
@@ -438,20 +428,19 @@ texture = ExtResource("5_badge")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="StatusWrap" type="Control" parent="Center/VBox"]
+[node name="StatusWrap" type="Control" parent="Center/VBox" unique_id=731005909]
 custom_minimum_size = Vector2(568, 36)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 0
 
-[node name="StatusLabel" type="Label" parent="Center/VBox/StatusWrap"]
+[node name="StatusLabel" type="Label" parent="Center/VBox/StatusWrap" unique_id=647932464]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 2
 theme_override_colors/font_color = Color(0.82, 0.75, 0.62, 1)
 theme_override_font_sizes/font_size = 16
 horizontal_alignment = 1

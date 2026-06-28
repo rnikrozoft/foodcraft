@@ -71,6 +71,7 @@ func apply_catalog_from_server(data: Dictionary) -> void:
 
 	_catalog_loaded = not _items_by_id.is_empty()
 	if _catalog_loaded:
+		FoodIcons.register_catalog(_items_by_id.keys())
 		catalog_loaded.emit()
 		progress_changed.emit()
 
@@ -112,7 +113,6 @@ func to_display_dict(id: String) -> Dictionary:
 	return {
 		"id": id,
 		"title": item.get("name_th", id),
-		"emoji": item.get("emoji", ""),
 		"category": item.get("category", ""),
 		"tier": int(item.get("tier", 0)),
 	}

@@ -636,10 +636,12 @@ func _make_ingredient_row(offer: Dictionary) -> PanelContainer:
 	emoji_box.add_theme_stylebox_override("panel", _make_icon_box_style(RARITY_COLORS.get(rarity, Color.WHITE)))
 	var emoji_center := CenterContainer.new()
 	emoji_box.add_child(emoji_center)
-	var emoji := Label.new()
-	emoji.text = String(offer.get("emoji", "?"))
-	emoji.add_theme_font_size_override("font_size", int(_s(26)))
-	emoji_center.add_child(emoji)
+	var icon := TextureRect.new()
+	icon.custom_minimum_size = Vector2(_s(36), _s(36))
+	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	FoodIcons.apply_to(icon, String(offer.get("id", "")))
+	emoji_center.add_child(icon)
 	row.add_child(emoji_box)
 
 	var info := VBoxContainer.new()

@@ -83,7 +83,7 @@ func _show_items(items: Array) -> void:
 		card.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 		card.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		card.title = data.get("title", "")
-		card.emoji = data.get("emoji", "")
+		card.food_id = String(data.get("id", ""))
 		card.pressed.connect(_on_card_pressed.bind(data))
 		_cards_row.add_child(card)
 		_cards.append(card)

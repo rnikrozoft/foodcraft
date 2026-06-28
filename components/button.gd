@@ -2,9 +2,9 @@ extends Control
 
 signal pressed
 
-const TEX_NORMAL := preload("res://assets/Hyper_Casual_UI/Sprites/Buttons/empty_buttons/Green empty.png")
-const TEX_HOVER := preload("res://assets/Hyper_Casual_UI/Sprites/Buttons/empty_buttons/DARK Green empty.png")
-const TEX_DISABLED := preload("res://assets/Hyper_Casual_UI/Sprites/Buttons/empty_buttons/GREY.png")
+@export var tex_normal: Texture2D = preload("res://assets/Hyper_Casual_UI/Sprites/Buttons/empty_buttons/Green empty.png")
+@export var tex_hover: Texture2D = preload("res://assets/Hyper_Casual_UI/Sprites/Buttons/empty_buttons/DARK Green empty.png")
+@export var tex_disabled: Texture2D = preload("res://assets/Hyper_Casual_UI/Sprites/Buttons/empty_buttons/GREY.png")
 
 @onready var _background: NinePatchRect = $Background
 @onready var _button: Button = $ButtonBg
@@ -29,8 +29,8 @@ func _ready() -> void:
 
 func _update_visual() -> void:
 	if _button.disabled:
-		_background.texture = TEX_DISABLED
+		_background.texture = tex_disabled
 	elif _button.is_pressed() or _button.is_hovered():
-		_background.texture = TEX_HOVER
+		_background.texture = tex_hover
 	else:
-		_background.texture = TEX_NORMAL
+		_background.texture = tex_normal

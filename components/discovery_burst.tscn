@@ -81,11 +81,12 @@ theme_override_font_sizes/font_size = 44
 text = "ค้นพบสูตรใหม่!"
 horizontal_alignment = 1
 
-[node name="Emoji" type="Label" parent="CelebrationStack/Root/Center/Content/VBox"]
+[node name="FoodIcon" type="TextureRect" parent="CelebrationStack/Root/Center/Content/VBox"]
+custom_minimum_size = Vector2(200, 200)
 layout_mode = 2
-theme_override_font_sizes/font_size = 156
-text = "🍚"
-horizontal_alignment = 1
+size_flags_horizontal = 4
+expand_mode = 1
+stretch_mode = 5
 
 [node name="Title" type="Label" parent="CelebrationStack/Root/Center/Content/VBox"]
 layout_mode = 2

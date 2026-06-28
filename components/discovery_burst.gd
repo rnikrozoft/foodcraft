@@ -18,7 +18,7 @@ signal celebration_finished
 @onready var _content: Control = $CelebrationStack/Root/Center/Content
 @onready var _particles_root: Node2D = $CelebrationStack/ParticlesRoot
 @onready var _header: Label = $CelebrationStack/Root/Center/Content/VBox/Header
-@onready var _emoji: Label = $CelebrationStack/Root/Center/Content/VBox/Emoji
+@onready var _food_icon: TextureRect = $CelebrationStack/Root/Center/Content/VBox/FoodIcon
 @onready var _title: Label = $CelebrationStack/Root/Center/Content/VBox/Title
 
 var _bursts: Array[CPUParticles2D] = []
@@ -59,7 +59,7 @@ func play_celebration(display: Dictionary, burst_origin: Vector2, header_text: S
 	set_process_unhandled_input(true)
 
 	_header.text = header_text
-	_emoji.text = display.get("emoji", "")
+	FoodIcons.apply_to(_food_icon, String(display.get("id", "")))
 	_title.text = display.get("title", "")
 
 	visible = true

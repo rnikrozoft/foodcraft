@@ -547,7 +547,7 @@ func _make_rank_row(record: Dictionary, board_id: String, score_unit: String) ->
 
 func _make_hall_row(entry: Dictionary, index: int) -> PanelContainer:
 	var item_name := String(entry.get("item_name", entry.get("item_id", "?")))
-	var title := "%s %s" % [String(entry.get("emoji", "🍽")), item_name]
+	var title := item_name
 	var discoverer := String(entry.get("username", "???"))
 	return _make_list_row(index, title, "ค้นพบโดย %s" % discoverer, "", false)
 

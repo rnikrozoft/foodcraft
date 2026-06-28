@@ -184,7 +184,7 @@ func _show_grid(items: Array) -> void:
 	for data in items:
 		var card = CARD_SCENE.instantiate()
 		card.title = String(data.get("title", ""))
-		card.emoji = String(data.get("emoji", ""))
+		card.food_id = String(data.get("id", ""))
 		if _pick_mode:
 			card.pressed.connect(_on_card_pressed.bind(data))
 		else:

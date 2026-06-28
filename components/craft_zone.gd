@@ -1,7 +1,5 @@
 extends Control
 
-const SLOT_EMOJI_SIZE := 112
-const RESULT_EMOJI_SIZE := 120
 const LOCK_ICON := preload("res://assets/Hyper_Casual_UI/Sprites/Icons/lock.png")
 const UNLOCK_ICON := preload("res://assets/Icons/PictoIcon_64/Icon_PictoIcon_Unlock.Png")
 
@@ -23,23 +21,21 @@ signal reward_granted(reward: Dictionary, origin: Vector2)
 var _slot_data: Array = [{}, {}]
 var _slot_locked: Array[bool] = [false, false]
 var _craft_busy := false
-var _slot_a_emoji: Label
-var _slot_b_emoji: Label
-var _result_emoji: Label
+var _slot_a_icon: TextureRect
+var _slot_b_icon: TextureRect
 var _result_shake_tween: Tween
 var _input_shake_tween: Tween
 
 
 func _ready() -> void:
-	_slot_a_emoji = _ensure_emoji_label(_slot_a, SLOT_EMOJI_SIZE)
-	_slot_b_emoji = _ensure_emoji_label(_slot_b, SLOT_EMOJI_SIZE)
-	_result_emoji = _ensure_emoji_label(_result_slot, RESULT_EMOJI_SIZE)
+	_slot_a_icon = _slot_a.get_node("Icon") as TextureRect
+	_slot_b_icon = _slot_b.get_node("Icon") as TextureRect
 	_slot_a.get_node("RemoveButton").pressed.connect(_on_slot_a_cleared)
 	_slot_b.get_node("RemoveButton").pressed.connect(_on_slot_b_cleared)
 	_slot_a.get_node("LockButton").pressed.connect(_on_slot_a_lock_toggled)
 	_slot_b.get_node("LockButton").pressed.connect(_on_slot_b_lock_toggled)
-	_clear_slot(_slot_a, 0, _slot_a_emoji)
-	_clear_slot(_slot_b, 1, _slot_b_emoji)
+	_clear_slot(_slot_a, 0)
+	_clear_slot(_slot_b, 1)
 	_reset_result()
 
 
@@ -52,14 +48,14 @@ func add_ingredient(data: Dictionary) -> bool:
 		if _slot_locked[0] and _slot_locked[1]:
 			_shake_input_slots()
 			return true
-		_clear_slot(_slot_a, 0, _slot_a_emoji)
-		_clear_slot(_slot_b, 1, _slot_b_emoji)
+		_clear_slot(_slot_a, 0)
+		_clear_slot(_slot_b, 1)
 		_reset_result()
 
 	if _slot_data[0].is_empty():
-		_set_slot(_slot_a, 0, data, _slot_a_emoji)
+		_set_slot(_slot_a, 0, data)
 	elif _slot_data[1].is_empty():
-		_set_slot(_slot_b, 1, data, _slot_b_emoji)
+		_set_slot(_slot_b, 1, data)
 	else:
 		return false
 
@@ -68,12 +64,12 @@ func add_ingredient(data: Dictionary) -> bool:
 
 
 func _on_slot_a_cleared() -> void:
-	_clear_slot(_slot_a, 0, _slot_a_emoji, true)
+	_clear_slot(_slot_a, 0, true)
 	_check_recipe()
 
 
 func _on_slot_b_cleared() -> void:
-	_clear_slot(_slot_b, 1, _slot_b_emoji, true)
+	_clear_slot(_slot_b, 1, true)
 	_check_recipe()
 
 
@@ -103,12 +99,11 @@ func _update_lock_button(slot: Control, index: int) -> void:
 	btn.modulate = Color(1.0, 0.92, 0.45) if locked else Color.WHITE
 
 
-func _set_slot(slot: Control, index: int, data: Dictionary, emoji_label: Label) -> void:
+func _set_slot(slot: Control, index: int, data: Dictionary) -> void:
 	_slot_data[index] = data
 	slot.get_node("Glow").visible = false
-	slot.get_node("Icon").visible = false
-	emoji_label.text = data.get("emoji", "")
-	emoji_label.visible = true
+	var icon := slot.get_node("Icon") as TextureRect
+	FoodIcons.apply_to(icon, String(data.get("id", "")))
 	slot.get_node("Title").text = data.get("title", "")
 	slot.get_node("Title").visible = true
 	slot.get_node("EmptyHint").visible = false
@@ -117,15 +112,15 @@ func _set_slot(slot: Control, index: int, data: Dictionary, emoji_label: Label) 
 	_update_lock_button(slot, index)
 
 
-func _clear_slot(slot: Control, index: int, emoji_label: Label, force := false) -> void:
+func _clear_slot(slot: Control, index: int, force := false) -> void:
 	if not force and _slot_locked[index]:
 		return
 	_slot_locked[index] = false
 	_slot_data[index] = {}
 	slot.get_node("Glow").visible = false
-	slot.get_node("Icon").visible = false
-	emoji_label.text = ""
-	emoji_label.visible = false
+	var icon := slot.get_node("Icon") as TextureRect
+	icon.texture = null
+	icon.visible = false
 	slot.get_node("Title").text = ""
 	slot.get_node("Title").visible = false
 	slot.get_node("EmptyHint").visible = true
@@ -160,7 +155,6 @@ func _attempt_craft(from_ids: PackedStringArray) -> void:
 	_craft_busy = true
 	_set_status("กำลังผสม...")
 	_result_icon.visible = false
-	_result_emoji.visible = false
 	_result_title.text = "..."
 	_result_title.visible = true
 	_result_glow.visible = false
@@ -220,9 +214,7 @@ func _show_craft_result(result_id: String, _from_ids: PackedStringArray, data: D
 	if is_new:
 		GameData.note_server_discovery(result_id)
 
-	_result_icon.visible = false
-	_result_emoji.text = display.get("emoji", "")
-	_result_emoji.visible = true
+	FoodIcons.apply_to(_result_icon, result_id)
 	_result_title.text = display.get("title", "")
 	_result_title.visible = true
 	_result_glow.visible = false
@@ -254,7 +246,6 @@ func _format_result_status(is_new: bool, result_kind: String, reward: Dictionary
 
 func _show_unknown_result() -> void:
 	_result_icon.visible = false
-	_result_emoji.visible = false
 	_result_title.text = "?"
 	_result_title.visible = true
 	_result_glow.visible = false
@@ -268,9 +259,8 @@ func _show_unknown_result() -> void:
 func _reset_result() -> void:
 	_stop_result_shake()
 	_stop_input_shake()
+	_result_icon.texture = null
 	_result_icon.visible = false
-	_result_emoji.text = ""
-	_result_emoji.visible = false
 	_result_title.visible = false
 	_result_glow.visible = false
 	_result_empty.visible = true
@@ -338,25 +328,3 @@ func _stop_input_shake() -> void:
 
 func get_result_burst_origin() -> Vector2:
 	return _result_slot.get_global_rect().get_center()
-
-
-func _ensure_emoji_label(slot: Control, font_size: int) -> Label:
-	var existing := slot.get_node_or_null("Emoji") as Label
-	var label := existing
-	if label == null:
-		label = Label.new()
-		label.name = "Emoji"
-		label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-		label.set_anchors_preset(Control.PRESET_CENTER)
-		label.grow_horizontal = Control.GROW_DIRECTION_BOTH
-		label.grow_vertical = Control.GROW_DIRECTION_BOTH
-		slot.add_child(label)
-
-	label.offset_left = -105.0
-	label.offset_top = -50.0
-	label.offset_right = 105.0
-	label.offset_bottom = 18.0
-	label.add_theme_font_size_override("font_size", font_size)
-	return label
