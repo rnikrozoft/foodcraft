@@ -22,6 +22,7 @@ signal reward_granted(reward: Dictionary, origin: Vector2)
 
 var _slot_data: Array = [{}, {}]
 var _slot_locked: Array[bool] = [false, false]
+var _craft_busy := false
 var _slot_a_emoji: Label
 var _slot_b_emoji: Label
 var _result_emoji: Label
@@ -145,28 +146,77 @@ func _check_recipe() -> void:
 		if not GameData.can_use_in_craft(String(ingredient_id)):
 			_show_unknown_result()
 			return
-	var result_id := GameData.lookup_recipe(from_ids[0], from_ids[1])
+	_attempt_craft(from_ids)
+
+
+func _attempt_craft(from_ids: PackedStringArray) -> void:
+	if _craft_busy:
+		return
+	if not NakamaService.is_online:
+		_set_status("ขาดการเชื่อมต่อ — กดเชื่อมต่อใหม่บนหน้าจอ")
+		_shake_result_slot()
+		return
+
+	_craft_busy = true
+	_set_status("กำลังผสม...")
+	_result_icon.visible = false
+	_result_emoji.visible = false
+	_result_title.text = "..."
+	_result_title.visible = true
+	_result_glow.visible = false
+	_result_empty.visible = false
+	_new_badge.visible = false
+
+	var data := await NakamaService.process_craft(from_ids)
+	_craft_busy = false
+
+	if not _slots_match(from_ids):
+		_check_recipe()
+		return
+
+	if bool(data.get("rpc_error", false)):
+		if NakamaService.is_unknown_recipe_error(data):
+			_show_unknown_result()
+		else:
+			_set_status(NakamaService.format_rpc_error(data))
+			_shake_result_slot()
+		return
+
+	var result_id := String(data.get("item_id", ""))
 	if result_id.is_empty():
 		_show_unknown_result()
-	else:
-		_show_result_async(result_id, from_ids)
+		return
+
+	_show_craft_result(result_id, from_ids, data)
 
 
-func _show_result_async(result_id: String, from_ids: PackedStringArray) -> void:
+func _slots_match(from_ids: PackedStringArray) -> bool:
+	if _slot_data[0].is_empty() or _slot_data[1].is_empty():
+		return false
+	return (
+		String(_slot_data[0].get("id", "")) == from_ids[0]
+		and String(_slot_data[1].get("id", "")) == from_ids[1]
+	)
+
+
+func _show_craft_result(result_id: String, _from_ids: PackedStringArray, data: Dictionary) -> void:
 	var display := GameData.to_display_dict(result_id)
 	if display.is_empty():
 		_show_unknown_result()
 		return
 
-	GameData.record_craft_local()
-	var outcome := GameData.process_craft_result(result_id)
-	var is_new := bool(outcome.get("is_new", false))
-	var result_kind := String(outcome.get("result_kind", ""))
-	if NakamaService.is_online:
-		NakamaService.record_craft(is_new)
+	var is_new := bool(data.get("is_new", false))
+	var result_kind := GameData.craft_result_kind(result_id)
 	var reward := {}
+	var reward_type := String(data.get("reward_type", ""))
+	if not reward_type.is_empty():
+		reward = {
+			"type": reward_type,
+			"amount": int(data.get("reward_amount", 0)),
+		}
 	if is_new:
-		reward = await _grant_discovery_reward(result_id, from_ids)
+		GameData.note_server_discovery(result_id)
+
 	_result_icon.visible = false
 	_result_emoji.text = display.get("emoji", "")
 	_result_emoji.visible = true
@@ -182,23 +232,6 @@ func _show_result_async(result_id: String, from_ids: PackedStringArray) -> void:
 	if is_new:
 		new_recipe_discovered.emit(display)
 	recipe_crafted.emit(result_id, is_new)
-
-
-func _grant_discovery_reward(result_id: String, from_ids: PackedStringArray) -> Dictionary:
-	if NakamaService.is_online:
-		var data := await NakamaService.discover_recipe(result_id, from_ids)
-		if not data.is_empty() and String(data.get("reward_type", "")) != "":
-			return {
-				"type": String(data.get("reward_type", "")),
-				"amount": int(data.get("reward_amount", 0)),
-			}
-		if data.is_empty():
-			GameData.queue_discovery(result_id, from_ids)
-	var reward := GameData.roll_discovery_reward(result_id)
-	GameData.stage_reward(reward)
-	if not NakamaService.is_online:
-		GameData.queue_discovery(result_id, from_ids)
-	return reward
 
 
 func _format_result_status(is_new: bool, result_kind: String, reward: Dictionary) -> String:

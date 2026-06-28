@@ -55,6 +55,7 @@ func _ready() -> void:
 	NakamaService.leaderboard_loaded.connect(_on_leaderboard_loaded)
 	NakamaService.leaderboards_loaded.connect(_on_boards_loaded)
 	NakamaService.hall_of_fame_loaded.connect(_on_hall_of_fame_loaded)
+	NakamaService.connection_restored.connect(_on_connection_restored)
 	_tier_menu_scroll.resized.connect(_sync_tier_menu_layout)
 	_build_tier_menu()
 
@@ -388,6 +389,19 @@ func _on_hall_of_fame_loaded(data: Dictionary) -> void:
 	if _in_tier_menu or not _showing_hall:
 		return
 	_apply_hall_of_fame(data)
+
+
+func _on_connection_restored() -> void:
+	if not visible:
+		return
+	if _in_tier_menu:
+		await NakamaService.fetch_leaderboard_list()
+	elif _showing_hall:
+		await NakamaService.fetch_hall_of_fame()
+	elif not _active_board.is_empty():
+		var data := await NakamaService.fetch_leaderboard(_active_board)
+		if not data.is_empty() and not bool(data.get("rpc_error", false)):
+			_apply_leaderboard(data)
 
 
 func _apply_leaderboard(data: Dictionary) -> void:

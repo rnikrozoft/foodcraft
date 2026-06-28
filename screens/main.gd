@@ -53,6 +53,7 @@ func _ready() -> void:
 	GameData.wallet_changed.connect(_update_currency_display)
 	NakamaService.session_ready.connect(_on_session_ready)
 	NakamaService.discovery_synced.connect(_on_discovery_synced)
+	NakamaService.connection_restored.connect(_on_connection_restored)
 
 	_my_recipes_panel.visible = false
 	_leaderboard_panel.visible = false
@@ -63,7 +64,6 @@ func _ready() -> void:
 	_update_discovery_panel()
 	_update_profile_panel()
 	_update_currency_display()
-	await _sync_pending_progress()
 
 
 func _layout_pages() -> void:
@@ -256,9 +256,19 @@ func _on_session_ready(_profile: Dictionary) -> void:
 
 
 func _on_discovery_synced(_data: Dictionary) -> void:
+	_refresh_after_server_sync()
+
+
+func _on_connection_restored() -> void:
+	_refresh_after_server_sync()
+
+
+func _refresh_after_server_sync() -> void:
 	_update_discovery_panel()
 	_update_profile_panel()
 	_update_currency_display()
+	if _current_page == Page.SHOP:
+		_shop_panel.prepare_panel(_shop_panel.get_active_tab())
 
 
 func _play_pending_reward_fly() -> void:
@@ -276,19 +286,5 @@ func _play_pending_reward_fly() -> void:
 		target = _currency_display.get_star_icon_global_center()
 
 	await _reward_fly.play(reward, origin, target)
-	GameData.commit_staged_reward()
 	_update_currency_display()
 	_currency_display.pulse_reward(reward_type)
-
-
-func _sync_pending_progress() -> void:
-	if not NakamaService.is_online:
-		return
-
-	var pending := GameData.get_pending_sync()
-	if pending.is_empty():
-		return
-
-	var data := await NakamaService.sync_discoveries(pending, GameData.get_craft_count())
-	if not data.is_empty():
-		GameData.clear_pending_sync()

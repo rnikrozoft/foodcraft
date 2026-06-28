@@ -4,6 +4,7 @@ const MAIN_SCENE := preload("res://screens/main.tscn")
 
 @onready var _guest_button: Control = $VBoxContainer/GuestButton
 @onready var _facebook_button: Control = $VBoxContainer/FacebookButton
+@onready var _status: Label = $StatusLabel
 
 
 func _ready() -> void:
@@ -13,7 +14,13 @@ func _ready() -> void:
 
 func _enter_game() -> void:
 	_set_buttons_enabled(false)
-	await NakamaService.authenticate_guest()
+	_status.text = "กำลังเชื่อมต่อเซิร์ฟเวอร์..."
+	var ok := await NakamaService.authenticate_guest()
+	if not ok:
+		_status.text = "เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ — ตรวจสอบเน็ตแล้วลองใหม่"
+		_set_buttons_enabled(true)
+		return
+	_status.text = ""
 	await SceneTransition.fade_to_scene(MAIN_SCENE)
 
 

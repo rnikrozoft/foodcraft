@@ -59,6 +59,11 @@ var _active_tab := Tab.GENERAL
 var _tab_buttons: Array = []
 var _cooldown_timer: Timer
 var _pending_burst_origin := Vector2.ZERO
+var _daily_reward_status: Dictionary = {
+	"can_claim": true,
+	"coins": 120,
+	"next_claim_sec": 0,
+}
 
 
 func _iap_billing_enabled() -> bool:
@@ -75,6 +80,7 @@ func _ready() -> void:
 	GameData.wallet_changed.connect(_on_wallet_changed)
 	GameData.progress_changed.connect(_on_progress_changed)
 	GameData.shop_config_changed.connect(_on_shop_config_changed)
+	NakamaService.connection_restored.connect(_on_connection_restored)
 	_cooldown_timer = Timer.new()
 	_cooldown_timer.wait_time = 1.0
 	_cooldown_timer.timeout.connect(_on_cooldown_tick)
@@ -105,7 +111,7 @@ func prepare_panel(tab: Tab = Tab.GENERAL) -> void:
 func show_panel(tab: Tab = Tab.GENERAL) -> void:
 	prepare_panel(tab)
 	visible = true
-	if tab == Tab.INGREDIENTS and NakamaService.is_online:
+	if tab == Tab.INGREDIENTS:
 		_sync_shop_from_server()
 
 
@@ -118,10 +124,28 @@ func hide_panel() -> void:
 func show_tab(tab: Tab) -> void:
 	_active_tab = tab
 	_update_tab_buttons()
-	if visible:
+	if tab == Tab.GENERAL:
+		_prepare_general_tab_async()
+	elif visible:
 		call_deferred("_refresh")
 	else:
 		_rebuild_content()
+
+
+func _prepare_general_tab_async() -> void:
+	await _refresh_daily_reward_status()
+	if _active_tab != Tab.GENERAL:
+		return
+	if visible:
+		_rebuild_content()
+	else:
+		_rebuild_content()
+
+
+func _refresh_daily_reward_status() -> void:
+	var data := await NakamaService.fetch_daily_reward_status()
+	if not bool(data.get("rpc_error", false)) and not data.is_empty():
+		_daily_reward_status = data
 
 
 func _build_tabs() -> void:
@@ -159,8 +183,8 @@ func _rebuild_content() -> void:
 	match _active_tab:
 		Tab.GENERAL:
 			_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_NEVER
-			_cooldown_timer.stop()
 			_build_general_tab()
+			_cooldown_timer.start()
 		Tab.INGREDIENTS:
 			_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_NEVER
 			_build_ingredient_tab()
@@ -173,13 +197,26 @@ func _build_general_tab() -> void:
 	_content.add_child(_make_section_header("พิเศษ"))
 	_content.add_child(_make_remove_ads_banner())
 	var special_grid := _make_product_grid(GRID_COLS_HINTS)
+	var can_claim := bool(_daily_reward_status.get("can_claim", true))
+	var coins := int(_daily_reward_status.get("coins", GameData.get_daily_reward_coins()))
+	var next_sec := int(_daily_reward_status.get("next_claim_sec", 0))
+	var daily_desc := "รับ %d เหรียญฟรีทุกวัน" % coins
+	var daily_btn := "รับฟรี"
+	if not can_claim:
+		daily_btn = "รับแล้ว"
+		if next_sec > 0:
+			daily_desc = "รับแล้ว — รอบถัดไปใน %s" % _format_duration(next_sec)
+		else:
+			daily_desc = "รับเหรียญรายวันแล้ววันนี้"
 	special_grid.add_child(_make_special_card(
 		"เหรียญรายวัน",
-		"รับ 120 เหรียญฟรีทุกวัน",
+		daily_desc,
 		"🎁",
-		"รับฟรี",
+		daily_btn,
 		BTN_GREEN,
-		_on_daily_coins_pressed
+		_on_daily_coins_pressed,
+		can_claim,
+		not can_claim
 	))
 	special_grid.add_child(_make_special_card(
 		"ดูโฆษณา",
@@ -217,7 +254,7 @@ func _build_general_tab() -> void:
 
 
 func _build_ingredient_tab() -> void:
-	_content.add_child(_make_shop_reset_banner())
+	_content.add_child(_make_shop_auto_banner())
 	_content.add_child(_make_section_header("ปลดล็อกวัตถุดิบด้วยเหรียญ"))
 	var offers := GameData.get_shop_ingredient_offers()
 	var current_rarity := ""
@@ -232,8 +269,7 @@ func _build_ingredient_tab() -> void:
 		_content.add_child(_make_ingredient_row(offer))
 
 
-func _make_shop_reset_banner() -> PanelContainer:
-	var info := GameData.get_shop_reset_info()
+func _make_shop_auto_banner() -> PanelContainer:
 	var panel := PanelContainer.new()
 	panel.add_theme_stylebox_override("panel", _make_banner_style(Color(0.28, 0.38, 0.52, 1)))
 
@@ -244,58 +280,28 @@ func _make_shop_reset_banner() -> PanelContainer:
 	margin.add_theme_constant_override("margin_bottom", 12)
 	panel.add_child(margin)
 
-	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", 10)
-	margin.add_child(row)
-
-	var info_col := VBoxContainer.new()
-	info_col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	info_col.add_theme_constant_override("separation", 4)
-	row.add_child(info_col)
+	var col := VBoxContainer.new()
+	col.add_theme_constant_override("separation", 6)
+	margin.add_child(col)
 
 	var title := Label.new()
-	title.text = "รีเซ็ตร้านค้า"
+	title.text = "ร้านวัตถุดิบรายวัน"
 	title.add_theme_font_size_override("font_size", int(_s(17)))
 	title.add_theme_color_override("font_color", Color(1, 0.95, 0.7, 1))
-	info_col.add_child(title)
+	col.add_child(title)
 
 	var desc := Label.new()
-	desc.text = "สุ่มวัตถุดิบที่ยังไม่มีมาขาย — กดรีเซ็ตเพื่อสุ่มใหม่"
+	desc.text = "สุ่มวัตถุดิบที่ยังไม่มีมาขาย — ร้านเปลี่ยนสินค้าอัตโนมัติทุกเที่ยงคืน (UTC)"
 	desc.autowrap_mode = TextServer.AUTOWRAP_WORD
 	desc.add_theme_font_size_override("font_size", int(_s(12)))
 	desc.add_theme_color_override("font_color", Color(0.9, 0.94, 1, 1))
-	info_col.add_child(desc)
+	col.add_child(desc)
 
-	var hint := _make_countdown_label(
-		int(info.get("next_free_reset_sec", 0)) if String(info.get("price_type", "")) != "free" else 0,
-		"reset_free"
-	)
-	var shop_cfg := GameData.get_shop_config()
-	var mid_count := int(shop_cfg.get("reset_mid_count", 5))
-	var reset_prices: Dictionary = shop_cfg.get("reset_prices", {})
-	var mid_price := int(reset_prices.get("mid", 90))
-	var high_price := int(reset_prices.get("high", 150))
-	if String(info.get("price_type", "")) == "free":
-		var free_hint := Label.new()
-		free_hint.text = "รีเซ็ตฟรีวันนี้: 1 ครั้ง (ครั้งถัดไป %s เหรียญ × %d แล้ว %s เหรียญ)" % [
-			_format_number(mid_price), mid_count, _format_number(high_price)
-		]
-		free_hint.autowrap_mode = TextServer.AUTOWRAP_WORD
-		free_hint.add_theme_font_size_override("font_size", int(_s(11)))
-		free_hint.add_theme_color_override("font_color", Color(0.75, 0.82, 0.92, 1))
-		info_col.add_child(free_hint)
-	else:
-		hint.autowrap_mode = TextServer.AUTOWRAP_WORD
-		hint.add_theme_font_size_override("font_size", int(_s(11)))
-		hint.add_theme_color_override("font_color", Color(0.75, 0.82, 0.92, 1))
-		info_col.add_child(hint)
-
-	var price_type := String(info.get("price_type", "free"))
-	if price_type == "free":
-		row.add_child(_make_price_button("ฟรี", BTN_GREEN, _on_shop_reset_pressed))
-	else:
-		var cost := int(info.get("coin_cost", 0))
-		row.add_child(_make_coin_price_button(cost, _on_shop_reset_pressed))
+	var timer := _make_countdown_label(GameData.get_next_shop_reset_sec(), "shop_reset")
+	timer.autowrap_mode = TextServer.AUTOWRAP_WORD
+	timer.add_theme_font_size_override("font_size", int(_s(13)))
+	timer.add_theme_color_override("font_color", Color(0.75, 0.9, 1, 1))
+	col.add_child(timer)
 
 	return panel
 
@@ -575,7 +581,9 @@ func _make_special_card(
 	emoji: String,
 	price: String,
 	btn_tex: Texture2D,
-	callback: Callable
+	callback: Callable,
+	enabled: bool = true,
+	countdown_desc: bool = false
 ) -> PanelContainer:
 	var card := _make_product_card()
 	var panel: PanelContainer = card["panel"]
@@ -596,15 +604,18 @@ func _make_special_card(
 	desc_label.autowrap_mode = TextServer.AUTOWRAP_WORD
 	desc_label.add_theme_font_size_override("font_size", int(_s(12)))
 	desc_label.add_theme_color_override("font_color", Color(0.48, 0.36, 0.26, 1))
+	if countdown_desc:
+		desc_label.set_meta("daily_reward_countdown", true)
 	body.add_child(desc_label)
-	body.add_child(_make_price_button(price, btn_tex, callback, true))
+	var btn := _make_price_button(price, btn_tex, callback, true)
+	btn.disabled = not enabled
+	body.add_child(btn)
 	return panel
 
 
 func _make_ingredient_row(offer: Dictionary) -> PanelContainer:
 	var unlocked := bool(offer.get("unlocked", false))
 	var buyable := bool(offer.get("buyable", false))
-	var cooldown_sec := int(offer.get("cooldown_sec", 0))
 	var panel := PanelContainer.new()
 	panel.add_theme_stylebox_override("panel", _make_card_style(unlocked or not buyable))
 
@@ -657,20 +668,14 @@ func _make_ingredient_row(offer: Dictionary) -> PanelContainer:
 	elif buyable:
 		var cost := int(offer.get("cost", 0))
 		var id := String(offer.get("id", ""))
-		var window_sec := int(offer.get("window_remaining_sec", 0))
-		if window_sec > 0:
-			var timer_lbl := _make_countdown_label(window_sec, "window", id)
-			timer_lbl.add_theme_font_size_override("font_size", int(_s(11)))
-			timer_lbl.add_theme_color_override("font_color", Color(0.45, 0.55, 0.35, 1))
-			info.add_child(timer_lbl)
 		row.add_child(_make_coin_price_button(cost, _on_ingredient_pressed.bind(id, cost), true))
 	else:
-		var id := String(offer.get("id", ""))
-		var wait := _make_countdown_label(cooldown_sec, "cooldown", id)
-		wait.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		wait.add_theme_font_size_override("font_size", int(_s(12)))
-		wait.add_theme_color_override("font_color", Color(0.55, 0.42, 0.32, 1))
-		row.add_child(wait)
+		var unavailable := Label.new()
+		unavailable.text = "ไม่พร้อมขาย"
+		unavailable.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		unavailable.add_theme_font_size_override("font_size", int(_s(12)))
+		unavailable.add_theme_color_override("font_color", Color(0.55, 0.42, 0.32, 1))
+		row.add_child(unavailable)
 
 	return panel
 
@@ -914,18 +919,10 @@ func _make_countdown_label(initial_sec: int, kind: String, target_id: String = "
 func _countdown_text(kind: String, sec: int) -> String:
 	var duration := _format_duration(sec)
 	match kind:
-		"window":
+		"shop_reset":
 			if sec <= 0:
-				return "หมดเวลาขาย"
-			return "เหลือเวลา %s" % duration
-		"cooldown":
-			if sec <= 0:
-				return "หมดเวลา\nรีเซ็ตร้าน"
-			return "รอรีเซ็ต\n%s" % duration
-		"reset_free":
-			if sec <= 0:
-				return "รีเซ็ตฟรีพร้อมแล้ว"
-			return "รีเซ็ตฟรีอีกครั้งใน %s" % duration
+				return "กำลังเปลี่ยนสินค้า..."
+			return "ร้านเปลี่ยนสินค้าใน %s" % duration
 	return duration
 
 
@@ -940,7 +937,7 @@ func _update_countdown_labels_in(node: Node) -> bool:
 		var target := String(node.get_meta("countdown_target", ""))
 		var sec := GameData.get_shop_timer_sec(kind, target)
 		node.text = _countdown_text(kind, sec)
-		if sec <= 0 and (kind == "cooldown" or kind == "window"):
+		if sec <= 0 and kind == "shop_reset":
 			needs_refresh = true
 	for child in node.get_children():
 		if _update_countdown_labels_in(child):
@@ -949,8 +946,6 @@ func _update_countdown_labels_in(node: Node) -> bool:
 
 
 func _sync_shop_from_server() -> void:
-	if not NakamaService.is_online:
-		return
 	await NakamaService.sync_wallet()
 	await NakamaService.fetch_shop_state()
 	if visible and _active_tab == Tab.INGREDIENTS:
@@ -973,28 +968,11 @@ func _on_hint_pack_pressed(stars: int) -> void:
 	_simulate_iap("ซื้อ %d ดาว" % stars, on_success, 0, stars)
 
 
-func _on_ingredient_pressed(id: String, cost: int) -> void:
+func _on_ingredient_pressed(id: String, _cost: int) -> void:
 	if GameData.is_ingredient_unlocked(id):
 		_show_status("ปลดล็อกวัตถุดิบนี้แล้ว")
 		return
-	if NakamaService.is_online:
-		_purchase_ingredient_online(id)
-		return
-	if not GameData.is_shop_ingredient_buyable(id):
-		_show_status("วัตถุดิบนี้หมดเวลาขายแล้ว — รีเซ็ตร้านหรือรอรอบถัดไป")
-		return
-	if GameData.get_coins() < cost:
-		_show_status("เหรียญไม่พอ — เติมเหรียญก่อนนะ")
-		show_tab(Tab.GENERAL)
-		return
-	if GameData.purchase_ingredient_with_coins(id, cost):
-		var display := GameData.to_display_dict(id)
-		_play_purchase_burst(display)
-		_show_status("ปลดล็อก %s แล้ว!" % display.get("title", id))
-		purchase_completed.emit()
-		_refresh()
-	else:
-		_show_status("ซื้อไม่สำเร็จ")
+	_purchase_ingredient_online(id)
 
 
 func _purchase_ingredient_online(id: String) -> void:
@@ -1012,66 +990,39 @@ func _purchase_ingredient_online(id: String) -> void:
 	_refresh()
 
 
-func _on_shop_reset_pressed() -> void:
-	if NakamaService.is_online:
-		_reset_shop_online()
-		return
-	var info := GameData.get_shop_reset_info()
-	var price_type := String(info.get("price_type", "free"))
-	if price_type == "free":
-		if GameData.reset_shop_free():
-			_show_status("รีเซ็ตร้านค้าเรียบร้อย — วัตถุดิบพร้อมขายแล้ว!")
-			purchase_completed.emit()
-			_refresh()
-		else:
-			_show_status("ใช้รีเซ็ตฟรีไปแล้ว — รอครบ 24 ชม. หรือใช้เหรียญรีเซ็ต")
-		return
-	var cost := int(info.get("coin_cost", 0))
-	if GameData.get_coins() < cost:
-		_show_status("เหรียญไม่พอ — ต้องการ %s เหรียญ" % _format_number(cost))
-		return
-	if GameData.reset_shop_paid():
-		_show_status("รีเซ็ตร้านค้าเรียบร้อย — หัก %s เหรียญ" % _format_number(cost))
-		purchase_completed.emit()
-		_refresh()
-	else:
-		_show_status("รีเซ็ตไม่สำเร็จ — ลองใหม่อีกครั้ง")
-
-
-func _reset_shop_online() -> void:
-	var info := GameData.get_shop_reset_info()
-	var price_type := String(info.get("price_type", "free"))
-	if price_type != "free":
-		var cost := int(info.get("coin_cost", 0))
-		if GameData.get_coins() < cost:
-			_show_status("เหรียญไม่พอ — ต้องการ %s เหรียญ" % _format_number(cost))
-			return
-		_reset_shop_online_confirmed("paid")
-		return
-	_reset_shop_online_confirmed("free")
-
-
-func _reset_shop_online_confirmed(payment_type: String) -> void:
-	var data := await NakamaService.reset_shop(payment_type)
-	if bool(data.get("rpc_error", false)):
-		_show_status(NakamaService.format_rpc_error(data))
-		return
-	if data.is_empty():
-		if payment_type == "free":
-			_show_status("ใช้รีเซ็ตฟรีไปแล้ว — รอครบ 24 ชม. หรือใช้เหรียญรีเซ็ต")
-		else:
-			_show_status("รีเซ็ตไม่สำเร็จ — ลองใหม่อีกครั้ง")
-		return
-	_show_status("รีเซ็ตร้านค้าเรียบร้อย — วัตถุดิบพร้อมขายแล้ว!")
-	purchase_completed.emit()
-	_refresh()
-
-
 func _on_cooldown_tick() -> void:
-	if not visible or _active_tab != Tab.INGREDIENTS:
+	if not visible:
+		return
+	if _active_tab == Tab.GENERAL:
+		var next_sec := int(_daily_reward_status.get("next_claim_sec", 0))
+		if next_sec > 0:
+			_daily_reward_status["next_claim_sec"] = next_sec - 1
+		_update_daily_reward_countdown_labels()
+		if next_sec <= 1 and not bool(_daily_reward_status.get("can_claim", false)):
+			await _refresh_daily_reward_status()
+			_refresh()
+		return
+	if _active_tab != Tab.INGREDIENTS:
 		return
 	if _update_countdown_labels():
+		await _sync_shop_from_server()
 		_refresh()
+
+
+func _update_daily_reward_countdown_labels() -> void:
+	_update_daily_reward_countdown_labels_in(_content)
+
+
+func _update_daily_reward_countdown_labels_in(node: Node) -> void:
+	if node is Label and node.has_meta("daily_reward_countdown"):
+		var next_sec := int(_daily_reward_status.get("next_claim_sec", 0))
+		var coins := int(_daily_reward_status.get("coins", GameData.get_daily_reward_coins()))
+		if next_sec > 0:
+			node.text = "รับแล้ว — รอบถัดไปใน %s" % _format_duration(next_sec)
+		else:
+			node.text = "รับ %d เหรียญฟรีทุกวัน" % coins
+	for child in node.get_children():
+		_update_daily_reward_countdown_labels_in(child)
 
 
 func _on_remove_ads_pressed() -> void:
@@ -1089,12 +1040,6 @@ func _on_remove_ads_pressed() -> void:
 
 func _on_starter_pack_pressed() -> void:
 	var on_success := func() -> void:
-		if not NakamaService.is_online:
-			var offers := GameData.get_shop_ingredient_offers()
-			for offer in offers:
-				if String(offer.get("rarity", "")) == "uncommon" and not bool(offer.get("unlocked", false)):
-					GameData.unlock_ingredient(String(offer.get("id", "")))
-					break
 		_show_status("ได้รับแพ็กเริ่มต้นแล้ว!")
 		_play_purchase_burst()
 		purchase_completed.emit()
@@ -1103,11 +1048,25 @@ func _on_starter_pack_pressed() -> void:
 
 
 func _on_daily_coins_pressed() -> void:
-	var on_success := func() -> void:
-		_play_purchase_burst()
-		_show_status("รับเหรียญรายวัน 120 เหรียญ!")
-		purchase_completed.emit()
-	_simulate_iap("เหรียญรายวัน", on_success, 120, 0)
+	if not bool(_daily_reward_status.get("can_claim", true)):
+		_show_status("รับเหรียญรายวันแล้ว — กลับมาพรุ่งนี้นะ")
+		return
+	var data := await NakamaService.claim_daily_reward()
+	if bool(data.get("rpc_error", false)):
+		_show_status(NakamaService.format_rpc_error(data))
+		_refresh()
+		return
+	var received := int(data.get("coins_received", 0))
+	if received <= 0:
+		_daily_reward_status = data
+		_show_status("รับเหรียญรายวันแล้ว — กลับมาพรุ่งนี้นะ")
+		_refresh()
+		return
+	_daily_reward_status = data
+	_play_purchase_burst()
+	_show_status("ได้รับ %d เหรียญรายวัน!" % received)
+	purchase_completed.emit()
+	_refresh()
 
 
 func _on_watch_ad_pressed() -> void:
@@ -1121,21 +1080,11 @@ func _on_watch_ad_pressed() -> void:
 	_show_status("โฆษณาจะแสดงที่นี่ (ยังไม่เชื่อม AdMob)")
 
 
-func _simulate_iap(label: String, on_success: Callable, coins_delta: int = 0, stars_delta: int = 0) -> void:
+func _simulate_iap(label: String, _on_success: Callable, _coins_delta: int = 0, _stars_delta: int = 0) -> void:
 	if not _iap_billing_enabled():
 		_show_status("รีเซ็ตนี้ต้องชำระเงินจริง — ไม่ใช่เหรียญในเกม (รอเชื่อม Google Play / App Store)")
 		return
-	if NakamaService.is_online and (coins_delta != 0 or stars_delta != 0):
-		var data: Dictionary = await NakamaService.adjust_wallet(coins_delta, stars_delta)
-		if bool(data.get("rpc_error", false)):
-			_show_status(NakamaService.format_rpc_error(data))
-			return
-	elif coins_delta > 0:
-		GameData.add_coins(coins_delta)
-	elif stars_delta > 0:
-		GameData.add_stars(stars_delta)
-	on_success.call()
-	# Placeholder for Google Play / App Store billing integration.
+	_show_status("ยังไม่เชื่อม IAP — รอ Google Play / App Store")
 
 
 func _show_status(message: String) -> void:
@@ -1156,6 +1105,11 @@ func _on_wallet_changed() -> void:
 func _on_progress_changed() -> void:
 	if visible and (_active_tab == Tab.INGREDIENTS or _active_tab == Tab.GENERAL):
 		_refresh()
+
+
+func _on_connection_restored() -> void:
+	if visible:
+		_sync_shop_from_server()
 
 
 func _on_shop_config_changed() -> void:
