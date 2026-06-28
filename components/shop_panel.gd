@@ -2,6 +2,7 @@ extends Control
 class_name ShopPanel
 
 signal purchase_completed
+signal purchase_celebrated(display: Dictionary, origin: Vector2, show_full: bool)
 
 enum Tab { GENERAL, INGREDIENTS }
 
@@ -57,6 +58,7 @@ const TAB_HEIGHT := 46.0
 var _active_tab := Tab.GENERAL
 var _tab_buttons: Array = []
 var _cooldown_timer: Timer
+var _pending_burst_origin := Vector2.ZERO
 
 
 func _iap_billing_enabled() -> bool:
@@ -92,22 +94,34 @@ func _s(value: float) -> float:
 	return value * _ui_scale()
 
 
+func get_active_tab() -> Tab:
+	return _active_tab
+
+
+func prepare_panel(tab: Tab = Tab.GENERAL) -> void:
+	show_tab(tab)
+
+
 func show_panel(tab: Tab = Tab.GENERAL) -> void:
+	prepare_panel(tab)
 	visible = true
 	if tab == Tab.INGREDIENTS and NakamaService.is_online:
 		_sync_shop_from_server()
-	show_tab(tab)
 
 
 func hide_panel() -> void:
 	visible = false
 	_cooldown_timer.stop()
+	show_tab(Tab.GENERAL)
 
 
 func show_tab(tab: Tab) -> void:
 	_active_tab = tab
 	_update_tab_buttons()
-	call_deferred("_refresh")
+	if visible:
+		call_deferred("_refresh")
+	else:
+		_rebuild_content()
 
 
 func _build_tabs() -> void:
@@ -386,7 +400,7 @@ func _make_feature_banner(
 
 	var btn_col := VBoxContainer.new()
 	btn_col.alignment = BoxContainer.ALIGNMENT_CENTER
-	btn_col.add_child(_make_price_button(price, btn_tex, callback))
+	btn_col.add_child(_make_price_button(price, btn_tex, callback, true))
 	row.add_child(btn_col)
 	return panel
 
@@ -429,7 +443,7 @@ func _make_remove_ads_banner() -> PanelContainer:
 		var btn_row := HBoxContainer.new()
 		btn_row.alignment = BoxContainer.ALIGNMENT_END
 		col.add_child(btn_row)
-		btn_row.add_child(_make_price_button("฿149", BTN_YELLOW, _on_remove_ads_pressed))
+		btn_row.add_child(_make_price_button("฿149", BTN_YELLOW, _on_remove_ads_pressed, true))
 
 	return panel
 
@@ -523,7 +537,7 @@ func _make_coin_card(pack: Dictionary) -> PanelContainer:
 	body.add_child(amount)
 
 	var price := String(pack.get("price", ""))
-	body.add_child(_make_price_button(price, BTN_GREEN, _on_coin_pack_pressed.bind(coins)))
+	body.add_child(_make_price_button(price, BTN_GREEN, _on_coin_pack_pressed.bind(coins), true))
 	return panel
 
 
@@ -551,7 +565,7 @@ func _make_hint_card(pack: Dictionary) -> PanelContainer:
 	body.add_child(amount)
 
 	var price := String(pack.get("price", ""))
-	body.add_child(_make_price_button(price, BTN_YELLOW, _on_hint_pack_pressed.bind(stars)))
+	body.add_child(_make_price_button(price, BTN_YELLOW, _on_hint_pack_pressed.bind(stars), true))
 	return panel
 
 
@@ -583,7 +597,7 @@ func _make_special_card(
 	desc_label.add_theme_font_size_override("font_size", int(_s(12)))
 	desc_label.add_theme_color_override("font_color", Color(0.48, 0.36, 0.26, 1))
 	body.add_child(desc_label)
-	body.add_child(_make_price_button(price, btn_tex, callback))
+	body.add_child(_make_price_button(price, btn_tex, callback, true))
 	return panel
 
 
@@ -649,7 +663,7 @@ func _make_ingredient_row(offer: Dictionary) -> PanelContainer:
 			timer_lbl.add_theme_font_size_override("font_size", int(_s(11)))
 			timer_lbl.add_theme_color_override("font_color", Color(0.45, 0.55, 0.35, 1))
 			info.add_child(timer_lbl)
-		row.add_child(_make_coin_price_button(cost, _on_ingredient_pressed.bind(id, cost)))
+		row.add_child(_make_coin_price_button(cost, _on_ingredient_pressed.bind(id, cost), true))
 	else:
 		var id := String(offer.get("id", ""))
 		var wait := _make_countdown_label(cooldown_sec, "cooldown", id)
@@ -697,7 +711,7 @@ func _make_card_icon_block(texture: Texture2D, scale_factor: float) -> CenterCon
 	return center
 
 
-func _make_price_button(text: String, texture: Texture2D, callback: Callable) -> Button:
+func _make_price_button(text: String, texture: Texture2D, callback: Callable, celebrate := false) -> Button:
 	var btn := Button.new()
 	btn.text = text
 	btn.focus_mode = Control.FOCUS_NONE
@@ -706,7 +720,10 @@ func _make_price_button(text: String, texture: Texture2D, callback: Callable) ->
 	btn.add_theme_stylebox_override("hover", _make_action_button_style(texture, true))
 	btn.add_theme_stylebox_override("pressed", _make_action_button_style(texture, true))
 	btn.add_theme_color_override("font_color", Color(0.12, 0.08, 0.04, 1))
-	btn.pressed.connect(callback)
+	if celebrate:
+		_connect_purchase_button(btn, callback)
+	else:
+		btn.pressed.connect(callback)
 	return btn
 
 
@@ -725,7 +742,7 @@ func _make_action_button_style(texture: Texture2D, pressed: bool) -> StyleBoxTex
 	return style
 
 
-func _make_coin_price_button(cost: int, callback: Callable) -> Button:
+func _make_coin_price_button(cost: int, callback: Callable, celebrate := false) -> Button:
 	var btn := Button.new()
 	btn.text = "🪙 %s" % _format_number(cost)
 	btn.custom_minimum_size = Vector2(_s(96), _s(36))
@@ -738,8 +755,24 @@ func _make_coin_price_button(cost: int, callback: Callable) -> Button:
 	if GameData.get_coins() < cost:
 		btn.add_theme_color_override("font_color", Color(0.55, 0.4, 0.3, 1))
 		btn.text = "🔒 %s" % _format_number(cost)
-	btn.pressed.connect(callback)
+	if celebrate:
+		_connect_purchase_button(btn, callback)
+	else:
+		btn.pressed.connect(callback)
 	return btn
+
+
+func _connect_purchase_button(btn: Button, callback: Callable) -> void:
+	btn.pressed.connect(func() -> void:
+		_pending_burst_origin = btn.get_global_rect().get_center()
+		callback.call()
+	)
+
+
+func _play_purchase_burst(display: Dictionary = {}) -> void:
+	if _pending_burst_origin == Vector2.ZERO:
+		return
+	purchase_celebrated.emit(display, _pending_burst_origin, not display.is_empty())
 
 
 func _make_tab_button(text: String, icon_text: String) -> Button:
@@ -926,6 +959,7 @@ func _sync_shop_from_server() -> void:
 
 func _on_coin_pack_pressed(coins: int) -> void:
 	var on_success := func() -> void:
+		_play_purchase_burst()
 		_show_status("ได้รับ %s เหรียญแล้ว!" % _format_number(coins))
 		purchase_completed.emit()
 	_simulate_iap("ซื้อ %s เหรียญ" % _format_number(coins), on_success, coins, 0)
@@ -933,6 +967,7 @@ func _on_coin_pack_pressed(coins: int) -> void:
 
 func _on_hint_pack_pressed(stars: int) -> void:
 	var on_success := func() -> void:
+		_play_purchase_burst()
 		_show_status("ได้รับ %d ดาวแล้ว!" % stars)
 		purchase_completed.emit()
 	_simulate_iap("ซื้อ %d ดาว" % stars, on_success, 0, stars)
@@ -954,6 +989,7 @@ func _on_ingredient_pressed(id: String, cost: int) -> void:
 		return
 	if GameData.purchase_ingredient_with_coins(id, cost):
 		var display := GameData.to_display_dict(id)
+		_play_purchase_burst(display)
 		_show_status("ปลดล็อก %s แล้ว!" % display.get("title", id))
 		purchase_completed.emit()
 		_refresh()
@@ -970,6 +1006,7 @@ func _purchase_ingredient_online(id: String) -> void:
 		_show_status("ซื้อไม่สำเร็จ — ลองใหม่อีกครั้ง")
 		return
 	var display := GameData.to_display_dict(id)
+	_play_purchase_burst(display)
 	_show_status("ปลดล็อก %s แล้ว!" % display.get("title", id))
 	purchase_completed.emit()
 	_refresh()
@@ -1043,6 +1080,7 @@ func _on_remove_ads_pressed() -> void:
 		return
 	_simulate_iap("ลบโฆษณา", func() -> void:
 		GameData.set_ads_removed(true)
+		_play_purchase_burst()
 		_show_status("ลบโฆษณาเรียบร้อย — ขอบคุณที่สนับสนุน!")
 		purchase_completed.emit()
 		_refresh()
@@ -1058,6 +1096,7 @@ func _on_starter_pack_pressed() -> void:
 					GameData.unlock_ingredient(String(offer.get("id", "")))
 					break
 		_show_status("ได้รับแพ็กเริ่มต้นแล้ว!")
+		_play_purchase_burst()
 		purchase_completed.emit()
 		_refresh()
 	_simulate_iap("แพ็กเริ่มต้น", on_success, 500, 0)
@@ -1065,6 +1104,7 @@ func _on_starter_pack_pressed() -> void:
 
 func _on_daily_coins_pressed() -> void:
 	var on_success := func() -> void:
+		_play_purchase_burst()
 		_show_status("รับเหรียญรายวัน 120 เหรียญ!")
 		purchase_completed.emit()
 	_simulate_iap("เหรียญรายวัน", on_success, 120, 0)
@@ -1073,6 +1113,7 @@ func _on_daily_coins_pressed() -> void:
 func _on_watch_ad_pressed() -> void:
 	if GameData.is_ads_removed():
 		var on_success := func() -> void:
+			_play_purchase_burst()
 			_show_status("ได้รับ 80 เหรียญ!")
 			purchase_completed.emit()
 		_simulate_iap("ดูโฆษณา", on_success, 80, 0)

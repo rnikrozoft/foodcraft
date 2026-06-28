@@ -26,6 +26,7 @@ var _current_page: Page = Page.CRAFT
 var _transitioning := false
 var _page_tween: Tween
 var _pending_shop_tab: int = ShopPanel.Tab.GENERAL
+var _shop_tab_override := false
 
 
 func _ready() -> void:
@@ -47,6 +48,7 @@ func _ready() -> void:
 	_currency_display.add_coins_pressed.connect(_on_add_coins_pressed)
 	_currency_display.add_gems_pressed.connect(_on_add_gems_pressed)
 	_shop_panel.purchase_completed.connect(_update_currency_display)
+	_shop_panel.purchase_celebrated.connect(_on_shop_purchase_celebrated)
 	GameData.progress_changed.connect(_update_discovery_panel)
 	GameData.wallet_changed.connect(_update_currency_display)
 	NakamaService.session_ready.connect(_on_session_ready)
@@ -92,6 +94,18 @@ func _on_new_recipe_discovered(display: Dictionary) -> void:
 	await _play_pending_reward_fly()
 
 
+func _screen_burst_origin() -> Vector2:
+	return get_viewport().get_visible_rect().get_center()
+
+
+func _on_shop_purchase_celebrated(display: Dictionary, _origin: Vector2, show_full: bool) -> void:
+	var burst_origin := _screen_burst_origin()
+	if show_full:
+		_discovery_burst.play_celebration(display, burst_origin)
+	else:
+		_discovery_burst.play_particle_burst(burst_origin)
+
+
 func _on_tab_changed(index: int) -> void:
 	_go_to_page(_tab_to_page(index))
 
@@ -117,11 +131,19 @@ func _on_add_gems_pressed() -> void:
 
 func _open_shop(tab: int = ShopPanel.Tab.GENERAL) -> void:
 	_footer_menu.set_active_tab(4, false)
+	_shop_tab_override = true
+	_pending_shop_tab = tab
 	if _current_page == Page.SHOP:
 		_shop_panel.show_tab(tab)
+		_shop_tab_override = false
 		return
-	_pending_shop_tab = tab
 	_go_to_page(Page.SHOP)
+
+
+func _resolve_shop_tab() -> int:
+	if _shop_tab_override:
+		return _pending_shop_tab
+	return ShopPanel.Tab.GENERAL
 
 
 func _tab_to_page(tab_index: int) -> Page:
@@ -162,6 +184,11 @@ func _go_to_page(page: Page, pick_for_craft: bool = false) -> void:
 	var direction := 1 if int(page) > int(_current_page) else -1
 	var width := maxf(_content_host.size.x, 1.0)
 
+	if page == Page.SHOP:
+		_shop_panel.prepare_panel(_resolve_shop_tab())
+	elif page == Page.LEADERBOARD:
+		_leaderboard_panel.prepare_panel()
+
 	to_node.visible = true
 	to_node.position.x = direction * width
 	from_node.position.x = 0.0
@@ -191,7 +218,8 @@ func _activate_page(page: Page, pick_for_craft: bool) -> void:
 		Page.LEADERBOARD:
 			_leaderboard_panel.show_panel()
 		Page.SHOP:
-			_shop_panel.show_panel(_pending_shop_tab)
+			_shop_panel.show_panel(_resolve_shop_tab())
+			_shop_tab_override = false
 			_pending_shop_tab = ShopPanel.Tab.GENERAL
 
 

@@ -59,18 +59,33 @@ func _ready() -> void:
 	_build_tier_menu()
 
 
+func prepare_panel() -> void:
+	_reset_to_home()
+
+
 func show_panel() -> void:
+	prepare_panel()
 	visible = true
-	_show_tier_menu()
 	if not NakamaService.is_online:
 		_boards = NakamaConfig.get_fallback_boards()
 	elif _boards.is_empty():
 		await NakamaService.fetch_leaderboard_list()
-	_sync_tier_menu_layout()
+	call_deferred("_sync_tier_menu_layout")
 
 
 func hide_panel() -> void:
 	visible = false
+	_reset_to_home()
+
+
+func _reset_to_home() -> void:
+	_in_tier_menu = true
+	_active_tier = 1
+	_active_board = ""
+	_showing_hall = false
+	_apply_tier_menu_ui()
+	_clear_podium()
+	_clear_rows()
 
 
 func _build_tier_menu() -> void:
@@ -219,13 +234,7 @@ func _apply_tier_card_scale(card_h: float) -> void:
 
 func _open_tier(tier: int) -> void:
 	_active_tier = tier
-	_in_tier_menu = false
-	_tier_menu_scroll.visible = false
-	_detail_section.visible = true
-	_owner_panel.visible = false
-	_back.visible = true
-	_header_spacer.visible = true
-	_title.text = String(TIER_META.get(tier, {}).get("title", "อันดับ"))
+	_apply_tier_detail_ui_sync()
 	if NakamaService.is_online and _boards.is_empty():
 		_show_status("กำลังโหลด...")
 		await NakamaService.fetch_leaderboard_list()
@@ -236,7 +245,7 @@ func _back_to_tier_menu() -> void:
 	_show_tier_menu()
 
 
-func _show_tier_menu() -> void:
+func _apply_tier_menu_ui() -> void:
 	_in_tier_menu = true
 	_title.text = "อันดับ"
 	_back.visible = false
@@ -244,6 +253,26 @@ func _show_tier_menu() -> void:
 	_tier_menu_scroll.visible = true
 	_detail_section.visible = false
 	_owner_panel.visible = false
+
+
+func _apply_tier_detail_ui_sync() -> void:
+	_in_tier_menu = false
+	_tier_menu_scroll.visible = false
+	_detail_section.visible = true
+	_back.visible = true
+	_header_spacer.visible = true
+	_title.text = String(TIER_META.get(_active_tier, {}).get("title", "อันดับ"))
+	_showing_hall = _active_tier == 4
+	_board_tabs.visible = not _showing_hall and NakamaService.is_online
+	if not _showing_hall and NakamaService.is_online and not _boards.is_empty():
+		_rebuild_board_tabs()
+		var board := _board_meta(_active_board)
+		if not board.is_empty():
+			_desc.text = String(board.get("description", ""))
+
+
+func _show_tier_menu() -> void:
+	_apply_tier_menu_ui()
 	_clear_podium()
 	_clear_rows()
 	call_deferred("_sync_tier_menu_layout")

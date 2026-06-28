@@ -47,7 +47,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 
 
-func play_celebration(display: Dictionary, burst_origin: Vector2) -> void:
+func play_celebration(display: Dictionary, burst_origin: Vector2, header_text: String = "ค้นพบสูตรใหม่!") -> void:
 	if _playing:
 		return
 
@@ -58,7 +58,7 @@ func play_celebration(display: Dictionary, burst_origin: Vector2) -> void:
 	_fit_root()
 	set_process_unhandled_input(true)
 
-	_header.text = "ค้นพบสูตรใหม่!"
+	_header.text = header_text
 	_emoji.text = display.get("emoji", "")
 	_title.text = display.get("title", "")
 
@@ -71,6 +71,28 @@ func play_celebration(display: Dictionary, burst_origin: Vector2) -> void:
 		await _play_hold_phase()
 	await _play_fade_phase(_skip_requested)
 	_finish_celebration()
+
+
+func play_particle_burst(burst_origin: Vector2) -> void:
+	# เอฟเฟกต์ดาว/sparkle เดียวกับตอนผสมของ แต่ไม่เปิด overlay ข้อความ
+	if _playing:
+		return
+
+	_fit_root()
+	_reset_visual_state()
+	visible = true
+	_dim.modulate.a = 0.0
+	_content.modulate.a = 0.0
+	_particles_root.modulate.a = 1.0
+	_play_screen_flash()
+	_start_particles(burst_origin)
+
+	await get_tree().create_timer(1.9).timeout
+	if _playing:
+		return
+	_stop_particles()
+	_flash.modulate.a = 0.0
+	visible = false
 
 
 func _finish_celebration() -> void:
