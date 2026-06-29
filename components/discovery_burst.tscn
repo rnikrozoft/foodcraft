@@ -1,12 +1,16 @@
-[gd_scene load_steps=2 format=3 uid="uid://fc2discoveryburst01"]
+[gd_scene format=3 uid="uid://bu1wkat6vw2am"]
 
-[ext_resource type="Script" path="res://components/discovery_burst.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://i8e3ond1tyxb" path="res://components/discovery_burst.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://dheeq22bcagm5" path="res://assets/Vector_UI_Pack_dobo_ui/Effects/effect_cyan.png" id="2_effect"]
+[ext_resource type="Texture2D" uid="uid://dpbcn5tlvan3q" path="res://assets/Vector_UI_Pack_dobo_ui/Panels/panel_cyan.png" id="3_panel"]
+[ext_resource type="Texture2D" uid="uid://cdtprovbacna7" path="res://assets/Vector_UI_Pack_dobo_ui/Headers/headerBow_cyan.png" id="4_gdb3c"]
+[ext_resource type="Texture2D" uid="uid://bc5kwa614inx1" path="res://assets/foods/1.png" id="5_n2f2a"]
 
-[node name="DiscoveryBurst" type="CanvasLayer"]
+[node name="DiscoveryBurst" type="CanvasLayer" unique_id=546042425]
 layer = 100
 script = ExtResource("1_script")
 
-[node name="CelebrationStack" type="Control" parent="."]
+[node name="CelebrationStack" type="Control" parent="." unique_id=1275895985]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -15,84 +19,144 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="Dim" type="ColorRect" parent="CelebrationStack"]
+[node name="Dim" type="ColorRect" parent="CelebrationStack" unique_id=636335314]
+modulate = Color(1, 1, 1, 0)
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 0
-modulate = Color(1, 1, 1, 0)
 color = Color(0.02, 0.04, 0.1, 1)
 
-[node name="ParticlesRoot" type="Node2D" parent="CelebrationStack"]
-
-[node name="Root" type="Control" parent="CelebrationStack"]
+[node name="Content" type="Control" parent="CelebrationStack" unique_id=1483912754]
 layout_mode = 1
-anchors_preset = 15
+anchors_preset = 14
+anchor_top = 0.5
 anchor_right = 1.0
-anchor_bottom = 1.0
+anchor_bottom = 0.5
+offset_top = -210.0
+offset_bottom = 210.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="Flash" type="ColorRect" parent="CelebrationStack/Root"]
+[node name="BackEffect" type="TextureRect" parent="CelebrationStack/Content" unique_id=1307566632]
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.39
+anchor_right = 0.5
+anchor_bottom = 0.39
+offset_left = -300.0
+offset_top = -300.0
+offset_right = 300.0
+offset_bottom = 325.2
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-modulate = Color(1, 1, 1, 0)
-color = Color(1, 0.92, 0.45, 1)
-
-[node name="Center" type="CenterContainer" parent="CelebrationStack/Root"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-
-[node name="Content" type="Control" parent="CelebrationStack/Root/Center"]
-custom_minimum_size = Vector2(520, 360)
-layout_mode = 2
-mouse_filter = 2
-
-[node name="VBox" type="VBoxContainer" parent="CelebrationStack/Root/Center/Content"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_constants/separation = 16
-alignment = 1
-
-[node name="Header" type="Label" parent="CelebrationStack/Root/Center/Content/VBox"]
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.92, 0.45, 1)
-theme_override_colors/font_outline_color = Color(0.35, 0.18, 0, 0.95)
-theme_override_constants/outline_size = 10
-theme_override_font_sizes/font_size = 44
-text = "ค้นพบสูตรใหม่!"
-horizontal_alignment = 1
-
-[node name="FoodIcon" type="TextureRect" parent="CelebrationStack/Root/Center/Content/VBox"]
-custom_minimum_size = Vector2(200, 200)
-layout_mode = 2
-size_flags_horizontal = 4
+texture = ExtResource("2_effect")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Title" type="Label" parent="CelebrationStack/Root/Center/Content/VBox"]
-layout_mode = 2
+[node name="Panel" type="NinePatchRect" parent="CelebrationStack/Content" unique_id=904858531]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.105000004
+anchor_right = 1.0
+anchor_bottom = 0.82900006
+offset_top = -0.10000229
+offset_bottom = -0.1800232
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("3_panel")
+patch_margin_left = 28
+patch_margin_top = 28
+patch_margin_right = 28
+patch_margin_bottom = 28
+
+[node name="Header" type="Control" parent="CelebrationStack/Content" unique_id=772086418]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -160.0
+offset_top = -4.0
+offset_right = 160.0
+offset_bottom = 68.0
+grow_horizontal = 2
+mouse_filter = 2
+
+[node name="HeaderBg" type="TextureRect" parent="CelebrationStack/Content/Header" unique_id=1315604960]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -0.141
+anchor_top = -0.27800003
+anchor_right = 1.159
+anchor_bottom = 1.7500001
+offset_left = 0.12000275
+offset_top = 0.016002655
+offset_right = 0.11999512
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("4_gdb3c")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="HeaderLabel" type="Label" parent="CelebrationStack/Content/Header" unique_id=2018924404]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.009000001
+anchor_top = 0.194
+anchor_right = 1.006
+anchor_bottom = 1.0
+offset_left = 0.119999886
+offset_top = 0.031999588
+offset_right = 0.07998657
+grow_horizontal = 2
+grow_vertical = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_outline_color = Color(0, 0, 0, 0.75)
+theme_override_colors/font_outline_color = Color(0.08, 0.12, 0.18, 0.95)
 theme_override_constants/outline_size = 8
-theme_override_font_sizes/font_size = 52
+theme_override_font_sizes/font_size = 32
+text = "พบสูตรอาหารใหม่"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Body" type="VBoxContainer" parent="CelebrationStack/Content" unique_id=2044501880]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.014
+anchor_top = 0.24
+anchor_right = 0.9850001
+anchor_bottom = 0.702
+offset_left = -0.07999992
+offset_top = 0.1800003
+offset_right = -0.20007324
+offset_bottom = 0.16000366
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = -6
+
+[node name="FoodIcon" type="TextureRect" parent="CelebrationStack/Content/Body" unique_id=1966429200]
+custom_minimum_size = Vector2(200, 150)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_filter = 2
+texture = ExtResource("5_n2f2a")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Title" type="Label" parent="CelebrationStack/Content/Body" unique_id=483625674]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0.08, 0.12, 0.18, 0.9)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 38
 text = "ข้าวผัด"
 horizontal_alignment = 1
+vertical_alignment = 1
+clip_text = true
+text_overrun_behavior = 3

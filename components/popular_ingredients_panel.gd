@@ -6,11 +6,11 @@ signal ingredient_selected(data: Dictionary)
 
 const CARD_SCENE := preload("res://components/ingredient_card.tscn")
 
-@onready var _title: Label = $Margin/VBox/Header/Title
-@onready var _see_all: Button = $Margin/VBox/Header/SeeAll
-@onready var _scroll: ScrollContainer = $Margin/VBox/Scroll
-@onready var _cards_row: HBoxContainer = $Margin/VBox/Scroll/CardRow
-@onready var _search: LineEdit = $Margin/VBox/SearchBox/SearchInput
+@onready var _title: Label = $Content/Header/Title
+@onready var _see_all: TextureButton = $Content/Header/SeeAll/Arrow
+@onready var _scroll: ScrollContainer = $Content/Scroll
+@onready var _cards_row: HBoxContainer = $Content/Scroll/CardRow
+@onready var _search: LineEdit = $Content/SearchBox/SearchInput
 
 var _cards: Array = []
 var _display_items: Array = []
@@ -74,8 +74,8 @@ func _on_search_changed(query: String) -> void:
 
 
 func _show_items(items: Array) -> void:
-	for card in _cards:
-		card.queue_free()
+	for child in _cards_row.get_children():
+		child.queue_free()
 	_cards.clear()
 
 	for data in items:
@@ -88,8 +88,6 @@ func _show_items(items: Array) -> void:
 		_cards_row.add_child(card)
 		_cards.append(card)
 
-	if _cards.size() > 0:
-		_select_card(0)
 	_scroll.scroll_horizontal = 0
 
 
@@ -97,10 +95,4 @@ func _on_card_pressed(data: Dictionary) -> void:
 	ingredient_selected.emit(data)
 	for i in _cards.size():
 		if _cards[i].title == data.get("title"):
-			_select_card(i)
 			return
-
-
-func _select_card(index: int) -> void:
-	for i in _cards.size():
-		_cards[i].set_selected(i == index)

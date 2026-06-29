@@ -1,9 +1,10 @@
-[gd_scene load_steps=3 format=3 uid="uid://5olqa8ssjmo4"]
+[gd_scene format=3 uid="uid://5olqa8ssjmo4"]
 
-[ext_resource type="Script" path="res://screens/home.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://biqeeeombdtc8" path="res://screens/home.gd" id="1_script"]
 [ext_resource type="PackedScene" uid="uid://pmu66lcl8yd8" path="res://components/button.tscn" id="2_button"]
+[ext_resource type="Texture2D" uid="uid://dyrnjkrjtjqrv" path="res://assets/Vector_UI_Pack_dobo_ui/Buttons/button_black.png" id="3_tbfvp"]
 
-[node name="Home" type="Control"]
+[node name="Home" type="Control" unique_id=1747418955]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -12,7 +13,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_script")
 
-[node name="Background" type="ColorRect" parent="."]
+[node name="Background" type="ColorRect" parent="." unique_id=728425959]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -21,7 +22,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.15, 0.2, 0.28, 1)
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=982494422]
 layout_mode = 1
 anchors_preset = 12
 anchor_top = 1.0
@@ -36,7 +37,21 @@ grow_vertical = 0
 theme_override_constants/separation = 16
 alignment = 1
 
-[node name="StatusLabel" type="Label" parent="."]
+[node name="GuestButton" parent="VBoxContainer" unique_id=1372457318 instance=ExtResource("2_button")]
+layout_mode = 2
+tex_hover = ExtResource("3_tbfvp")
+
+[node name="Label" parent="VBoxContainer/GuestButton" index="2"]
+text = "Login with Guest"
+
+[node name="FacebookButton" parent="VBoxContainer" unique_id=574861120 instance=ExtResource("2_button")]
+layout_mode = 2
+tex_hover = ExtResource("3_tbfvp")
+
+[node name="Label" parent="VBoxContainer/FacebookButton" index="2"]
+text = "Login with Facebook"
+
+[node name="StatusLabel" type="Label" parent="." unique_id=1760331390]
 layout_mode = 1
 anchors_preset = 7
 anchor_left = 0.5
@@ -51,20 +66,5 @@ grow_horizontal = 2
 grow_vertical = 0
 theme_override_colors/font_color = Color(1, 0.75, 0.75, 1)
 theme_override_font_sizes/font_size = 14
-text = ""
 horizontal_alignment = 1
 autowrap_mode = 3
-
-[node name="GuestButton" parent="VBoxContainer" instance=ExtResource("2_button")]
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="Label" parent="VBoxContainer/GuestButton" index="2"]
-text = "guest"
-
-[node name="FacebookButton" parent="VBoxContainer" instance=ExtResource("2_button")]
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="Label" parent="VBoxContainer/FacebookButton" index="2"]
-text = "login with facebook"

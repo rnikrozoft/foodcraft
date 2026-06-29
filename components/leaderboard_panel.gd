@@ -10,9 +10,9 @@ const TIER_META := {
 	5: {"title": "ซีซัน", "desc": "อันดับรายฤดูกาล", "emoji": "🌟"},
 }
 
-const AVATAR_TEX := preload("res://assets/Hyper_Casual_UI/Sprites/Icons/character2.png")
-const AVATAR_BG_TEX := preload("res://assets/Hyper_Casual_UI/Sprites/Panel_Sprites/profile placeeholder.png")
-const TROPHY_TEX := preload("res://assets/Hyper_Casual_UI/Sprites/Icons/leaderboard.png")
+const AVATAR_TEX := preload("res://assets/Vector_UI_Pack_dobo_ui/Modals/profile_image.png")
+const AVATAR_BG_TEX := preload("res://assets/Vector_UI_Pack_dobo_ui/ItemSlots/itemSlot_white.png")
+const TROPHY_TEX := preload("res://assets/Vector_UI_Pack_dobo_ui/Icons/128px/tabClaimed_icon_128px.png")
 
 const SCORE_WIDTH := 88
 const TAB_FONT_SIZE := 15

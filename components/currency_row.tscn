@@ -1,93 +1,71 @@
 [gd_scene format=3 uid="uid://c8currrow001"]
 
-[ext_resource type="Script" path="res://components/currency_row.gd" id="1_script"]
-[ext_resource type="Texture2D" uid="uid://dbvxanodevbrp" path="res://assets/Hyper_Casual_UI/Sprites/Panel_Sprites/Rectangle 359.png" id="2_panel"]
-[ext_resource type="Texture2D" uid="uid://bx4868vvavt7i" path="res://assets/Hyper_Casual_UI/Sprites/Icons/coin.png" id="3_icon"]
-[ext_resource type="Texture2D" uid="uid://ctc0wd6wav1eo" path="res://assets/Icons/PictoIcon_128/Icon_PictoIcon_Add.Png" id="4_add"]
+[ext_resource type="Script" uid="uid://deiiucdujtwvh" path="res://components/currency_row.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://7ec2jqe1mwlg" path="res://assets/Vector_UI_Pack_dobo_ui/Labels/coin_label.png" id="2_bar"]
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_transparent"]
-
-[node name="CurrencyRow" type="Control"]
-custom_minimum_size = Vector2(168, 36)
+[node name="CurrencyRow" type="Control" unique_id=1651569120]
+custom_minimum_size = Vector2(128.7, 55.899998)
 layout_mode = 3
-size_flags_horizontal = 0
-script = ExtResource("1_script")
-icon = ExtResource("3_icon")
-amount = 0
-
-[node name="Background" type="NinePatchRect" parent="."]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-texture = ExtResource("2_panel")
-patch_margin_left = 24
-patch_margin_top = 12
-patch_margin_right = 24
-patch_margin_bottom = 12
-
-[node name="HBox" type="HBoxContainer" parent="."]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 8.0
-offset_top = 2.0
-offset_right = -6.0
-offset_bottom = -2.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_constants/separation = 6
-alignment = 1
-
-[node name="Icon" type="TextureRect" parent="HBox"]
-custom_minimum_size = Vector2(30, 30)
-layout_mode = 2
+anchors_preset = 0
+offset_right = 128.7
+offset_bottom = 55.899998
+size_flags_horizontal = 4
 size_flags_vertical = 4
+script = ExtResource("1_script")
+bar_texture = ExtResource("2_bar")
+
+[node name="Bar" type="TextureRect" parent="." unique_id=169641209]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 2
-texture = ExtResource("3_icon")
+texture = ExtResource("2_bar")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Amount" type="Label" parent="HBox"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_outline_color = Color(0, 0, 0, 0.75)
-theme_override_constants/outline_size = 4
-theme_override_font_sizes/font_size = 16
-text = "0"
-vertical_alignment = 1
+[node name="Icon" type="TextureRect" parent="." unique_id=1592831739]
+visible = false
+layout_mode = 0
+offset_left = 6.0
+offset_top = 4.0
+offset_right = 38.0
+offset_bottom = 36.0
+pivot_offset = Vector2(16, 16)
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
 
-[node name="AddButton" type="Button" parent="HBox"]
-custom_minimum_size = Vector2(24, 24)
-layout_mode = 2
-size_flags_vertical = 4
-focus_mode = 0
-flat = true
-theme_override_styles/normal = SubResource("StyleBoxEmpty_transparent")
-theme_override_styles/hover = SubResource("StyleBoxEmpty_transparent")
-theme_override_styles/pressed = SubResource("StyleBoxEmpty_transparent")
-theme_override_styles/disabled = SubResource("StyleBoxEmpty_transparent")
-theme_override_styles/focus = SubResource("StyleBoxEmpty_transparent")
-
-[node name="AddIcon" type="TextureRect" parent="HBox/AddButton"]
+[node name="Amount" type="Label" parent="." unique_id=1334751936]
 layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -12.0
-offset_top = -12.0
-offset_right = 12.0
-offset_bottom = 12.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 46.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -8.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 2
-texture = ExtResource("4_add")
-expand_mode = 1
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 13
+text = "0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="AddButton" type="TextureButton" parent="." unique_id=991332077]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.172
+anchor_top = 0.558
+anchor_right = 0.313
+anchor_bottom = 0.907
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 0
+ignore_texture_size = true
 stretch_mode = 5

@@ -1,64 +1,107 @@
 [gd_scene format=3 uid="uid://c0oosvvfuiboe"]
 
-[ext_resource type="Script" path="res://components/my_recipes_panel.gd" id="1_script"]
-[ext_resource type="Texture2D" path="res://assets/Hyper_Casual_UI/Sprites/Panel_Sprites/Rectangle 359.png" id="2_panel"]
+[ext_resource type="Script" uid="uid://bkuthh5kya1t3" path="res://components/my_recipes_panel.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://bxrp2xnqbuc17" path="res://assets/Vector_UI_Pack_dobo_ui/Modals/modal_base.png" id="2_b8gj8"]
 [ext_resource type="PackedScene" uid="uid://c8discpanel01" path="res://components/discovery_panel.tscn" id="3_discovery"]
+[ext_resource type="PackedScene" uid="uid://n2qscsph5gj2" path="res://components/ingredient_card.tscn" id="4_preview_card"]
+[ext_resource type="Texture2D" path="res://assets/Vector_UI_Pack_dobo_ui/Buttons/buttonAdvanced_black.png" id="5_cat_btn"]
+[ext_resource type="Texture2D" uid="uid://5laadurhwree" path="res://assets/Vector_UI_Pack_dobo_ui/Icons/128px/options_icon_128px.png" id="6_search_icon"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_cat_active"]
+texture = ExtResource("5_cat_btn")
+texture_margin_left = 136.0
+texture_margin_top = 4.0
+texture_margin_right = 136.0
+texture_margin_bottom = 4.0
+content_margin_left = 20.0
+content_margin_top = 6.0
+content_margin_right = 20.0
+content_margin_bottom = 6.0
+modulate_color = Color(1, 0.92, 0.55, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_cat_inactive"]
+texture = ExtResource("5_cat_btn")
+texture_margin_left = 136.0
+texture_margin_top = 4.0
+texture_margin_right = 136.0
+texture_margin_bottom = 4.0
+content_margin_left = 20.0
+content_margin_top = 6.0
+content_margin_right = 20.0
+content_margin_bottom = 6.0
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_search"]
-content_margin_left = 14.0
-content_margin_top = 10.0
-content_margin_right = 14.0
-content_margin_bottom = 10.0
-bg_color = Color(0.35, 0.24, 0.17, 1)
-corner_radius_top_left = 12
-corner_radius_top_right = 12
-corner_radius_bottom_right = 12
-corner_radius_bottom_left = 12
+content_margin_left = 52.0
+content_margin_top = 8.0
+content_margin_right = 36.0
+content_margin_bottom = 8.0
+bg_color = Color(0.1, 0.1, 0.12, 1)
+border_width_bottom = 3
+border_color = Color(0.04, 0.04, 0.06, 1)
+corner_radius_top_left = 22
+corner_radius_top_right = 22
+corner_radius_bottom_right = 22
+corner_radius_bottom_left = 22
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_search_focus"]
-content_margin_left = 14.0
-content_margin_top = 10.0
-content_margin_right = 14.0
-content_margin_bottom = 10.0
-bg_color = Color(0.4, 0.28, 0.2, 1)
+content_margin_left = 52.0
+content_margin_top = 8.0
+content_margin_right = 36.0
+content_margin_bottom = 8.0
+bg_color = Color(0.13, 0.13, 0.16, 1)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color(1, 0.82, 0.28, 1)
-corner_radius_top_left = 12
-corner_radius_top_right = 12
-corner_radius_bottom_right = 12
-corner_radius_bottom_left = 12
+border_color = Color(0.55, 0.75, 0.95, 0.85)
+corner_radius_top_left = 22
+corner_radius_top_right = 22
+corner_radius_bottom_right = 22
+corner_radius_bottom_left = 22
 
-[node name="MyRecipesPanel" type="Control"]
+[node name="MyRecipesPanel" type="Control" unique_id=202607863]
+custom_minimum_size = Vector2(688, 1088)
 layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+anchors_preset = 0
+offset_left = 16.0
+offset_top = 96.0
+offset_right = 704.0
+offset_bottom = 1184.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
 script = ExtResource("1_script")
 
-[node name="Background" type="NinePatchRect" parent="."]
+[node name="Background" type="NinePatchRect" parent="." unique_id=115928142]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 2
-texture = ExtResource("2_panel")
+texture = ExtResource("2_b8gj8")
 patch_margin_left = 24
 patch_margin_top = 20
 patch_margin_right = 24
 patch_margin_bottom = 20
 
-[node name="Margin" type="MarginContainer" parent="."]
+[node name="DiscoveryBadge" parent="." unique_id=1249155307 instance=ExtResource("3_discovery")]
+layout_mode = 0
+offset_left = 184.0
+offset_top = 56.0
+offset_right = 504.0
+offset_bottom = 116.0
+
+[node name="Margin" type="MarginContainer" parent="." unique_id=973434395]
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
+anchors_preset = -1
+anchor_left = 0.057000004
+anchor_top = 0.16100001
+anchor_right = 0.95100003
+anchor_bottom = 0.957
+offset_left = -0.21600342
+offset_top = -0.16801453
+offset_right = -0.2880249
+offset_bottom = -0.21606445
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/margin_left = 20
@@ -66,64 +109,178 @@ theme_override_constants/margin_top = 16
 theme_override_constants/margin_right = 20
 theme_override_constants/margin_bottom = 16
 
-[node name="VBox" type="VBoxContainer" parent="Margin"]
+[node name="VBox" type="VBoxContainer" parent="Margin" unique_id=2056401872]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="HeaderRow" type="CenterContainer" parent="Margin/VBox"]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="DiscoveryBadge" parent="Margin/VBox/HeaderRow" instance=ExtResource("3_discovery")]
-layout_mode = 2
-
-[node name="Scroll" type="ScrollContainer" parent="Margin/VBox"]
+[node name="Scroll" type="ScrollContainer" parent="Margin/VBox" unique_id=689776239]
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
 vertical_scroll_mode = 3
 
-[node name="Grid" type="GridContainer" parent="Margin/VBox/Scroll"]
+[node name="Grid" type="GridContainer" parent="Margin/VBox/Scroll" unique_id=148282974]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/h_separation = 12
 theme_override_constants/v_separation = 12
 columns = 4
 
-[node name="StatusLabel" type="Label" parent="Margin/VBox"]
+[node name="PreviewCard1" parent="Margin/VBox/Scroll/Grid" unique_id=324337396 instance=ExtResource("4_preview_card")]
+layout_mode = 2
+title = "ข้าวต้ม"
+
+[node name="PreviewCard2" parent="Margin/VBox/Scroll/Grid" unique_id=1867435194 instance=ExtResource("4_preview_card")]
+layout_mode = 2
+title = "ข้าวผัด"
+
+[node name="PreviewCard3" parent="Margin/VBox/Scroll/Grid" unique_id=137513075 instance=ExtResource("4_preview_card")]
+layout_mode = 2
+title = "ไข่ดาว"
+
+[node name="PreviewCard4" parent="Margin/VBox/Scroll/Grid" unique_id=348769797 instance=ExtResource("4_preview_card")]
+layout_mode = 2
+title = "เกลือ"
+
+[node name="StatusLabel" type="Label" parent="Margin/VBox" unique_id=1791498715]
+visible = false
 layout_mode = 2
 theme_override_colors/font_color = Color(0.75, 0.7, 0.62, 1)
 theme_override_font_sizes/font_size = 16
-horizontal_alignment = 1
 text = "ยังไม่มีสูตรที่ค้นพบ"
+horizontal_alignment = 1
 
-[node name="CategoryScroll" type="ScrollContainer" parent="Margin/VBox"]
-custom_minimum_size = Vector2(0, 44)
+[node name="CategoryScroll" type="ScrollContainer" parent="Margin/VBox" unique_id=138659046]
+custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
 horizontal_scroll_mode = 3
 vertical_scroll_mode = 0
 
-[node name="CategoryRow" type="HBoxContainer" parent="Margin/VBox/CategoryScroll"]
+[node name="CategoryRow" type="HBoxContainer" parent="Margin/VBox/CategoryScroll" unique_id=1076595092]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="SearchBox" type="Control" parent="Margin/VBox"]
+[node name="PreviewCatAll" type="Button" parent="Margin/VBox/CategoryScroll/CategoryRow" unique_id=2041758155]
 custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(1, 0.95, 0.85, 1)
+theme_override_colors/font_pressed_color = Color(1, 0.95, 0.85, 1)
+theme_override_colors/font_hover_color = Color(1, 0.95, 0.85, 1)
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("StyleBoxTexture_cat_active")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_cat_active")
+theme_override_styles/hover = SubResource("StyleBoxTexture_cat_active")
+text = "🍽 ทั้งหมด"
 
-[node name="SearchInput" type="LineEdit" parent="Margin/VBox/SearchBox"]
+[node name="PreviewCatThai" type="Button" parent="Margin/VBox/CategoryScroll/CategoryRow" unique_id=1812694173]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(1, 0.95, 0.85, 1)
+theme_override_colors/font_pressed_color = Color(1, 0.95, 0.85, 1)
+theme_override_colors/font_hover_color = Color(1, 0.95, 0.85, 1)
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("StyleBoxTexture_cat_inactive")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_cat_inactive")
+theme_override_styles/hover = SubResource("StyleBoxTexture_cat_inactive")
+text = "🍜 ไทย"
+
+[node name="PreviewCatJapanese" type="Button" parent="Margin/VBox/CategoryScroll/CategoryRow" unique_id=1581774404]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(1, 0.95, 0.85, 1)
+theme_override_colors/font_pressed_color = Color(1, 0.95, 0.85, 1)
+theme_override_colors/font_hover_color = Color(1, 0.95, 0.85, 1)
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("StyleBoxTexture_cat_inactive")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_cat_inactive")
+theme_override_styles/hover = SubResource("StyleBoxTexture_cat_inactive")
+text = "🍣 ญี่ปุ่น"
+
+[node name="PreviewCatChinese" type="Button" parent="Margin/VBox/CategoryScroll/CategoryRow" unique_id=1648339389]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(1, 0.95, 0.85, 1)
+theme_override_colors/font_pressed_color = Color(1, 0.95, 0.85, 1)
+theme_override_colors/font_hover_color = Color(1, 0.95, 0.85, 1)
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("StyleBoxTexture_cat_inactive")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_cat_inactive")
+theme_override_styles/hover = SubResource("StyleBoxTexture_cat_inactive")
+text = "🥟 จีน"
+
+[node name="PreviewCatWestern" type="Button" parent="Margin/VBox/CategoryScroll/CategoryRow" unique_id=608491196]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(1, 0.95, 0.85, 1)
+theme_override_colors/font_pressed_color = Color(1, 0.95, 0.85, 1)
+theme_override_colors/font_hover_color = Color(1, 0.95, 0.85, 1)
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("StyleBoxTexture_cat_inactive")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_cat_inactive")
+theme_override_styles/hover = SubResource("StyleBoxTexture_cat_inactive")
+text = "🍔 ตะวันตก"
+
+[node name="PreviewCatDessert" type="Button" parent="Margin/VBox/CategoryScroll/CategoryRow" unique_id=1110796635]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(1, 0.95, 0.85, 1)
+theme_override_colors/font_pressed_color = Color(1, 0.95, 0.85, 1)
+theme_override_colors/font_hover_color = Color(1, 0.95, 0.85, 1)
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("StyleBoxTexture_cat_inactive")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_cat_inactive")
+theme_override_styles/hover = SubResource("StyleBoxTexture_cat_inactive")
+text = "🍰 ของหวาน"
+
+[node name="PreviewCatIngredient" type="Button" parent="Margin/VBox/CategoryScroll/CategoryRow" unique_id=476550562]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(1, 0.95, 0.85, 1)
+theme_override_colors/font_pressed_color = Color(1, 0.95, 0.85, 1)
+theme_override_colors/font_hover_color = Color(1, 0.95, 0.85, 1)
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("StyleBoxTexture_cat_inactive")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_cat_inactive")
+theme_override_styles/hover = SubResource("StyleBoxTexture_cat_inactive")
+text = "🧄 วัตถุดิบ"
+
+[node name="SearchBox" type="Control" parent="Margin/VBox" unique_id=1157378497]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="SearchInput" type="LineEdit" parent="Margin/VBox/SearchBox" unique_id=1222870112]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_colors/font_color = Color(1, 0.95, 0.85, 1)
-theme_override_colors/font_placeholder_color = Color(0.75, 0.68, 0.58, 1)
-theme_override_colors/caret_color = Color(1, 0.82, 0.28, 1)
-theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_placeholder_color = Color(0.88, 0.95, 1, 0.75)
+theme_override_colors/caret_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 16
 theme_override_styles/normal = SubResource("StyleBoxFlat_search")
 theme_override_styles/focus = SubResource("StyleBoxFlat_search_focus")
 placeholder_text = "ค้นหาชื่ออาหารหรือวัตถุดิบ..."
 clear_button_enabled = true
 caret_blink = true
+
+[node name="SearchIcon" type="TextureRect" parent="Margin/VBox/SearchBox" unique_id=902020]
+z_index = 1
+layout_mode = 0
+offset_left = 20.0
+offset_top = 11.0
+offset_right = 41.5
+offset_bottom = 32.5
+mouse_filter = 2
+texture = ExtResource("6_search_icon")
+expand_mode = 1
+stretch_mode = 5

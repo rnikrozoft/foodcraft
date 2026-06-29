@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://du3b04ovm5ryb"]
 
 [ext_resource type="Script" uid="uid://mbyq7l5pebqb" path="res://screens/main.gd" id="1_script"]
-[ext_resource type="PackedScene" uid="uid://5opc08xhpslw" path="res://components/scrolling_star_background.tscn" id="2_star_bg"]
+[ext_resource type="PackedScene" uid="uid://wdet2p34nkce" path="res://components/scrolling_star_background.tscn" id="2_star_bg"]
 [ext_resource type="PackedScene" uid="uid://fc2nxda8ii5o" path="res://components/craft_zone.tscn" id="3_craft"]
 [ext_resource type="PackedScene" uid="uid://dbj5gw0htu8rb" path="res://components/popular_ingredients_panel.tscn" id="4_ingredients"]
 [ext_resource type="PackedScene" uid="uid://c8currdisp001" path="res://components/currency_display.tscn" id="5_currency"]
@@ -23,9 +23,10 @@ script = ExtResource("1_script")
 
 [node name="Background" parent="." unique_id=1157294893 instance=ExtResource("2_star_bg")]
 layout_mode = 1
-bg_color = Color(0.12156863, 0.20784314, 0.7254902, 1)
+bg_color = Color(0.13725491, 0.18039216, 0.29411766, 1)
 star_spacing = Vector2(150, 90)
-star_modulate = Color(0.21960784, 0.2509804, 0.81960785, 1)
+star_size = 65
+star_modulate = Color(0.87058824, 0.9137255, 0.99215686, 0.101960786)
 
 [node name="ScreenVBox" type="VBoxContainer" parent="." unique_id=958644911]
 layout_mode = 1
@@ -59,6 +60,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/separation = 12
+alignment = 1
 
 [node name="ProfilePanel" parent="ScreenVBox/Header/HeaderMargin/HeaderHBox" unique_id=-1037608832 instance=ExtResource("7_profile")]
 layout_mode = 2
@@ -69,7 +71,6 @@ size_flags_horizontal = 3
 
 [node name="CurrencyDisplay" parent="ScreenVBox/Header/HeaderMargin/HeaderHBox" unique_id=-1742641536 instance=ExtResource("5_currency")]
 layout_mode = 2
-size_flags_vertical = 4
 
 [node name="ContentHost" type="Control" parent="ScreenVBox" unique_id=1998727651]
 clip_contents = true
@@ -107,17 +108,53 @@ size_flags_vertical = 1
 [node name="CraftZone" parent="ScreenVBox/ContentHost/CraftPage" unique_id=942679277 instance=ExtResource("3_craft")]
 layout_mode = 2
 
-[node name="MyRecipesPanel" parent="ScreenVBox/ContentHost" unique_id=1907110811 instance=ExtResource("9_myrecipes")]
+[node name="MyRecipesMargin" type="MarginContainer" parent="ScreenVBox/ContentHost" unique_id=1907110810]
 visible = false
 layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_right = 16
 
-[node name="LeaderboardPanel" parent="ScreenVBox/ContentHost" unique_id=1708040611 instance=ExtResource("8_leaderboard")]
-visible = false
-layout_mode = 1
+[node name="MyRecipesPanel" parent="ScreenVBox/ContentHost/MyRecipesMargin" unique_id=1907110811 instance=ExtResource("9_myrecipes")]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 
-[node name="ShopPanel" parent="ScreenVBox/ContentHost" unique_id=76463927 instance=ExtResource("10_shop")]
+[node name="LeaderboardMargin" type="MarginContainer" parent="ScreenVBox/ContentHost" unique_id=1708040610]
 visible = false
 layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_right = 16
+
+[node name="LeaderboardPanel" parent="ScreenVBox/ContentHost/LeaderboardMargin" unique_id=1708040611 instance=ExtResource("8_leaderboard")]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ShopMargin" type="MarginContainer" parent="ScreenVBox/ContentHost" unique_id=76463926]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_right = 16
+
+[node name="ShopPanel" parent="ScreenVBox/ContentHost/ShopMargin" unique_id=76463927 instance=ExtResource("10_shop")]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 
 [node name="BottomMargin" type="MarginContainer" parent="ScreenVBox" unique_id=577238671]
 layout_mode = 2
@@ -126,12 +163,12 @@ size_flags_vertical = 0
 theme_override_constants/margin_left = 16
 theme_override_constants/margin_top = 0
 theme_override_constants/margin_right = 16
-theme_override_constants/margin_bottom = 20
+theme_override_constants/margin_bottom = 0
 
 [node name="BottomVBox" type="VBoxContainer" parent="ScreenVBox/BottomMargin" unique_id=921850186]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 30
+theme_override_constants/separation = 100
 
 [node name="PopularIngredientsPanel" parent="ScreenVBox/BottomMargin/BottomVBox" unique_id=1249708824 instance=ExtResource("4_ingredients")]
 layout_mode = 2

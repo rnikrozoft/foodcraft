@@ -1,8 +1,8 @@
-[gd_scene format=3 uid="uid://5opc08xhpslw"]
+[gd_scene format=3 uid="uid://wdet2p34nkce"]
 
-[ext_resource type="Script" path="res://components/scrolling_star_background.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://djaq0nt5dymbw" path="res://components/scrolling_star_background.gd" id="1_script"]
 
-[node name="ScrollingStarBackground" type="Control"]
+[node name="ScrollingStarBackground" type="Control" unique_id=1479590203]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -11,3 +11,6 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("1_script")
+star_spacing = Vector2(190, 170)
+star_modulate = Color(0.8714992, 0.91567093, 0.9919748, 0.25882354)
+scroll_speed = Vector2(30, 20)

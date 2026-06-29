@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://c0t6p786sh3oe"]
 
 [ext_resource type="Script" path="res://components/shop_panel.gd" id="1_script"]
-[ext_resource type="Texture2D" path="res://assets/Hyper_Casual_UI/Sprites/Panel_Sprites/Rectangle 359.png" id="2_panel"]
+[ext_resource type="Texture2D" path="res://assets/Vector_UI_Pack_dobo_ui/Panels/panel_white.png" id="2_panel"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_header"]
 bg_color = Color(0.22, 0.14, 0.08, 0.95)
@@ -20,12 +20,15 @@ content_margin_right = 12.0
 content_margin_bottom = 10.0
 
 [node name="ShopPanel" type="Control"]
+custom_minimum_size = Vector2(688, 1088)
 layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+anchors_preset = 0
+offset_left = 16.0
+offset_top = 96.0
+offset_right = 704.0
+offset_bottom = 1184.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
 script = ExtResource("1_script")
 
 [node name="Background" type="NinePatchRect" parent="."]
@@ -100,6 +103,13 @@ vertical_scroll_mode = 3
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 10
+
+[node name="PreviewLabel" type="Label" parent="Margin/VBox/Scroll/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.75, 0.7, 0.62, 1)
+theme_override_font_sizes/font_size = 16
+text = "รายการร้านค้า (preview)"
+horizontal_alignment = 1
 
 [node name="StatusLabel" type="Label" parent="Margin/VBox"]
 visible = false

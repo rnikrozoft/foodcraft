@@ -1,7 +1,7 @@
 extends CanvasLayer
 
-const COIN_TEXTURE := preload("res://assets/Hyper_Casual_UI/Sprites/Icons/coin.png")
-const STAR_TEXTURE := preload("res://assets/Hyper_Casual_UI/Sprites/Icons/rataing star.png")
+const COIN_TEXTURE := preload("res://assets/Vector_UI_Pack_dobo_ui/Icons/128px/coin_icon_128px.png")
+const STAR_TEXTURE := preload("res://assets/Vector_UI_Pack_dobo_ui/Icons/128px/gem_icon_128px.png")
 
 const MIN_PARTICLES := 4
 const MAX_PARTICLES := 12

@@ -1,32 +1,41 @@
 [gd_scene format=3 uid="uid://c8discpanel01"]
 
 [ext_resource type="Script" uid="uid://dpm8mhmlepsfs" path="res://components/discovery_panel.gd" id="1_script"]
-[ext_resource type="Texture2D" uid="uid://cu64wdi5k24g1" path="res://assets/Hyper_Casual_UI/Sprites/Panel_Sprites/Rectangle 363 (1).png" id="2_panel"]
-[ext_resource type="Texture2D" uid="uid://bcyp0ar5oaq34" path="res://assets/Hyper_Casual_UI/Sprites/Icons/rank.png" id="3_rank"]
+[ext_resource type="Texture2D" uid="uid://h0611b57xr03" path="res://assets/Vector_UI_Pack_dobo_ui/Icons/128px/tabSelected_icon_128px.png" id="3_rank"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bg"]
+bg_color = Color(0.12, 0.11, 0.14, 0.92)
+border_width_bottom = 2
+border_color = Color(0.06, 0.06, 0.08, 1)
+corner_radius_top_left = 22
+corner_radius_top_right = 22
+corner_radius_bottom_right = 22
+corner_radius_bottom_left = 22
 
 [node name="DiscoveryPanel" type="Control" unique_id=1769782423]
-custom_minimum_size = Vector2(0, 44)
+custom_minimum_size = Vector2(320, 60)
 layout_mode = 3
 anchors_preset = 0
+offset_left = 200.0
+offset_top = 116.0
+offset_right = 520.0
+offset_bottom = 176.0
 size_flags_horizontal = 4
 size_flags_vertical = 0
 script = ExtResource("1_script")
 
-[node name="Background" type="NinePatchRect" parent="." unique_id=4259967]
+[node name="Background" type="Panel" parent="." unique_id=4259967]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -30.0
-offset_right = 30.0
-offset_bottom = 7.0
+offset_left = -16.0
+offset_right = 16.0
+offset_bottom = 4.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("2_panel")
-patch_margin_left = 30
-patch_margin_top = 14
-patch_margin_right = 30
-patch_margin_bottom = 14
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_bg")
 
 [node name="Margin" type="MarginContainer" parent="." unique_id=1496862393]
 layout_mode = 1

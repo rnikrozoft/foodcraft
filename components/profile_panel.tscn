@@ -1,30 +1,35 @@
 [gd_scene format=3 uid="uid://c8profile001"]
 
 [ext_resource type="Script" uid="uid://opdlyi4c8cx3" path="res://components/profile_panel.gd" id="1_script"]
-[ext_resource type="Texture2D" uid="uid://cniigpw374okg" path="res://assets/Hyper_Casual_UI/Sprites/Panel_Sprites/1 lvl.png" id="2_avatar_frame"]
-[ext_resource type="Texture2D" uid="uid://c6t33vxms5dt0" path="res://assets/Hyper_Casual_UI/Sprites/Panel_Sprites/profile placeeholder.png" id="3_avatar_bg"]
-[ext_resource type="Texture2D" uid="uid://cnq3p85jbwpdi" path="res://assets/Hyper_Casual_UI/Sprites/Icons/character2.png" id="4_avatar"]
+[ext_resource type="Texture2D" path="res://assets/Vector_UI_Pack_dobo_ui/ItemSlots/itemSlotAdvanced_yellow.png" id="2_avatar_frame"]
+[ext_resource type="Texture2D" path="res://assets/Vector_UI_Pack_dobo_ui/ItemSlots/itemSlot_white.png" id="3_avatar_bg"]
+[ext_resource type="Texture2D" path="res://assets/Vector_UI_Pack_dobo_ui/Modals/profile_image.png" id="4_avatar"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_exp_bg"]
-bg_color = Color(0.12, 0.32, 0.33, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
+bg_color = Color(0.05, 0.07, 0.09, 0.55)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_exp_fill"]
 bg_color = Color(1, 0.82, 0.22, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
 
 [node name="ProfilePanel" type="Control" unique_id=533021469]
 custom_minimum_size = Vector2(220, 64)
 layout_mode = 3
 anchors_preset = 0
+offset_left = 16.0
+offset_top = 8.0
+offset_right = 236.0
+offset_bottom = 72.0
 size_flags_horizontal = 0
 size_flags_vertical = 4
+mouse_filter = 2
 script = ExtResource("1_script")
 avatar_texture = ExtResource("4_avatar")
 
@@ -94,21 +99,22 @@ stretch_mode = 5
 [node name="Info" type="VBoxContainer" parent="HBox" unique_id=57308643]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 2
+theme_override_constants/separation = 4
 alignment = 1
 
 [node name="PlayerName" type="Label" parent="HBox/Info" unique_id=302502650]
 layout_mode = 2
+mouse_filter = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 0.65)
 theme_override_constants/outline_size = 4
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 17
 text = "Food Crafter"
 
 [node name="ExpWrap" type="Control" parent="HBox/Info" unique_id=1962826195]
 custom_minimum_size = Vector2(148, 18)
 layout_mode = 2
-size_flags_horizontal = 0
+size_flags_horizontal = 3
 
 [node name="ExpBar" type="ProgressBar" parent="HBox/Info/ExpWrap" unique_id=796909833]
 layout_mode = 1
@@ -130,6 +136,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 0.75)
 theme_override_constants/outline_size = 3

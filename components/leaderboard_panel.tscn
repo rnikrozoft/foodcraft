@@ -1,10 +1,10 @@
 [gd_scene load_steps=8 format=3 uid="uid://byedncsx3e5u7"]
 
 [ext_resource type="Script" path="res://components/leaderboard_panel.gd" id="1_script"]
-[ext_resource type="Texture2D" path="res://assets/Hyper_Casual_UI/Sprites/Panel_Sprites/Rectangle 359.png" id="2_panel"]
-[ext_resource type="Texture2D" path="res://assets/Hyper_Casual_UI/Sprites/Panel_Sprites/profile placeeholder.png" id="3_avatar_bg"]
-[ext_resource type="Texture2D" path="res://assets/Hyper_Casual_UI/Sprites/Icons/character2.png" id="4_avatar"]
-[ext_resource type="Texture2D" path="res://assets/Hyper_Casual_UI/Sprites/Icons/leaderboard.png" id="5_trophy"]
+[ext_resource type="Texture2D" path="res://assets/Vector_UI_Pack_dobo_ui/Panels/panel_white.png" id="2_panel"]
+[ext_resource type="Texture2D" path="res://assets/Vector_UI_Pack_dobo_ui/ItemSlots/itemSlot_white.png" id="3_avatar_bg"]
+[ext_resource type="Texture2D" path="res://assets/Vector_UI_Pack_dobo_ui/Modals/profile_image.png" id="4_avatar"]
+[ext_resource type="Texture2D" path="res://assets/Vector_UI_Pack_dobo_ui/Icons/128px/tabClaimed_icon_128px.png" id="5_trophy"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_header"]
 bg_color = Color(0.22, 0.14, 0.08, 0.95)
@@ -37,12 +37,15 @@ corner_radius_bottom_left = 16
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_back"]
 
 [node name="LeaderboardPanel" type="Control"]
+custom_minimum_size = Vector2(688, 1088)
 layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+anchors_preset = 0
+offset_left = 16.0
+offset_top = 96.0
+offset_right = 704.0
+offset_bottom = 1184.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
 script = ExtResource("1_script")
 
 [node name="Background" type="NinePatchRect" parent="."]
@@ -128,6 +131,13 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/separation = 8
+
+[node name="PreviewTierLabel" type="Label" parent="Margin/VBox/TierMenuScroll/TierMenuList"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.75, 0.7, 0.62, 1)
+theme_override_font_sizes/font_size = 18
+text = "เลือกอันดับ (preview)"
+horizontal_alignment = 1
 
 [node name="DetailSection" type="VBoxContainer" parent="Margin/VBox"]
 visible = false

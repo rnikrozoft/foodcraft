@@ -13,9 +13,12 @@ enum Page { CRAFT, RECIPES, LEADERBOARD, SHOP }
 @onready var _ingredients_panel: Control = $ScreenVBox/BottomMargin/BottomVBox/PopularIngredientsPanel
 @onready var _profile_panel: Control = $ScreenVBox/Header/HeaderMargin/HeaderHBox/ProfilePanel
 @onready var _currency_display: Control = $ScreenVBox/Header/HeaderMargin/HeaderHBox/CurrencyDisplay
-@onready var _leaderboard_panel: Control = $ScreenVBox/ContentHost/LeaderboardPanel
-@onready var _my_recipes_panel: Control = $ScreenVBox/ContentHost/MyRecipesPanel
-@onready var _shop_panel: Control = $ScreenVBox/ContentHost/ShopPanel
+@onready var _my_recipes_page: MarginContainer = $ScreenVBox/ContentHost/MyRecipesMargin
+@onready var _my_recipes_panel: Control = $ScreenVBox/ContentHost/MyRecipesMargin/MyRecipesPanel
+@onready var _leaderboard_page: MarginContainer = $ScreenVBox/ContentHost/LeaderboardMargin
+@onready var _leaderboard_panel: Control = $ScreenVBox/ContentHost/LeaderboardMargin/LeaderboardPanel
+@onready var _shop_page: MarginContainer = $ScreenVBox/ContentHost/ShopMargin
+@onready var _shop_panel: Control = $ScreenVBox/ContentHost/ShopMargin/ShopPanel
 @onready var _footer_menu: Control = $ScreenVBox/BottomMargin/BottomVBox/FooterMenu
 
 var _discovery_burst
@@ -70,7 +73,7 @@ func _layout_pages() -> void:
 	if _transitioning:
 		return
 	var host_size := _content_host.size
-	for page in [_craft_page, _my_recipes_panel, _leaderboard_panel, _shop_panel]:
+	for page in [_craft_page, _my_recipes_page, _leaderboard_page, _shop_page]:
 		page.size = host_size
 		page.position = Vector2.ZERO
 
@@ -99,11 +102,8 @@ func _screen_burst_origin() -> Vector2:
 
 
 func _on_shop_purchase_celebrated(display: Dictionary, _origin: Vector2, show_full: bool) -> void:
-	var burst_origin := _screen_burst_origin()
 	if show_full:
-		_discovery_burst.play_celebration(display, burst_origin)
-	else:
-		_discovery_burst.play_particle_burst(burst_origin)
+		_discovery_burst.play_celebration(display, _screen_burst_origin())
 
 
 func _on_tab_changed(index: int) -> void:
@@ -161,11 +161,11 @@ func _tab_to_page(tab_index: int) -> Page:
 func _page_node(page: Page) -> Control:
 	match page:
 		Page.RECIPES:
-			return _my_recipes_panel
+			return _my_recipes_page
 		Page.LEADERBOARD:
-			return _leaderboard_panel
+			return _leaderboard_page
 		Page.SHOP:
-			return _shop_panel
+			return _shop_page
 		_:
 			return _craft_page
 
@@ -188,10 +188,12 @@ func _go_to_page(page: Page, pick_for_craft: bool = false) -> void:
 		_shop_panel.prepare_panel(_resolve_shop_tab())
 	elif page == Page.LEADERBOARD:
 		_leaderboard_panel.prepare_panel()
+	elif page == Page.RECIPES:
+		_my_recipes_panel.prepare_panel(pick_for_craft)
 
-	to_node.visible = true
 	to_node.position.x = direction * width
 	from_node.position.x = 0.0
+	to_node.visible = true
 
 	_transitioning = true
 	if _page_tween != null and _page_tween.is_valid():

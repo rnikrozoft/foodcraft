@@ -17,6 +17,12 @@ func _ready() -> void:
 	for i in _tabs.size():
 		_tabs[i].pressed.connect(set_active_tab.bind(i))
 	set_active_tab(0)
+	call_deferred("_refresh_tabs")
+
+
+func _refresh_tabs() -> void:
+	for tab in _tabs:
+		tab.set_active(tab == _tabs[_active_index], false)
 
 
 func set_active_tab(index: int, notify: bool = true) -> void:

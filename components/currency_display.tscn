@@ -1,19 +1,24 @@
 [gd_scene format=3 uid="uid://c8currdisp001"]
 
-[ext_resource type="Script" path="res://components/currency_display.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://dpl5hgw4tnqch" path="res://components/currency_display.gd" id="1_script"]
 [ext_resource type="PackedScene" uid="uid://c8currrow001" path="res://components/currency_row.tscn" id="2_row"]
-[ext_resource type="Texture2D" uid="uid://db74g3wguj4h4" path="res://assets/Hyper_Casual_UI/Sprites/Icons/rataing star.png" id="3_star"]
+[ext_resource type="Texture2D" uid="uid://dhiqlb7p1bsnd" path="res://assets/Vector_UI_Pack_dobo_ui/Labels/gem_label.png" id="3_gem_bar"]
 
-[node name="CurrencyDisplay" type="Control"]
-custom_minimum_size = Vector2(168, 78)
+[node name="CurrencyDisplay" type="Control" unique_id=767954790]
+custom_minimum_size = Vector2(263.4, 55.899998)
 layout_mode = 3
-size_flags_horizontal = 0
-size_flags_vertical = 0
+anchors_preset = 0
+offset_left = 440.6
+offset_top = 12.0
+offset_right = 704.0
+offset_bottom = 67.9
+size_flags_horizontal = 4
+size_flags_vertical = 4
 script = ExtResource("1_script")
 coins = 0
 gems = 0
 
-[node name="VBox" type="VBoxContainer" parent="."]
+[node name="HBox" type="HBoxContainer" parent="." unique_id=994005809]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -21,11 +26,12 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 6
+alignment = 1
 
-[node name="CoinRow" parent="VBox" instance=ExtResource("2_row")]
+[node name="GemRow" parent="HBox" unique_id=1870990360 instance=ExtResource("2_row")]
+custom_minimum_size = Vector2(128.7, 55.249996)
 layout_mode = 2
+bar_texture = ExtResource("3_gem_bar")
 
-[node name="GemRow" parent="VBox" instance=ExtResource("2_row")]
+[node name="CoinRow" parent="HBox" unique_id=496741951 instance=ExtResource("2_row")]
 layout_mode = 2
-icon = ExtResource("3_star")
-amount = 0

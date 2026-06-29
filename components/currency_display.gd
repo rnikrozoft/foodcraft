@@ -1,7 +1,13 @@
+@tool
 extends Control
 
 signal add_coins_pressed
 signal add_gems_pressed
+
+@export_range(0.4, 1.0, 0.01) var row_scale: float = 0.65:
+	set(value):
+		row_scale = value
+		_apply_row_scale()
 
 @export var coins: int = 12345:
 	set(value):
@@ -13,11 +19,17 @@ signal add_gems_pressed
 		gems = value
 		_update_gems()
 
-@onready var _coin_row: Control = $VBox/CoinRow
-@onready var _gem_row: Control = $VBox/GemRow
+@onready var _coin_row: Control = $HBox/CoinRow
+@onready var _gem_row: Control = $HBox/GemRow
+
+
+func _enter_tree() -> void:
+	if Engine.is_editor_hint():
+		_apply_row_scale()
 
 
 func _ready() -> void:
+	_apply_row_scale()
 	_coin_row.add_pressed.connect(func() -> void: add_coins_pressed.emit())
 	_gem_row.add_pressed.connect(func() -> void: add_gems_pressed.emit())
 	_update_coins()
@@ -45,6 +57,24 @@ func pulse_reward(reward_type: String) -> void:
 		_coin_row.pulse_icon()
 	else:
 		_gem_row.pulse_icon()
+
+
+func _apply_row_scale() -> void:
+	var coin_row := _coin_row if is_node_ready() else get_node_or_null("HBox/CoinRow")
+	var gem_row := _gem_row if is_node_ready() else get_node_or_null("HBox/GemRow")
+	for row in [coin_row, gem_row]:
+		if row == null:
+			continue
+		row.display_scale = row_scale
+	if coin_row == null:
+		return
+	var row_size: Vector2 = coin_row.custom_minimum_size
+	var gap := 6.0
+	if is_node_ready():
+		gap = float($HBox.get_theme_constant("separation"))
+	custom_minimum_size = Vector2(row_size.x * 2.0 + gap, row_size.y)
+	size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	size_flags_vertical = Control.SIZE_SHRINK_CENTER
 
 
 func _update_coins() -> void:

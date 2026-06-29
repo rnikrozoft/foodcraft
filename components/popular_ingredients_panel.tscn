@@ -1,122 +1,186 @@
 [gd_scene format=3 uid="uid://dbj5gw0htu8rb"]
 
 [ext_resource type="Script" uid="uid://df813kod7fcma" path="res://components/popular_ingredients_panel.gd" id="1_script"]
-[ext_resource type="Texture2D" uid="uid://cu64wdi5k24g1" path="res://assets/Hyper_Casual_UI/Sprites/Panel_Sprites/Rectangle 363 (1).png" id="2_panel"]
+[ext_resource type="Texture2D" uid="uid://cxmit6013ogit" path="res://assets/Vector_UI_Pack_dobo_ui/Containers/cardContainer_black.png" id="2_wq4ou"]
+[ext_resource type="Texture2D" uid="uid://bxieeukqj36yd" path="res://assets/Vector_UI_Pack_dobo_ui/Arrows/arrow_cream.png" id="3_mewdp"]
+[ext_resource type="Texture2D" uid="uid://bxit51hxc0d8a" path="res://assets/Vector_UI_Pack_dobo_ui/Arrows/arrow_white.png" id="4_qwd2a"]
+[ext_resource type="Texture2D" uid="uid://5laadurhwree" path="res://assets/Vector_UI_Pack_dobo_ui/Icons/128px/options_icon_128px.png" id="4_wq4ou"]
+[ext_resource type="PackedScene" uid="uid://n2qscsph5gj2" path="res://components/ingredient_card.tscn" id="5_preview_card"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_search"]
-content_margin_left = 14.0
-content_margin_top = 10.0
-content_margin_right = 14.0
-content_margin_bottom = 10.0
-bg_color = Color(0.35, 0.24, 0.17, 1)
-corner_radius_top_left = 12
-corner_radius_top_right = 12
-corner_radius_bottom_right = 12
-corner_radius_bottom_left = 12
+content_margin_left = 52.0
+content_margin_top = 8.0
+content_margin_right = 36.0
+content_margin_bottom = 8.0
+bg_color = Color(0.1, 0.1, 0.12, 1)
+border_width_bottom = 3
+border_color = Color(0.04, 0.04, 0.06, 1)
+corner_radius_top_left = 22
+corner_radius_top_right = 22
+corner_radius_bottom_right = 22
+corner_radius_bottom_left = 22
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_search_focus"]
-content_margin_left = 14.0
-content_margin_top = 10.0
-content_margin_right = 14.0
-content_margin_bottom = 10.0
-bg_color = Color(0.4, 0.28, 0.2, 1)
+content_margin_left = 52.0
+content_margin_top = 8.0
+content_margin_right = 36.0
+content_margin_bottom = 8.0
+bg_color = Color(0.13, 0.13, 0.16, 1)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color(1, 0.82, 0.28, 1)
-corner_radius_top_left = 12
-corner_radius_top_right = 12
-corner_radius_bottom_right = 12
-corner_radius_bottom_left = 12
+border_color = Color(0.55, 0.75, 0.95, 0.85)
+corner_radius_top_left = 22
+corner_radius_top_right = 22
+corner_radius_bottom_right = 22
+corner_radius_bottom_left = 22
 
 [node name="PopularIngredientsPanel" type="Control" unique_id=1249708824]
-custom_minimum_size = Vector2(0, 224)
+custom_minimum_size = Vector2(688, 224)
 layout_mode = 3
 anchors_preset = 0
+offset_left = 16.0
+offset_top = 860.0
+offset_right = 704.0
+offset_bottom = 1084.0
 size_flags_horizontal = 3
 script = ExtResource("1_script")
 
 [node name="Background" type="NinePatchRect" parent="." unique_id=1683483843]
 layout_mode = 1
-anchors_preset = 15
+anchors_preset = -1
 anchor_right = 1.0
-anchor_bottom = 1.0
+anchor_bottom = 1.437
+offset_bottom = 0.11199951
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("2_panel")
+texture = ExtResource("2_wq4ou")
 patch_margin_left = 30
 patch_margin_top = 14
 patch_margin_right = 30
 patch_margin_bottom = 14
 
-[node name="Margin" type="MarginContainer" parent="." unique_id=684610053]
+[node name="Content" type="Control" parent="." unique_id=684610053]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = 21.0
+offset_top = 65.0
+offset_right = -20.0
+offset_bottom = -12.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/margin_left = 20
-theme_override_constants/margin_top = 12
-theme_override_constants/margin_right = 20
-theme_override_constants/margin_bottom = 12
+mouse_filter = 2
 
-[node name="VBox" type="VBoxContainer" parent="Margin" unique_id=1970946197]
-layout_mode = 2
+[node name="Header" type="HBoxContainer" parent="Content" unique_id=1585177357]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = -0.29900002
+anchor_right = 1.0
+anchor_bottom = 0.12200001
+offset_top = -0.04699707
+offset_bottom = 0.06599808
+grow_horizontal = 2
 theme_override_constants/separation = 12
 
-[node name="Header" type="HBoxContainer" parent="Margin/VBox" unique_id=1585177357]
-layout_mode = 2
-theme_override_constants/separation = 12
-
-[node name="Title" type="Label" parent="Margin/VBox/Header" unique_id=1310758133]
+[node name="Title" type="Label" parent="Content/Header" unique_id=1310758133]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(1, 0.95, 0.85, 1)
-theme_override_font_sizes/font_size = 22
+theme_override_font_sizes/font_size = 20
 text = "วัตถุดิบยอดนิยม"
 
-[node name="SeeAll" type="Button" parent="Margin/VBox/Header" unique_id=923762635]
+[node name="SeeAll" type="Control" parent="Content/Header" unique_id=923762635]
+custom_minimum_size = Vector2(36, 36)
 layout_mode = 2
-focus_mode = 0
-theme_override_colors/font_color = Color(1, 0.82, 0.28, 1)
-theme_override_colors/font_hover_color = Color(1, 0.92, 0.45, 1)
-theme_override_font_sizes/font_size = 16
-text = "ดูทั้งหมด >"
-flat = true
 
-[node name="Scroll" type="ScrollContainer" parent="Margin/VBox" unique_id=1869231245]
-custom_minimum_size = Vector2(0, 108)
-layout_mode = 2
-size_flags_vertical = 0
+[node name="Arrow" type="TextureButton" parent="Content/Header/SeeAll" unique_id=1847293011]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.093
+anchor_right = 1.0
+anchor_bottom = 0.84000003
+offset_top = 0.0059723854
+offset_right = 10.299225
+offset_bottom = -10.178696
+rotation = 1.5707964
+pivot_offset = Vector2(18, 18)
+focus_mode = 0
+texture_normal = ExtResource("3_mewdp")
+texture_pressed = ExtResource("4_qwd2a")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="Scroll" type="ScrollContainer" parent="Content" unique_id=1869231245]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 0.84700006
+offset_top = 44.5
+offset_bottom = 39.99099
+grow_horizontal = 2
+grow_vertical = 2
 horizontal_scroll_mode = 3
 vertical_scroll_mode = 0
 
-[node name="CardRow" type="HBoxContainer" parent="Margin/VBox/Scroll" unique_id=1562007714]
+[node name="CardRow" type="HBoxContainer" parent="Content/Scroll" unique_id=1562007714]
 layout_mode = 2
-theme_override_constants/separation = 14
+theme_override_constants/separation = 15
 
-[node name="SearchBox" type="Control" parent="Margin/VBox" unique_id=304969767]
-custom_minimum_size = Vector2(0, 40)
+[node name="PreviewCard1" parent="Content/Scroll/CardRow" instance=ExtResource("5_preview_card")]
 layout_mode = 2
-size_flags_vertical = 0
+title = "ข้าว"
 
-[node name="SearchInput" type="LineEdit" parent="Margin/VBox/SearchBox" unique_id=652961160]
+[node name="PreviewCard2" parent="Content/Scroll/CardRow" instance=ExtResource("5_preview_card")]
+layout_mode = 2
+title = "ไข่"
+
+[node name="PreviewCard3" parent="Content/Scroll/CardRow" instance=ExtResource("5_preview_card")]
+layout_mode = 2
+title = "เกลือ"
+
+[node name="PreviewCard4" parent="Content/Scroll/CardRow" instance=ExtResource("5_preview_card")]
+layout_mode = 2
+title = "น้ำ"
+
+[node name="SearchBox" type="Control" parent="Content" unique_id=304969767]
+layout_mode = 1
+anchor_top = 1.19
+anchor_right = 1.0
+anchor_bottom = 1.4900001
+offset_top = 0.069992065
+offset_bottom = -0.030014038
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+
+[node name="SearchInput" type="LineEdit" parent="Content/SearchBox" unique_id=652961160]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = 12.0
-offset_bottom = 20.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_colors/font_color = Color(1, 0.95, 0.85, 1)
-theme_override_colors/font_placeholder_color = Color(0.75, 0.68, 0.58, 1)
-theme_override_colors/caret_color = Color(1, 0.82, 0.28, 1)
-theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_placeholder_color = Color(0.88, 0.95, 1, 0.75)
+theme_override_colors/caret_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 16
 theme_override_styles/normal = SubResource("StyleBoxFlat_search")
 theme_override_styles/focus = SubResource("StyleBoxFlat_search_focus")
 placeholder_text = "ค้นหาชื่ออาหาร..."
 clear_button_enabled = true
 caret_blink = true
+
+[node name="SearchIcon" type="TextureRect" parent="Content/SearchBox" unique_id=902020]
+z_index = 1
+layout_mode = 0
+offset_left = 20.0
+offset_top = 11.0
+offset_right = 41.5
+offset_bottom = 32.5
+mouse_filter = 2
+texture = ExtResource("4_wq4ou")
+expand_mode = 1
+stretch_mode = 5

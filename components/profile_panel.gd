@@ -26,7 +26,6 @@ extends Control
 		_update_avatar()
 
 @onready var _player_name_label: Label = $HBox/Info/PlayerName
-@onready var _level_label: Label = $HBox/Info/LevelLabel
 @onready var _exp_bar: ProgressBar = $HBox/Info/ExpWrap/ExpBar
 @onready var _exp_label: Label = $HBox/Info/ExpWrap/ExpLabel
 @onready var _avatar_icon: TextureRect = $HBox/Avatar/AvatarIcon

@@ -1,6 +1,6 @@
 extends Control
 
-const STAR_TEX := preload("res://assets/Icons/PictoIcon_512/Icon_PictoIcon_Star.Png")
+const STAR_TEX := preload("res://assets/Vector_UI_Pack_dobo_ui/Icons/128px/gem_icon_128px.png")
 
 @export var bg_color := Color(0.28, 0.56, 0.94, 1)
 @export var star_spacing := Vector2(80, 76)

@@ -35,13 +35,13 @@ const RARITY_COLORS := {
 	"legendary": Color(0.95, 0.76, 0.18, 1),
 }
 
-const COIN_TEX := preload("res://assets/Hyper_Casual_UI/Sprites/Icons/coin.png")
-const STAR_TEX := preload("res://assets/Hyper_Casual_UI/Sprites/Icons/rataing star.png")
-const BTN_GREEN := preload("res://assets/Hyper_Casual_UI/Sprites/Buttons/empty_buttons/green.png")
-const BTN_YELLOW := preload("res://assets/Hyper_Casual_UI/Sprites/Buttons/empty_buttons/yellow.png")
-const BTN_PURPLE := preload("res://assets/Hyper_Casual_UI/Sprites/Buttons/empty_buttons/PURPLE.png")
-const TREASURE_TEX := preload("res://assets/Hyper_Casual_UI/Sprites/Icons/Gold Treasure box.png")
-const LOCK_TEX := preload("res://assets/Hyper_Casual_UI/Sprites/Icons/lock.png")
+const COIN_TEX := preload("res://assets/Vector_UI_Pack_dobo_ui/Icons/128px/coin_icon_128px.png")
+const STAR_TEX := preload("res://assets/Vector_UI_Pack_dobo_ui/Icons/128px/gem_icon_128px.png")
+const BTN_GREEN := preload("res://assets/Vector_UI_Pack_dobo_ui/Buttons/button_green.png")
+const BTN_YELLOW := preload("res://assets/Vector_UI_Pack_dobo_ui/Buttons/button_yellow.png")
+const BTN_PURPLE := preload("res://assets/Vector_UI_Pack_dobo_ui/Buttons/button_purple.png")
+const TREASURE_TEX := preload("res://assets/Vector_UI_Pack_dobo_ui/Icons/128px/chestRuby_icon_128px.png")
+const LOCK_TEX := preload("res://assets/Vector_UI_Pack_dobo_ui/Icons/128px/key_icon_128px.png")
 
 const GRID_COLS_COINS := 2
 const GRID_COLS_HINTS := 2

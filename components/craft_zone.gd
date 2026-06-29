@@ -1,7 +1,10 @@
+@tool
 extends Control
 
-const LOCK_ICON := preload("res://assets/Hyper_Casual_UI/Sprites/Icons/lock.png")
-const UNLOCK_ICON := preload("res://assets/Icons/PictoIcon_64/Icon_PictoIcon_Unlock.Png")
+const LOCK_ICON := preload("res://assets/Vector_UI_Pack_dobo_ui/Icons/128px/tabSelected_icon_128px.png")
+const UNLOCK_ICON := preload("res://assets/Vector_UI_Pack_dobo_ui/Icons/128px/tab_icon_128px.png")
+const EDITOR_PREVIEW_SIZE := Vector2(720, 520)
+const EDITOR_PREVIEW_POS := Vector2(0, 184)
 
 signal recipe_crafted(result_id: String, is_new: bool)
 signal new_recipe_discovered(display: Dictionary)
@@ -25,13 +28,16 @@ var _slot_a_icon: TextureRect
 var _slot_b_icon: TextureRect
 var _result_shake_tween: Tween
 var _input_shake_tween: Tween
+var _slot_bounce_tweens: Dictionary = {}
+
+
+func _enter_tree() -> void:
+	_apply_editor_preview()
 
 
 func _ready() -> void:
-	_slot_a_icon = _slot_a.get_node("Icon") as TextureRect
-	_slot_b_icon = _slot_b.get_node("Icon") as TextureRect
-	_slot_a.get_node("RemoveButton").pressed.connect(_on_slot_a_cleared)
-	_slot_b.get_node("RemoveButton").pressed.connect(_on_slot_b_cleared)
+	_slot_a_icon = _slot_a.get_node("BounceRoot/Icon") as TextureRect
+	_slot_b_icon = _slot_b.get_node("BounceRoot/Icon") as TextureRect
 	_slot_a.get_node("LockButton").pressed.connect(_on_slot_a_lock_toggled)
 	_slot_b.get_node("LockButton").pressed.connect(_on_slot_b_lock_toggled)
 	_clear_slot(_slot_a, 0)
@@ -63,16 +69,6 @@ func add_ingredient(data: Dictionary) -> bool:
 	return true
 
 
-func _on_slot_a_cleared() -> void:
-	_clear_slot(_slot_a, 0, true)
-	_check_recipe()
-
-
-func _on_slot_b_cleared() -> void:
-	_clear_slot(_slot_b, 1, true)
-	_check_recipe()
-
-
 func _on_slot_a_lock_toggled() -> void:
 	_toggle_lock(0)
 
@@ -101,30 +97,32 @@ func _update_lock_button(slot: Control, index: int) -> void:
 
 func _set_slot(slot: Control, index: int, data: Dictionary) -> void:
 	_slot_data[index] = data
-	slot.get_node("Glow").visible = false
-	var icon := slot.get_node("Icon") as TextureRect
+	var icon := slot.get_node("BounceRoot/Icon") as TextureRect
 	FoodIcons.apply_to(icon, String(data.get("id", "")))
-	slot.get_node("Title").text = data.get("title", "")
-	slot.get_node("Title").visible = true
-	slot.get_node("EmptyHint").visible = false
-	slot.get_node("RemoveButton").visible = true
+	slot.get_node("BounceRoot/Title").text = data.get("title", "")
+	slot.get_node("BounceRoot/Title").visible = true
 	slot.get_node("LockButton").visible = true
 	_update_lock_button(slot, index)
+	_bounce_slot_content(slot)
 
 
-func _clear_slot(slot: Control, index: int, force := false) -> void:
-	if not force and _slot_locked[index]:
+func _clear_slot(slot: Control, index: int) -> void:
+	if _slot_locked[index]:
 		return
+	_stop_slot_bounce(slot)
 	_slot_locked[index] = false
 	_slot_data[index] = {}
-	slot.get_node("Glow").visible = false
-	var icon := slot.get_node("Icon") as TextureRect
+	var icon := slot.get_node("BounceRoot/Icon") as TextureRect
 	icon.texture = null
 	icon.visible = false
-	slot.get_node("Title").text = ""
-	slot.get_node("Title").visible = false
-	slot.get_node("EmptyHint").visible = true
-	slot.get_node("RemoveButton").visible = false
+	icon.scale = Vector2.ONE
+	var title := slot.get_node("BounceRoot/Title") as Label
+	title.text = ""
+	title.visible = false
+	title.scale = Vector2.ONE
+	var bounce_root := slot.get_node("BounceRoot") as Control
+	bounce_root.scale = Vector2.ONE
+	bounce_root.pivot_offset = bounce_root.size * 0.5
 	slot.get_node("LockButton").visible = false
 
 
@@ -153,12 +151,8 @@ func _attempt_craft(from_ids: PackedStringArray) -> void:
 		return
 
 	_craft_busy = true
-	_set_status("กำลังผสม...")
 	_result_icon.visible = false
-	_result_title.text = "..."
 	_result_title.visible = true
-	_result_glow.visible = false
-	_result_empty.visible = false
 	_new_badge.visible = false
 
 	var data := await NakamaService.process_craft(from_ids)
@@ -217,11 +211,8 @@ func _show_craft_result(result_id: String, _from_ids: PackedStringArray, data: D
 	FoodIcons.apply_to(_result_icon, result_id)
 	_result_title.text = display.get("title", "")
 	_result_title.visible = true
-	_result_glow.visible = false
-	_result_empty.visible = false
 	_new_badge.visible = is_new
 	_set_status(_format_result_status(is_new, result_kind, reward))
-	_arrow.modulate = Color(1, 0.85, 0.35, 1)
 	if is_new and not reward.is_empty():
 		reward_granted.emit(reward, get_result_burst_origin())
 	if is_new:
@@ -233,7 +224,7 @@ func _format_result_status(is_new: bool, result_kind: String, reward: Dictionary
 	var headline := ""
 	match result_kind:
 		"ingredient":
-			headline = "ปลดล็อกวัตถุดิบใหม่!" if is_new else "ได้วัตถุดิบ — มีอยู่แล้ว"
+			headline = "ปลดล็อกวัตถุดิบใหม่!" if is_new else "วัตถุดิบที่มีแล้ว"
 		_:
 			headline = "ค้นพบโดยคุณเมื่อสักครู่" if is_new else "สูตรที่รู้จักแล้ว"
 	var amount := int(reward.get("amount", 0))
@@ -246,13 +237,10 @@ func _format_result_status(is_new: bool, result_kind: String, reward: Dictionary
 
 func _show_unknown_result() -> void:
 	_result_icon.visible = false
-	_result_title.text = "?"
-	_result_title.visible = true
-	_result_glow.visible = false
-	_result_empty.visible = false
+	_result_title.text = ""
+	_result_title.visible = false
 	_new_badge.visible = false
 	_set_status("ยังไม่พบสูตรนี้ ลองผสมอย่างอื่นดู")
-	_arrow.modulate = Color(0.7, 0.7, 0.7, 1)
 	_shake_result_slot()
 
 
@@ -262,11 +250,8 @@ func _reset_result() -> void:
 	_result_icon.texture = null
 	_result_icon.visible = false
 	_result_title.visible = false
-	_result_glow.visible = false
-	_result_empty.visible = true
 	_new_badge.visible = false
 	_set_status("")
-	_arrow.modulate = Color(0.55, 0.55, 0.55, 0.8)
 
 
 func _set_status(message: String) -> void:
@@ -311,6 +296,54 @@ func _shake_tween_step(
 		tween.parallel().tween_property(secondary, "rotation", rotation, duration).set_trans(Tween.TRANS_SINE)
 
 
+func _play_slot_bounce(slot: Control) -> void:
+	if not is_instance_valid(slot):
+		return
+	var bounce_root := slot.get_node("BounceRoot") as Control
+	var icon := bounce_root.get_node("Icon") as TextureRect
+	if not icon.visible:
+		return
+
+	_stop_slot_bounce(slot)
+	bounce_root.scale = Vector2(0.72, 0.72)
+	bounce_root.pivot_offset = bounce_root.size * 0.5
+	if bounce_root.pivot_offset == Vector2.ZERO:
+		bounce_root.pivot_offset = Vector2(125.0, 125.0)
+
+	var tween := bounce_root.create_tween()
+	_slot_bounce_tweens[slot.get_instance_id()] = tween
+	tween.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.tween_property(bounce_root, "scale", Vector2(1.16, 1.16), 0.14)
+	tween.tween_property(bounce_root, "scale", Vector2.ONE, 0.2).set_trans(Tween.TRANS_ELASTIC)
+
+
+func _stop_slot_bounce(slot: Control) -> void:
+	var key := slot.get_instance_id()
+	if _slot_bounce_tweens.has(key):
+		var old_tween: Tween = _slot_bounce_tweens[key]
+		if old_tween != null and old_tween.is_valid():
+			old_tween.kill()
+		_slot_bounce_tweens.erase(key)
+	var bounce_root := slot.get_node("BounceRoot") as Control
+	bounce_root.scale = Vector2.ONE
+
+
+func _bounce_slot_content(slot: Control) -> void:
+	# Layout settles after the slot icon/title update; then play the pop bounce.
+	if not is_instance_valid(slot):
+		return
+	await get_tree().process_frame
+	await get_tree().process_frame
+	if not is_instance_valid(slot):
+		return
+
+	var bounce_root := slot.get_node("BounceRoot") as Control
+	bounce_root.pivot_offset = bounce_root.size * 0.5
+	if bounce_root.pivot_offset == Vector2.ZERO:
+		bounce_root.pivot_offset = Vector2(125.0, 125.0)
+	_play_slot_bounce(slot)
+
+
 func _stop_result_shake() -> void:
 	if _result_shake_tween != null and _result_shake_tween.is_valid():
 		_result_shake_tween.kill()
@@ -328,3 +361,15 @@ func _stop_input_shake() -> void:
 
 func get_result_burst_origin() -> Vector2:
 	return _result_slot.get_global_rect().get_center()
+
+
+func _apply_editor_preview() -> void:
+	if not Engine.is_editor_hint():
+		return
+	if get_tree().edited_scene_root == self:
+		custom_minimum_size = EDITOR_PREVIEW_SIZE
+		position = EDITOR_PREVIEW_POS
+		size = EDITOR_PREVIEW_SIZE
+	else:
+		custom_minimum_size = Vector2.ZERO
+		position = Vector2.ZERO

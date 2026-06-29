@@ -1,69 +1,67 @@
-[gd_scene load_steps=8 format=3 uid="uid://b7ftrmenu001"]
+[gd_scene format=3 uid="uid://b7ftrmenu001"]
 
-[ext_resource type="Script" path="res://components/footer_menu.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://c0cth0x3vuffl" path="res://components/footer_menu.gd" id="1_script"]
 [ext_resource type="PackedScene" uid="uid://d8ftr2tab001" path="res://components/footer_tab.tscn" id="2_tab"]
-[ext_resource type="Texture2D" uid="uid://tgetj6qcvl51" path="res://assets/Hyper_Casual_UI/Sprites/Panel_Sprites/Rectangle 361.png" id="3_bar"]
-[ext_resource type="Texture2D" uid="uid://cf2jkebt6bpq4" path="res://assets/Hyper_Casual_UI/Sprites/Icons/home_icon.png" id="4_icon_experiment"]
-[ext_resource type="Texture2D" uid="uid://b1vhwxy7bylic" path="res://assets/Hyper_Casual_UI/Sprites/Icons/character.png" id="5_icon_recipes"]
-[ext_resource type="Texture2D" uid="uid://cot7sypaw44yl" path="res://assets/Hyper_Casual_UI/Sprites/Icons/flag.png" id="6_icon_missions"]
-[ext_resource type="Texture2D" uid="uid://c6k43cw7ovaj2" path="res://assets/Hyper_Casual_UI/Sprites/Icons/leaderboard.png" id="7_icon_rank"]
-[ext_resource type="Texture2D" path="res://assets/Hyper_Casual_UI/Sprites/Icons/shop.png" id="8_icon_shop"]
+[ext_resource type="Texture2D" uid="uid://bppdfa8uog118" path="res://assets/Vector_UI_Pack_dobo_ui/Icons/128px/energy_icon_128px.png" id="4_isc4w"]
+[ext_resource type="Texture2D" uid="uid://cec8wlbi23tep" path="res://assets/Vector_UI_Pack_dobo_ui/Icons/128px/skills_icon_128px.png" id="5_icon_recipes"]
+[ext_resource type="Texture2D" uid="uid://drcef4wrmskhq" path="res://assets/Vector_UI_Pack_dobo_ui/Icons/128px/adventure_icon_128px.png" id="6_icon_missions"]
+[ext_resource type="Texture2D" uid="uid://d3ngobmh5j8r5" path="res://assets/Vector_UI_Pack_dobo_ui/Icons/128px/tabClaimed_icon_128px.png" id="7_icon_rank"]
+[ext_resource type="Texture2D" uid="uid://psbkkfh4ehkk" path="res://assets/Vector_UI_Pack_dobo_ui/Icons/128px/shop_icon_128px.png" id="8_icon_shop"]
 
-[node name="FooterMenu" type="Control"]
-custom_minimum_size = Vector2(0, 108)
+[node name="FooterMenu" type="Control" unique_id=1245679271]
+custom_minimum_size = Vector2(688, 96)
 layout_mode = 3
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = -96.0
+offset_right = -16.0
+grow_horizontal = 2
+grow_vertical = 0
 size_flags_horizontal = 3
 script = ExtResource("1_script")
 
-[node name="Background" type="NinePatchRect" parent="."]
+[node name="HBox" type="HBoxContainer" parent="." unique_id=1756664710]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = 10.0
+offset_right = -12.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 2
-texture = ExtResource("3_bar")
-patch_margin_left = 43
-patch_margin_top = 16
-patch_margin_right = 43
-patch_margin_bottom = 16
+theme_override_constants/separation = 6
+alignment = 2
 
-[node name="HBox" type="HBoxContainer" parent="."]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 8.0
-offset_top = 6.0
-offset_right = -8.0
-offset_bottom = -6.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_constants/separation = 0
-alignment = 1
-
-[node name="TabExperiment" parent="HBox" instance=ExtResource("2_tab")]
+[node name="TabExperiment" parent="HBox" unique_id=145893404 instance=ExtResource("2_tab")]
+custom_minimum_size = Vector2(76, 88)
 layout_mode = 2
 title = "ทดลอง"
-icon = ExtResource("4_icon_experiment")
+icon = ExtResource("4_isc4w")
 
-[node name="TabRecipes" parent="HBox" instance=ExtResource("2_tab")]
+[node name="TabRecipes" parent="HBox" unique_id=207228645 instance=ExtResource("2_tab")]
+custom_minimum_size = Vector2(76, 88)
 layout_mode = 2
 title = "สูตรของฉัน"
 icon = ExtResource("5_icon_recipes")
 
-[node name="TabMissions" parent="HBox" instance=ExtResource("2_tab")]
+[node name="TabMissions" parent="HBox" unique_id=824907159 instance=ExtResource("2_tab")]
+custom_minimum_size = Vector2(76, 88)
 layout_mode = 2
 title = "ภารกิจ"
 icon = ExtResource("6_icon_missions")
 
-[node name="TabRank" parent="HBox" instance=ExtResource("2_tab")]
+[node name="TabRank" parent="HBox" unique_id=2054150042 instance=ExtResource("2_tab")]
+custom_minimum_size = Vector2(76, 88)
 layout_mode = 2
 title = "อันดับ"
 icon = ExtResource("7_icon_rank")
 
-[node name="TabMore" parent="HBox" instance=ExtResource("2_tab")]
+[node name="TabMore" parent="HBox" unique_id=318948510 instance=ExtResource("2_tab")]
+custom_minimum_size = Vector2(76, 88)
 layout_mode = 2
 title = "ร้านค้า"
 icon = ExtResource("8_icon_shop")

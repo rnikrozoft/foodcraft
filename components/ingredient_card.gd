@@ -32,17 +32,12 @@ func _ready() -> void:
 	_apply_icon()
 	_click.pressed.connect(func() -> void: pressed.emit())
 	_title_clip.resized.connect(_update_title_marquee)
-	set_selected(false)
 	call_deferred("_update_title_marquee")
 
 
 func apply_display(data: Dictionary) -> void:
 	title = String(data.get("title", ""))
 	food_id = String(data.get("id", ""))
-
-
-func set_selected(selected: bool) -> void:
-	_highlight.visible = selected
 
 
 func _apply_icon() -> void:

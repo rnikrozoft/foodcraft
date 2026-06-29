@@ -1,3 +1,4 @@
+@tool
 extends Control
 
 signal ingredient_picked(data: Dictionary)
@@ -7,6 +8,9 @@ const CARD_MIN_WIDTH := 108.0
 const CARD_HEIGHT := 120.0
 const GRID_SEP := 12
 const GRID_MIN_COLUMNS := 3
+const EDITOR_PREVIEW_SIZE := Vector2(688, 1088)
+const EDITOR_PREVIEW_POS := Vector2(16, 96)
+const CAT_BTN_TEX := preload("res://assets/Vector_UI_Pack_dobo_ui/Buttons/buttonAdvanced_black.png")
 
 const CATEGORY_TABS := [
 	{"id": "", "label": "ทั้งหมด", "emoji": "🍽"},
@@ -33,8 +37,11 @@ var _active_category := ""
 var _category_buttons: Dictionary = {}
 
 
+func _enter_tree() -> void:
+	_apply_editor_preview()
+
+
 func _ready() -> void:
-	_discovery_badge.set_title("สูตรของฉัน")
 	_category_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_NEVER
 	_category_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	_build_category_buttons()
@@ -42,16 +49,25 @@ func _ready() -> void:
 	_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	_scroll.resized.connect(_layout_grid_cards)
 	_search.text_changed.connect(_on_search_changed)
+	if Engine.is_editor_hint():
+		return
 	GameData.progress_changed.connect(_on_progress_changed)
 
 
-func show_panel(pick_for_craft: bool = false) -> void:
+func prepare_panel(pick_for_craft: bool = false) -> void:
 	_pick_mode = pick_for_craft
 	_active_category = ""
 	_update_category_styles()
-	visible = true
 	_search.text = ""
+	visible = true
 	_refresh()
+
+
+func show_panel(pick_for_craft: bool = false) -> void:
+	if _pick_mode != pick_for_craft or not visible:
+		prepare_panel(pick_for_craft)
+	else:
+		visible = true
 
 
 func hide_panel() -> void:
@@ -66,7 +82,6 @@ func _on_progress_changed() -> void:
 
 func _refresh() -> void:
 	_all_items = _get_items_for_mode()
-	_discovery_badge.set_progress(GameData.get_discovered_count(), GameData.get_total_discoverable())
 	_apply_filter(_search.text.strip_edges())
 
 
@@ -121,6 +136,7 @@ func _build_category_buttons() -> void:
 		var btn := Button.new()
 		btn.text = "%s %s" % [String(tab.get("emoji", "")), String(tab.get("label", ""))]
 		btn.focus_mode = Control.FOCUS_NONE
+		btn.custom_minimum_size.y = 44.0
 		btn.pressed.connect(_on_category_pressed.bind(category_id))
 		_apply_category_style(btn, false)
 		_category_row.add_child(btn)
@@ -140,34 +156,36 @@ func _update_category_styles() -> void:
 
 
 func _apply_category_style(btn: Button, active: bool) -> void:
-	var box := StyleBoxFlat.new()
-	box.content_margin_left = 14.0
-	box.content_margin_right = 14.0
-	box.content_margin_top = 8.0
-	box.content_margin_bottom = 8.0
-	box.corner_radius_top_left = 10
-	box.corner_radius_top_right = 10
-	box.corner_radius_bottom_left = 10
-	box.corner_radius_bottom_right = 10
-	box.bg_color = Color(0.4, 0.28, 0.2, 1) if active else Color(0.35, 0.24, 0.17, 1)
-	if active:
-		box.border_width_left = 2
-		box.border_width_top = 2
-		box.border_width_right = 2
-		box.border_width_bottom = 2
-		box.border_color = Color(1, 0.82, 0.28, 1)
-	btn.add_theme_stylebox_override("normal", box)
-	btn.add_theme_stylebox_override("hover", box)
-	btn.add_theme_stylebox_override("pressed", box)
+	var normal_style := _make_category_button_style(active)
+	var pressed_style := _make_category_button_style(true)
+	btn.add_theme_stylebox_override("normal", normal_style)
+	btn.add_theme_stylebox_override("hover", normal_style)
+	btn.add_theme_stylebox_override("pressed", pressed_style)
 	btn.add_theme_color_override("font_color", Color(1, 0.95, 0.85, 1))
 	btn.add_theme_color_override("font_hover_color", Color(1, 0.95, 0.85, 1))
 	btn.add_theme_color_override("font_pressed_color", Color(1, 0.95, 0.85, 1))
 	btn.add_theme_font_size_override("font_size", 16)
 
 
+func _make_category_button_style(active: bool) -> StyleBoxTexture:
+	var style := StyleBoxTexture.new()
+	style.texture = CAT_BTN_TEX
+	style.texture_margin_left = 136
+	style.texture_margin_top = 4
+	style.texture_margin_right = 136
+	style.texture_margin_bottom = 4
+	style.content_margin_left = 20
+	style.content_margin_right = 20
+	style.content_margin_top = 6
+	style.content_margin_bottom = 6
+	if active:
+		style.modulate_color = Color(1, 0.92, 0.55, 1)
+	return style
+
+
 func _show_grid(items: Array) -> void:
-	for card in _cards:
-		card.queue_free()
+	for child in _grid.get_children():
+		child.queue_free()
 	_cards.clear()
 
 	if items.is_empty():
@@ -191,7 +209,7 @@ func _show_grid(items: Array) -> void:
 			card.get_node("ClickArea").mouse_filter = Control.MOUSE_FILTER_IGNORE
 		_grid.add_child(card)
 		_cards.append(card)
-	call_deferred("_layout_grid_cards")
+	_layout_grid_cards()
 
 
 func _layout_grid_cards() -> void:
@@ -232,3 +250,15 @@ func _input(event: InputEvent) -> void:
 
 	if not _search.get_global_rect().has_point(press_pos):
 		_search.release_focus()
+
+
+func _apply_editor_preview() -> void:
+	if not Engine.is_editor_hint():
+		return
+	if get_tree().edited_scene_root == self:
+		custom_minimum_size = EDITOR_PREVIEW_SIZE
+		position = EDITOR_PREVIEW_POS
+		size = EDITOR_PREVIEW_SIZE
+	else:
+		custom_minimum_size = Vector2.ZERO
+		position = Vector2.ZERO
