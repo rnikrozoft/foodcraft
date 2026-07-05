@@ -1,15 +1,45 @@
 [gd_scene format=3 uid="uid://fc2nxda8ii5o"]
 
 [ext_resource type="Script" uid="uid://d1vseigp20tse" path="res://components/craft_zone.gd" id="1_script"]
-[ext_resource type="Texture2D" uid="uid://bhyschb48lulu" path="res://assets/Vector_UI_Pack_dobo_ui/ItemSlots/itemSlot_black.png" id="2_q8n7n"]
+[ext_resource type="Texture2D" uid="uid://ddd22n7myey6x" path="res://assets/Components/Frame/ItemFrame01_Single_Brown.png" id="2_smfp0"]
 [ext_resource type="Texture2D" uid="uid://xdhn1fw4di31" path="res://assets/Vector_UI_Pack_dobo_ui/Icons/256px/warningCircle_icon_256px.png" id="4_smfp0"]
 [ext_resource type="Texture2D" uid="uid://db58s12tpf4al" path="res://assets/Vector_UI_Pack_dobo_ui/Icons/128px/tickV1_icon_128px.png" id="5_id12s"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_lock"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hint_normal"]
+bg_color = Color(0.42, 0.24, 0.62, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 4
+border_color = Color(0.62, 0.4, 0.85, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hint_pressed"]
+bg_color = Color(0.32, 0.18, 0.5, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hint_disabled"]
+bg_color = Color(0.3, 0.27, 0.32, 0.7)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
 [node name="CraftZone" type="Control" unique_id=606767267]
+custom_minimum_size = Vector2(720, 520)
 layout_mode = 3
 anchors_preset = 0
+offset_top = 184.0
+offset_right = 720.0
+offset_bottom = 704.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("1_script")
@@ -46,22 +76,25 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("2_q8n7n")
+texture = ExtResource("2_smfp0")
 patch_margin_left = 16
 patch_margin_top = 14
 patch_margin_right = 16
 patch_margin_bottom = 14
 
 [node name="BounceRoot" type="Control" parent="Center/VBox/InputRow/SlotA" unique_id=1988771201]
+clip_contents = true
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+pivot_offset = Vector2(125, 125)
 mouse_filter = 2
 
 [node name="Icon" type="TextureRect" parent="Center/VBox/InputRow/SlotA/BounceRoot" unique_id=1876032982]
+visible = false
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -79,6 +112,7 @@ expand_mode = 1
 stretch_mode = 5
 
 [node name="Title" type="Label" parent="Center/VBox/InputRow/SlotA/BounceRoot" unique_id=720611493]
+visible = false
 layout_mode = 1
 anchors_preset = -1
 anchor_top = 0.64000005
@@ -96,6 +130,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="LockButton" type="Button" parent="Center/VBox/InputRow/SlotA" unique_id=639220775]
+visible = false
 layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
@@ -127,19 +162,21 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("2_q8n7n")
+texture = ExtResource("2_smfp0")
 patch_margin_left = 16
 patch_margin_top = 14
 patch_margin_right = 16
 patch_margin_bottom = 14
 
 [node name="BounceRoot" type="Control" parent="Center/VBox/InputRow/SlotB" unique_id=1988771202]
+clip_contents = true
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+pivot_offset = Vector2(125, 125)
 mouse_filter = 2
 
 [node name="Icon" type="TextureRect" parent="Center/VBox/InputRow/SlotB/BounceRoot" unique_id=939883565]
@@ -212,7 +249,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("2_q8n7n")
+texture = ExtResource("2_smfp0")
 patch_margin_left = 16
 patch_margin_top = 14
 patch_margin_right = 16
@@ -255,6 +292,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="NewBadge" type="TextureRect" parent="Center/VBox/ResultSlot" unique_id=278059419]
+visible = false
 layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
@@ -270,7 +308,7 @@ expand_mode = 1
 stretch_mode = 5
 
 [node name="StatusWrap" type="Control" parent="Center/VBox" unique_id=731005909]
-custom_minimum_size = Vector2(568, 36)
+custom_minimum_size = Vector2(600, 48)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 0
@@ -282,9 +320,27 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_colors/font_color = Color(0.82, 0.75, 0.62, 1)
-theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(1, 0.93, 0.78, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.7)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 18
 horizontal_alignment = 1
 vertical_alignment = 1
-clip_text = true
+autowrap_mode = 2
 text_overrun_behavior = 3
+
+[node name="HintButton" type="Button" parent="Center/VBox" unique_id=731005910]
+custom_minimum_size = Vector2(300, 52)
+layout_mode = 2
+size_flags_horizontal = 4
+focus_mode = 0
+theme_override_colors/font_color = Color(1, 0.96, 0.85, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.55)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 20
+theme_override_styles/normal = SubResource("StyleBoxFlat_hint_normal")
+theme_override_styles/hover = SubResource("StyleBoxFlat_hint_normal")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_hint_pressed")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_hint_disabled")
+theme_override_styles/focus = SubResource("StyleBoxFlat_hint_normal")
+text = "ขอเบาะแส  ·  2 เพชร"

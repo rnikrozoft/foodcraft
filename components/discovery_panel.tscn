@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://c8discpanel01"]
 
 [ext_resource type="Script" uid="uid://dpm8mhmlepsfs" path="res://components/discovery_panel.gd" id="1_script"]
-[ext_resource type="Texture2D" uid="uid://h0611b57xr03" path="res://assets/Vector_UI_Pack_dobo_ui/Icons/128px/tabSelected_icon_128px.png" id="3_rank"]
+[ext_resource type="Texture2D" uid="uid://bocfgmea60y4u" path="res://assets/Components/Slider/Slider_Icon01_Icon1.png" id="2_6q2lr"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bg"]
 bg_color = Color(0.12, 0.11, 0.14, 0.92)
@@ -13,7 +13,7 @@ corner_radius_bottom_right = 22
 corner_radius_bottom_left = 22
 
 [node name="DiscoveryPanel" type="Control" unique_id=1769782423]
-custom_minimum_size = Vector2(320, 60)
+custom_minimum_size = Vector2(242, 44)
 layout_mode = 3
 anchors_preset = 0
 offset_left = 200.0
@@ -59,7 +59,7 @@ custom_minimum_size = Vector2(36, 36)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
-texture = ExtResource("3_rank")
+texture = ExtResource("2_6q2lr")
 expand_mode = 1
 stretch_mode = 5
 
@@ -70,7 +70,7 @@ mouse_filter = 2
 theme_override_colors/default_color = Color(1, 0.95, 0.85, 1)
 theme_override_font_sizes/normal_font_size = 18
 bbcode_enabled = true
-text = "ค้นพบแล้ว 158 / 5000"
+text = "[color=#FFF5E8]ค้นพบแล้ว[/color] [color=#FFD147]158[/color][color=#FFF5E8] / 5,000[/color]"
 fit_content = true
 scroll_active = false
 autowrap_mode = 0

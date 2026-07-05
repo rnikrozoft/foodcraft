@@ -1,24 +1,51 @@
+@tool
 extends Control
 
 signal back_requested
 
 const TIER_META := {
-	1: {"title": "อันดับหลัก", "desc": "ชื่อเสียง นักสำรวจ และผู้ค้นพบคนแรก", "emoji": "🏆"},
-	2: {"title": "สมรรถนะ", "desc": "ความเร็วและประสิทธิภาพการค้นพบ", "emoji": "⚡"},
-	3: {"title": "หมวดอาหาร", "desc": "อันดับแยกตามสำนักอาหาร", "emoji": "🍽"},
-	4: {"title": "หอเกียรติยศ", "desc": "ผู้ค้นพบเมนูก่อนใครของเซิร์ฟเวอร์", "emoji": "👑"},
-	5: {"title": "ซีซัน", "desc": "อันดับรายฤดูกาล", "emoji": "🌟"},
+	1: {"title": "อันดับหลัก", "desc": "ชื่อเสียง นักสำรวจ และผู้ค้นพบคนแรก"},
+	2: {"title": "สมรรถนะ", "desc": "ความเร็วและประสิทธิภาพการค้นพบ"},
+	3: {"title": "หมวดอาหาร", "desc": "อันดับแยกตามสำนักอาหาร"},
+	4: {"title": "หอเกียรติยศ", "desc": "ผู้ค้นพบเมนูก่อนใครของเซิร์ฟเวอร์"},
+	5: {"title": "ซีซัน", "desc": "อันดับรายฤดูกาล"},
 }
 
-const AVATAR_TEX := preload("res://assets/Vector_UI_Pack_dobo_ui/Modals/profile_image.png")
-const AVATAR_BG_TEX := preload("res://assets/Vector_UI_Pack_dobo_ui/ItemSlots/itemSlot_white.png")
-const TROPHY_TEX := preload("res://assets/Vector_UI_Pack_dobo_ui/Icons/128px/tabClaimed_icon_128px.png")
+const TIER_ICONS := {
+	1: preload("res://assets/Components/IconMisc/Icon_ImageIcon_Ranking.png"),
+	2: preload("res://assets/Components/IconMisc/Icon_ImageIcon_Energy.png"),
+	3: preload("res://assets/Components/Icon_ItemIcons/128/Icon_Food_Meat.png"),
+	4: preload("res://assets/Components/IconMisc/Icon_ImageIcon_Crown_Gold.Png"),
+	5: preload("res://assets/Components/IconMisc/Icon_ImageIcon_Star01_l.png"),
+}
+
+const AVATAR_TEX := preload("res://assets/Components/IconMisc/Icon_ImageIcon_UserThumbnail.png")
+const TROPHY_TEX := preload("res://assets/Components/IconMisc/Icon_ImageIcon_Trophy_l.png")
+
+const CARD_TEX      := preload("res://assets/Components/Label/Label_Round01_White.png")
+const ITEM_SLOT_TEX := preload("res://assets/Components/Frame/ItemFrame01_Single_Yellow.png")
+const CHEVRON_TEX   := preload("res://assets/Components/IconMisc/Icon_PictoIcon_Next01.png")
+
+const MEDAL_GOLD_TEX   := preload("res://assets/Components/IconMisc/Icon_ImageIcon_Medal_Gold.png")
+const MEDAL_SILVER_TEX := preload("res://assets/Components/IconMisc/Icon_ImageIcon_Medal_Silver.png")
+const MEDAL_BRONZE_TEX := preload("res://assets/Components/IconMisc/Icon_ImageIcon_Medal_Bronze.png")
+
+const FONT_BOLD := preload("res://assets/fonts/Kanit-Bold.ttf")
+
+# ── FoodCraft warm palette (cream cards on dark cocoa) ──
+const COL_CREAM        := Color(0.96, 0.92, 0.84)   # card bg
+const COL_GOLD         := Color(1.0, 0.78, 0.25)    # buttons / highlights
+const COL_GOLD_PRESSED := Color(0.85, 0.62, 0.12)
+const COL_GREEN        := Color(0.45, 0.68, 0.24)   # active tab
+const COL_OWNER_TINT   := Color(1.0, 0.84, 0.47)    # own-rank row
+const COL_TEXT_DARK    := Color(0.3, 0.23, 0.14)    # text on cream
+const COL_TEXT_SUB     := Color(0.55, 0.48, 0.37)   # secondary on cream
+const COL_SCORE        := Color(0.78, 0.55, 0.08)   # score gold on cream
 
 const SCORE_WIDTH := 88
-const TAB_FONT_SIZE := 15
-const ROW_MIN_HEIGHT := 62.0
-const AVATAR_SIZE := 44.0
-const PODIUM_ORDER := [2, 1, 3]
+const TAB_FONT_SIZE := 16
+const ROW_MIN_HEIGHT := 64.0
+const AVATAR_SIZE := 46.0
 
 @onready var _title: Label = $Margin/VBox/HeaderPanel/HeaderRow/TitleLabel
 @onready var _back: Button = $Margin/VBox/HeaderPanel/HeaderRow/BackButton
@@ -46,10 +73,13 @@ var _in_tier_menu := true
 
 
 func _ready() -> void:
-	_records_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_NEVER
-	_records_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	_tier_menu_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	_tier_menu_list.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_build_tier_menu()
+	if Engine.is_editor_hint():
+		return
+	_records_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_NEVER
+	_records_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	_apply_owner_panel_style()
 	_back.pressed.connect(_back_to_tier_menu)
 	NakamaService.leaderboard_loaded.connect(_on_leaderboard_loaded)
@@ -57,7 +87,6 @@ func _ready() -> void:
 	NakamaService.hall_of_fame_loaded.connect(_on_hall_of_fame_loaded)
 	NakamaService.connection_restored.connect(_on_connection_restored)
 	_tier_menu_scroll.resized.connect(_sync_tier_menu_layout)
-	_build_tier_menu()
 
 
 func prepare_panel() -> void:
@@ -106,8 +135,33 @@ func _sync_tier_menu_layout() -> void:
 		return
 	_tier_menu_list.custom_minimum_size.y = area_h
 	var sep := float(_tier_menu_list.get_theme_constant("separation"))
-	var card_h := (area_h - sep * 4.0) / 5.0
+	# 5 cards → 4 separations
+	var card_h := maxf((area_h - sep * 4.0) / 5.0, 80.0)
 	_apply_tier_card_scale(card_h)
+
+
+func _make_card_ninepatch(tint: Color) -> NinePatchRect:
+	var bg := NinePatchRect.new()
+	bg.texture = CARD_TEX
+	bg.self_modulate = tint
+	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
+	bg.patch_margin_left = 20
+	bg.patch_margin_top = 20
+	bg.patch_margin_right = 20
+	bg.patch_margin_bottom = 24
+	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	return bg
+
+
+func _make_card_style(tint: Color) -> StyleBoxTexture:
+	var sb := StyleBoxTexture.new()
+	sb.texture = CARD_TEX
+	sb.modulate_color = tint
+	sb.texture_margin_left = 20.0
+	sb.texture_margin_top = 20.0
+	sb.texture_margin_right = 20.0
+	sb.texture_margin_bottom = 24.0
+	return sb
 
 
 func _make_tier_menu_card(tier: int, meta: Dictionary) -> Control:
@@ -115,122 +169,137 @@ func _make_tier_menu_card(tier: int, meta: Dictionary) -> Control:
 	root.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	root.size_flags_vertical = Control.SIZE_EXPAND_FILL
 
-	var panel := PanelContainer.new()
-	panel.set_anchors_preset(Control.PRESET_FULL_RECT)
-	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	panel.add_theme_stylebox_override("panel", _make_menu_card_style())
-	root.add_child(panel)
+	# ── Background: cream rounded card ──
+	root.add_child(_make_card_ninepatch(COL_CREAM))
 
+	# ── Content row ──
 	var margin := MarginContainer.new()
-	margin.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	margin.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	margin.add_theme_constant_override("margin_left", 16)
+	margin.set_anchors_preset(Control.PRESET_FULL_RECT)
+	margin.add_theme_constant_override("margin_left", 12)
 	margin.add_theme_constant_override("margin_right", 16)
-	margin.add_theme_constant_override("margin_top", 10)
-	margin.add_theme_constant_override("margin_bottom", 10)
+	margin.add_theme_constant_override("margin_top", 8)
+	margin.add_theme_constant_override("margin_bottom", 12)
 	margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	panel.add_child(margin)
+	root.add_child(margin)
 
 	var row := HBoxContainer.new()
 	row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	row.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	row.alignment = BoxContainer.ALIGNMENT_CENTER
-	row.add_theme_constant_override("separation", 18)
+	row.add_theme_constant_override("separation", 14)
 	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	margin.add_child(row)
 
-	var icon_box := PanelContainer.new()
-	icon_box.custom_minimum_size = Vector2(96, 96)
-	icon_box.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	icon_box.add_theme_stylebox_override("panel", _make_icon_box_style())
-	row.add_child(icon_box)
+	# ── Left: golden badge slot with tier icon ──
+	var slot_wrap := Control.new()
+	slot_wrap.custom_minimum_size = Vector2(88, 88)
+	slot_wrap.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	row.add_child(slot_wrap)
 
-	var icon_center := CenterContainer.new()
-	icon_center.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	icon_box.add_child(icon_center)
+	var slot_bg := TextureRect.new()
+	slot_bg.texture = ITEM_SLOT_TEX
+	slot_bg.set_anchors_preset(Control.PRESET_FULL_RECT)
+	slot_bg.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	slot_bg.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	slot_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	slot_wrap.add_child(slot_bg)
 
-	var icon := Label.new()
+	var icon := TextureRect.new()
+	icon.texture = TIER_ICONS.get(tier, TROPHY_TEX)
+	icon.set_anchors_preset(Control.PRESET_FULL_RECT)
+	icon.offset_left = 16.0
+	icon.offset_top = 14.0
+	icon.offset_right = -16.0
+	icon.offset_bottom = -18.0
+	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	icon.text = String(meta.get("emoji", "🏆"))
-	icon.add_theme_font_size_override("font_size", 48)
-	icon_center.add_child(icon)
+	slot_wrap.add_child(icon)
 
+	# ── Center: title + desc (dark text on cream) ──
 	var info := VBoxContainer.new()
 	info.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	info.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	info.add_theme_constant_override("separation", 6)
+	info.add_theme_constant_override("separation", 2)
 	info.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	row.add_child(info)
 
 	var title := Label.new()
-	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	title.text = String(meta.get("title", ""))
-	title.add_theme_font_size_override("font_size", 30)
-	title.add_theme_color_override("font_color", Color(0.22, 0.14, 0.08, 1))
+	title.add_theme_font_override("font", FONT_BOLD)
+	title.add_theme_font_size_override("font_size", 26)
+	title.add_theme_color_override("font_color", COL_TEXT_DARK)
+	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	info.add_child(title)
 
 	var desc := Label.new()
-	desc.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	desc.text = String(meta.get("desc", ""))
 	desc.autowrap_mode = TextServer.AUTOWRAP_WORD
 	desc.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	desc.add_theme_font_size_override("font_size", 20)
-	desc.add_theme_color_override("font_color", Color(0.48, 0.36, 0.26, 1))
+	desc.add_theme_font_size_override("font_size", 16)
+	desc.add_theme_color_override("font_color", COL_TEXT_SUB)
+	desc.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	info.add_child(desc)
 
-	var chevron := Label.new()
-	chevron.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	chevron.text = "›"
-	chevron.custom_minimum_size = Vector2(32, 0)
-	chevron.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	chevron.add_theme_font_size_override("font_size", 46)
-	chevron.add_theme_color_override("font_color", Color(0.62, 0.48, 0.3, 1))
-	chevron.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	row.add_child(chevron)
+	# ── Right: gold "ดูอันดับ" button ──
+	var btn_wrap := Control.new()
+	btn_wrap.custom_minimum_size = Vector2(128, 52)
+	btn_wrap.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	row.add_child(btn_wrap)
 
+	var btn_bg := _make_card_ninepatch(COL_GOLD)
+	btn_wrap.add_child(btn_bg)
+
+	var btn_lbl := Label.new()
+	btn_lbl.text = "ดูอันดับ"
+	btn_lbl.set_anchors_preset(Control.PRESET_FULL_RECT)
+	btn_lbl.offset_bottom = -4.0
+	btn_lbl.add_theme_font_override("font", FONT_BOLD)
+	btn_lbl.add_theme_font_size_override("font_size", 17)
+	btn_lbl.add_theme_color_override("font_color", COL_TEXT_DARK)
+	btn_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	btn_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	btn_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	btn_wrap.add_child(btn_lbl)
+
+	# ── Transparent hit area ──
 	var hit := Button.new()
 	hit.focus_mode = Control.FOCUS_NONE
 	hit.flat = true
 	hit.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	hit.set_anchors_preset(Control.PRESET_FULL_RECT)
 	var empty_style := StyleBoxEmpty.new()
-	hit.add_theme_stylebox_override("normal", empty_style)
-	hit.add_theme_stylebox_override("hover", empty_style)
-	hit.add_theme_stylebox_override("pressed", empty_style)
-	hit.add_theme_stylebox_override("disabled", empty_style)
-	hit.add_theme_stylebox_override("focus", empty_style)
+	for s in ["normal", "hover", "pressed", "disabled", "focus"]:
+		hit.add_theme_stylebox_override(s, empty_style)
 	hit.pressed.connect(_open_tier.bind(tier))
 	root.add_child(hit)
 
-	root.set_meta("tier_icon_box", icon_box)
-	root.set_meta("tier_icon", icon)
+	root.set_meta("tier_icon_box", slot_wrap)
 	root.set_meta("tier_title", title)
 	root.set_meta("tier_desc", desc)
-	root.set_meta("tier_chevron", chevron)
+	root.set_meta("tier_chevron", btn_lbl)
 
 	return root
 
 
 func _apply_tier_card_scale(card_h: float) -> void:
-	var icon_sz := clampf(card_h * 0.58, 80.0, 112.0)
-	var title_sz := int(clampf(card_h * 0.2, 26, 36))
-	var desc_sz := int(clampf(card_h * 0.13, 17, 24))
-	var emoji_sz := int(clampf(icon_sz * 0.54, 40, 60))
-	var chevron_sz := int(clampf(card_h * 0.3, 36, 56))
+	var icon_sz  := clampf(card_h * 0.62, 70.0, 100.0)
+	var title_sz := int(clampf(card_h * 0.2, 22, 32))
+	var desc_sz  := int(clampf(card_h * 0.13, 14, 22))
+	var btn_sz   := int(clampf(card_h * 0.16, 13, 19))
 
 	for child in _tier_menu_list.get_children():
 		if not child.has_meta("tier_icon_box"):
 			continue
-		var icon_box: PanelContainer = child.get_meta("tier_icon_box")
+		child.custom_minimum_size.y = card_h
+		var icon_box: Control = child.get_meta("tier_icon_box")
 		icon_box.custom_minimum_size = Vector2(icon_sz, icon_sz)
-		var icon: Label = child.get_meta("tier_icon")
-		icon.add_theme_font_size_override("font_size", emoji_sz)
 		var title: Label = child.get_meta("tier_title")
 		title.add_theme_font_size_override("font_size", title_sz)
 		var desc: Label = child.get_meta("tier_desc")
 		desc.add_theme_font_size_override("font_size", desc_sz)
-		var chevron: Label = child.get_meta("tier_chevron")
-		chevron.add_theme_font_size_override("font_size", chevron_sz)
+		var btn_lbl: Label = child.get_meta("tier_chevron")
+		btn_lbl.add_theme_font_size_override("font_size", btn_sz)
 
 
 func _open_tier(tier: int) -> void:
@@ -421,10 +490,9 @@ func _apply_leaderboard(data: Dictionary) -> void:
 	_hide_status()
 	var score_unit := String(data.get("score_unit", ""))
 	var board_id := String(data.get("board_id", _active_board))
-	_build_podium(records, board_id, score_unit)
+	_podium.visible = false
 	for record in records:
-		if int(record.get("rank", 0)) > 3:
-			_rows.add_child(_make_rank_row(record, board_id, score_unit))
+		_rows.add_child(_make_rank_row(record, board_id, score_unit))
 
 	var owner_data: Dictionary = data.get("owner", {})
 	if owner_data.is_empty():
@@ -453,96 +521,11 @@ func _apply_hall_of_fame(data: Dictionary) -> void:
 		_rows.add_child(_make_hall_row(entries[i], i + 1))
 
 
-func _build_podium(records: Array, board_id: String, score_unit: String) -> void:
-	_clear_podium()
-	var top_records := _records_up_to_rank(records, 3)
-	if top_records.is_empty():
-		_podium.visible = false
-		return
-	_podium.visible = true
-	for rank in PODIUM_ORDER:
-		var record: Dictionary = top_records.get(rank, {})
-		_podium.add_child(_make_podium_slot(rank, record, board_id, score_unit))
-
-
-func _records_up_to_rank(records: Array, max_rank: int) -> Dictionary:
-	var out := {}
-	for record in records:
-		var rank := int(record.get("rank", 0))
-		if rank >= 1 and rank <= max_rank:
-			out[rank] = record
-	return out
-
-
-func _make_podium_slot(rank: int, record: Dictionary, board_id: String, score_unit: String) -> Control:
-	var slot := VBoxContainer.new()
-	slot.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	slot.add_theme_constant_override("separation", 4)
-	slot.alignment = BoxContainer.ALIGNMENT_END
-
-	var pedestal := PanelContainer.new()
-	pedestal.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	pedestal.add_theme_stylebox_override("panel", _make_podium_style(rank))
-
-	var body := VBoxContainer.new()
-	body.alignment = BoxContainer.ALIGNMENT_CENTER
-	body.add_theme_constant_override("separation", 4)
-	pedestal.add_child(body)
-
-	var margin := MarginContainer.new()
-	margin.add_theme_constant_override("margin_left", 6)
-	margin.add_theme_constant_override("margin_right", 6)
-	margin.add_theme_constant_override("margin_top", 8)
-	margin.add_theme_constant_override("margin_bottom", 8)
-	body.add_child(margin)
-
-	var inner := VBoxContainer.new()
-	inner.alignment = BoxContainer.ALIGNMENT_CENTER
-	inner.add_theme_constant_override("separation", 4)
-	margin.add_child(inner)
-
-	if record.is_empty():
-		inner.add_theme_constant_override("separation", 0)
-		var empty := Label.new()
-		empty.text = "-"
-		empty.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		empty.add_theme_font_size_override("font_size", 20)
-		empty.add_theme_color_override("font_color", Color(0.5, 0.4, 0.3, 0.6))
-		inner.add_child(empty)
-	else:
-		inner.add_child(_make_avatar())
-		var name := Label.new()
-		name.text = String(record.get("username", "???"))
-		name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		name.clip_text = true
-		name.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-		name.add_theme_font_size_override("font_size", 14 if rank == 1 else 13)
-		name.add_theme_color_override("font_color", Color(0.2, 0.12, 0.06, 1))
-		inner.add_child(name)
-		var score := Label.new()
-		score.text = _format_score(int(record.get("score", 0)), board_id, score_unit)
-		score.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		score.add_theme_font_size_override("font_size", 15 if rank == 1 else 14)
-		score.add_theme_color_override("font_color", Color(0.35, 0.22, 0.1, 1))
-		inner.add_child(score)
-
-	slot.add_child(pedestal)
-
-	var medal := Label.new()
-	medal.text = _rank_display(rank)
-	medal.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	medal.add_theme_font_size_override("font_size", 22 if rank == 1 else 18)
-	slot.add_child(medal)
-
-	pedestal.custom_minimum_size.y = 108.0 if rank == 1 else 84.0
-	return slot
-
-
 func _make_rank_row(record: Dictionary, board_id: String, score_unit: String) -> PanelContainer:
 	var rank := int(record.get("rank", 0))
 	var username := String(record.get("username", "???"))
 	var score_text := _format_score(int(record.get("score", 0)), board_id, score_unit)
-	return _make_list_row(rank, username, "เชฟ", score_text, false)
+	return _make_list_row(rank, username, "", score_text, false)
 
 
 func _make_hall_row(entry: Dictionary, index: int) -> PanelContainer:
@@ -561,26 +544,47 @@ func _make_list_row(
 ) -> PanelContainer:
 	var panel := PanelContainer.new()
 	panel.custom_minimum_size.y = ROW_MIN_HEIGHT
-	panel.add_theme_stylebox_override("panel", _make_row_style(is_owner))
+	panel.add_theme_stylebox_override(
+		"panel", _make_card_style(COL_OWNER_TINT if is_owner else COL_CREAM)
+	)
 
 	var margin := MarginContainer.new()
-	margin.add_theme_constant_override("margin_left", 8)
-	margin.add_theme_constant_override("margin_right", 8)
+	margin.add_theme_constant_override("margin_left", 10)
+	margin.add_theme_constant_override("margin_right", 14)
 	margin.add_theme_constant_override("margin_top", 6)
-	margin.add_theme_constant_override("margin_bottom", 6)
+	margin.add_theme_constant_override("margin_bottom", 10)
 	panel.add_child(margin)
 
 	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", 10)
+	row.add_theme_constant_override("separation", 12)
 	margin.add_child(row)
 
-	var rank_label := Label.new()
-	rank_label.custom_minimum_size = Vector2(32, 0)
-	rank_label.text = str(rank) if rank > 3 else _rank_display(rank)
-	rank_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	rank_label.add_theme_font_size_override("font_size", 16)
-	rank_label.add_theme_color_override("font_color", Color(0.4, 0.3, 0.2, 1))
-	row.add_child(rank_label)
+	# ── Rank cell: winged medal for 1-3, number for the rest ──
+	var rank_cell := Control.new()
+	rank_cell.custom_minimum_size = Vector2(48, 0)
+	row.add_child(rank_cell)
+	if rank >= 1 and rank <= 3:
+		var medal := TextureRect.new()
+		match rank:
+			1: medal.texture = MEDAL_GOLD_TEX
+			2: medal.texture = MEDAL_SILVER_TEX
+			_: medal.texture = MEDAL_BRONZE_TEX
+		medal.set_anchors_preset(Control.PRESET_FULL_RECT)
+		medal.offset_top = 2.0
+		medal.offset_bottom = -2.0
+		medal.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		medal.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		rank_cell.add_child(medal)
+	else:
+		var rank_label := Label.new()
+		rank_label.text = str(rank)
+		rank_label.set_anchors_preset(Control.PRESET_FULL_RECT)
+		rank_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		rank_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		rank_label.add_theme_font_override("font", FONT_BOLD)
+		rank_label.add_theme_font_size_override("font_size", 20)
+		rank_label.add_theme_color_override("font_color", COL_TEXT_SUB)
+		rank_cell.add_child(rank_label)
 
 	if not _showing_hall:
 		row.add_child(_make_avatar())
@@ -588,14 +592,16 @@ func _make_list_row(
 	var info := VBoxContainer.new()
 	info.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	info.add_theme_constant_override("separation", 0)
+	info.alignment = BoxContainer.ALIGNMENT_CENTER
 	row.add_child(info)
 
 	var title_label := Label.new()
 	title_label.text = title_text
 	title_label.clip_text = true
 	title_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-	title_label.add_theme_font_size_override("font_size", 17)
-	title_label.add_theme_color_override("font_color", Color(0.2, 0.12, 0.06, 1))
+	title_label.add_theme_font_override("font", FONT_BOLD)
+	title_label.add_theme_font_size_override("font_size", 18)
+	title_label.add_theme_color_override("font_color", COL_TEXT_DARK)
 	info.add_child(title_label)
 
 	if not subtitle_text.is_empty():
@@ -603,8 +609,8 @@ func _make_list_row(
 		subtitle_label.text = subtitle_text
 		subtitle_label.clip_text = true
 		subtitle_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-		subtitle_label.add_theme_font_size_override("font_size", 12)
-		subtitle_label.add_theme_color_override("font_color", Color(0.48, 0.36, 0.26, 1))
+		subtitle_label.add_theme_font_size_override("font_size", 13)
+		subtitle_label.add_theme_color_override("font_color", COL_TEXT_SUB)
 		info.add_child(subtitle_label)
 
 	if not score_text.is_empty():
@@ -614,48 +620,38 @@ func _make_list_row(
 
 
 func _make_avatar() -> Control:
-	var wrap := Control.new()
-	wrap.custom_minimum_size = Vector2(AVATAR_SIZE, AVATAR_SIZE)
-
-	var bg := TextureRect.new()
-	bg.texture = AVATAR_BG_TEX
-	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
-	bg.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	bg.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-	wrap.add_child(bg)
-
 	var face := TextureRect.new()
+	face.custom_minimum_size = Vector2(AVATAR_SIZE, AVATAR_SIZE)
 	face.texture = AVATAR_TEX
-	face.set_anchors_preset(Control.PRESET_FULL_RECT)
-	face.offset_left = 4.0
-	face.offset_top = 4.0
-	face.offset_right = -4.0
-	face.offset_bottom = -4.0
 	face.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	face.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	wrap.add_child(face)
-	return wrap
+	face.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	return face
 
 
 func _make_score_box(score_text: String) -> HBoxContainer:
 	var box := HBoxContainer.new()
-	box.add_theme_constant_override("separation", 4)
+	box.add_theme_constant_override("separation", 5)
 	box.custom_minimum_size.x = SCORE_WIDTH
-	box.alignment = BoxContainer.ALIGNMENT_CENTER
-
-	var trophy := TextureRect.new()
-	trophy.custom_minimum_size = Vector2(20, 20)
-	trophy.texture = TROPHY_TEX
-	trophy.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	trophy.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	box.add_child(trophy)
+	box.alignment = BoxContainer.ALIGNMENT_END
 
 	var label := Label.new()
 	label.text = score_text
+	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	label.add_theme_font_size_override("font_size", 17)
-	label.add_theme_color_override("font_color", Color(0.22, 0.14, 0.08, 1))
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	label.add_theme_font_override("font", FONT_BOLD)
+	label.add_theme_font_size_override("font_size", 18)
+	label.add_theme_color_override("font_color", COL_SCORE)
 	box.add_child(label)
+
+	var trophy := TextureRect.new()
+	trophy.custom_minimum_size = Vector2(24, 24)
+	trophy.texture = TROPHY_TEX
+	trophy.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	trophy.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	trophy.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	box.add_child(trophy)
 	return box
 
 
@@ -665,43 +661,31 @@ func _make_tab_button(text: String) -> Button:
 	btn.focus_mode = Control.FOCUS_NONE
 	btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	btn.size_flags_stretch_ratio = 1.0
-	btn.custom_minimum_size.y = 42
+	btn.custom_minimum_size.y = 48
 	btn.add_theme_font_size_override("font_size", TAB_FONT_SIZE)
 	_apply_tab_style(btn, false)
 	return btn
 
 
 func _apply_tab_style(btn: Button, active: bool) -> void:
-	var box := StyleBoxFlat.new()
-	box.content_margin_left = 6.0
-	box.content_margin_right = 6.0
-	box.content_margin_top = 10.0
-	box.content_margin_bottom = 10.0
-	box.corner_radius_top_left = 14
-	box.corner_radius_top_right = 14
-	box.corner_radius_bottom_left = 14
-	box.corner_radius_bottom_right = 14
-	if active:
-		box.bg_color = Color(0.98, 0.86, 0.42, 1)
-		box.border_width_left = 2
-		box.border_width_top = 2
-		box.border_width_right = 2
-		box.border_width_bottom = 2
-		box.border_color = Color(0.82, 0.62, 0.18, 1)
-	else:
-		box.bg_color = Color(0.88, 0.8, 0.68, 1)
-		box.border_width_left = 2
-		box.border_width_top = 2
-		box.border_width_right = 2
-		box.border_width_bottom = 2
-		box.border_color = Color(0.68, 0.54, 0.34, 0.55)
+	var box := _make_card_style(COL_GREEN if active else COL_CREAM)
+	box.content_margin_left = 8.0
+	box.content_margin_right = 8.0
+	box.content_margin_top = 8.0
+	box.content_margin_bottom = 12.0
 	btn.add_theme_stylebox_override("normal", box)
 	btn.add_theme_stylebox_override("hover", box)
 	btn.add_theme_stylebox_override("pressed", box)
+	btn.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
 	btn.add_theme_color_override(
 		"font_color",
-		Color(0.24, 0.14, 0.08, 1) if active else Color(0.45, 0.34, 0.24, 1)
+		Color(1, 1, 1, 1) if active else COL_TEXT_SUB
 	)
+	btn.add_theme_color_override(
+		"font_outline_color",
+		Color(0.25, 0.42, 0.1, 0.6) if active else Color(0, 0, 0, 0)
+	)
+	btn.add_theme_constant_override("outline_size", 3 if active else 0)
 
 
 func _update_board_buttons() -> void:
@@ -709,94 +693,13 @@ func _update_board_buttons() -> void:
 		_apply_tab_style(_board_buttons[board_id], board_id == _active_board)
 
 
-func _make_menu_card_style() -> StyleBoxFlat:
-	var box := StyleBoxFlat.new()
-	box.bg_color = Color(0.94, 0.88, 0.76, 1)
-	box.border_width_left = 2
-	box.border_width_top = 2
-	box.border_width_right = 2
-	box.border_width_bottom = 2
-	box.border_color = Color(0.68, 0.52, 0.32, 0.65)
-	box.corner_radius_top_left = 14
-	box.corner_radius_top_right = 14
-	box.corner_radius_bottom_left = 14
-	box.corner_radius_bottom_right = 14
-	return box
-
-
-func _make_icon_box_style() -> StyleBoxFlat:
-	var box := StyleBoxFlat.new()
-	box.bg_color = Color(0.98, 0.92, 0.8, 1)
-	box.border_width_left = 2
-	box.border_width_top = 2
-	box.border_width_right = 2
-	box.border_width_bottom = 2
-	box.border_color = Color(0.72, 0.55, 0.3, 0.5)
-	box.corner_radius_top_left = 12
-	box.corner_radius_top_right = 12
-	box.corner_radius_bottom_left = 12
-	box.corner_radius_bottom_right = 12
-	return box
-
-
-func _make_podium_style(rank: int) -> StyleBoxFlat:
-	var box := StyleBoxFlat.new()
-	match rank:
-		1:
-			box.bg_color = Color(1, 0.88, 0.45, 0.55)
-		2:
-			box.bg_color = Color(0.82, 0.86, 0.92, 0.65)
-		_:
-			box.bg_color = Color(0.92, 0.72, 0.52, 0.55)
-	box.corner_radius_top_left = 12
-	box.corner_radius_top_right = 12
-	box.corner_radius_bottom_left = 4
-	box.corner_radius_bottom_right = 4
-	box.border_width_left = 2
-	box.border_width_top = 2
-	box.border_width_right = 2
-	box.border_width_bottom = 2
-	box.border_color = Color(0.62, 0.48, 0.28, 0.45)
-	return box
-
-
-func _make_row_style(is_owner: bool) -> StyleBoxFlat:
-	var box := StyleBoxFlat.new()
-	box.border_width_bottom = 1
-	box.border_color = Color(0.62, 0.5, 0.36, 0.22)
-	box.bg_color = Color(1, 0.78, 0.35, 0.18) if is_owner else Color(0, 0, 0, 0)
-	return box
-
-
 func _apply_owner_panel_style() -> void:
-	var box := StyleBoxFlat.new()
-	box.bg_color = Color(0.28, 0.52, 0.82, 1)
-	box.border_width_left = 2
-	box.border_width_top = 2
-	box.border_width_right = 2
-	box.border_width_bottom = 2
-	box.border_color = Color(0.18, 0.38, 0.62, 1)
-	box.corner_radius_top_left = 14
-	box.corner_radius_top_right = 14
-	box.corner_radius_bottom_left = 14
-	box.corner_radius_bottom_right = 14
-	box.content_margin_left = 10
-	box.content_margin_right = 10
-	box.content_margin_top = 8
-	box.content_margin_bottom = 8
+	var box := _make_card_style(COL_OWNER_TINT)
+	box.content_margin_left = 12.0
+	box.content_margin_right = 14.0
+	box.content_margin_top = 8.0
+	box.content_margin_bottom = 12.0
 	_owner_panel.add_theme_stylebox_override("panel", box)
-
-
-func _rank_display(rank: int) -> String:
-	match rank:
-		1:
-			return "🥇"
-		2:
-			return "🥈"
-		3:
-			return "🥉"
-		_:
-			return "#%d" % rank
 
 
 func _format_score(score: int, board_id: String, score_unit: String) -> String:

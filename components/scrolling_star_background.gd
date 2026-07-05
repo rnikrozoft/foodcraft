@@ -1,11 +1,12 @@
+@tool
 extends Control
 
-const STAR_TEX := preload("res://assets/Vector_UI_Pack_dobo_ui/Icons/128px/gem_icon_128px.png")
+const STAR_TEX := preload("res://assets/Components/IconMisc/Icon_ImageIcon_Star01_l.png")
 
-@export var bg_color := Color(0.28, 0.56, 0.94, 1)
+@export var bg_color := Color(0.115, 0.09, 0.068, 1)
 @export var star_spacing := Vector2(80, 76)
 @export var star_size := 100
-@export var star_modulate := Color(0.16, 0.38, 0.74, 0.26)
+@export var star_modulate := Color(1, 0.85, 0.55, 0.08)
 @export var scroll_speed := Vector2(9, 13)
 
 var _offset := Vector2.ZERO

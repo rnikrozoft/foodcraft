@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://n2qscsph5gj2"]
 
 [ext_resource type="Script" uid="uid://t0l2ttj7s0og" path="res://components/ingredient_card.gd" id="1_script"]
-[ext_resource type="Texture2D" uid="uid://bhyschb48lulu" path="res://assets/Vector_UI_Pack_dobo_ui/ItemSlots/itemSlot_black.png" id="2_lvnuv"]
+[ext_resource type="Texture2D" uid="uid://coojsx75xdq3v" path="res://assets/Components/Label/Label_Round01_White.png" id="2_lvnuv"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_transparent"]
 
@@ -20,11 +20,12 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+self_modulate = Color(0.96, 0.92, 0.84, 1)
 texture = ExtResource("2_lvnuv")
-patch_margin_left = 16
-patch_margin_top = 14
-patch_margin_right = 16
-patch_margin_bottom = 14
+patch_margin_left = 20
+patch_margin_top = 20
+patch_margin_right = 20
+patch_margin_bottom = 24
 
 [node name="Icon" type="TextureRect" parent="." unique_id=1935494895]
 layout_mode = 1
@@ -60,9 +61,9 @@ mouse_filter = 2
 layout_mode = 0
 offset_top = 1.0
 offset_bottom = 29.0
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_outline_color = Color(0, 0, 0, 0.55)
-theme_override_constants/outline_size = 4
+theme_override_colors/font_color = Color(0.3, 0.23, 0.14, 1)
+theme_override_colors/font_outline_color = Color(1, 0.98, 0.92, 0.75)
+theme_override_constants/outline_size = 3
 theme_override_font_sizes/font_size = 20
 vertical_alignment = 1
 

@@ -1,0 +1,60 @@
+[gd_scene format=3 uid="uid://ingrdtabbar1"]
+
+[ext_resource type="Script" uid="uid://c8h0fvdatcjon" path="res://components/ingredient_tab_bar.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://c1dwoutk8nugu" path="res://assets/Components/UI_Etc/Toggle02_CheckBox_On.png" id="2_bg"]
+
+[node name="IngredientTabBar" type="Control" unique_id=1504808166]
+custom_minimum_size = Vector2(360, 54)
+layout_mode = 3
+anchors_preset = 0
+size_flags_horizontal = 3
+size_flags_vertical = 0
+script = ExtResource("1_script")
+
+[node name="Bg" type="NinePatchRect" parent="." unique_id=1712964170]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.008
+anchor_right = 1.0
+anchor_bottom = 1.2040001
+offset_left = 0.119999886
+offset_bottom = -0.01600647
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_bg")
+patch_margin_left = 30
+patch_margin_top = 14
+patch_margin_right = 30
+patch_margin_bottom = 14
+
+[node name="Layout" type="HBoxContainer" parent="." unique_id=1111111111]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.047000002
+anchor_top = 0.185
+anchor_right = 0.96900004
+anchor_bottom = 1.0
+offset_left = 0.07999992
+offset_top = 0.010000229
+offset_right = 0.15997314
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 0
+
+[node name="Scroll" type="ScrollContainer" parent="Layout" unique_id=2130471942]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+horizontal_scroll_mode = 3
+vertical_scroll_mode = 3
+
+[node name="HBox" type="HBoxContainer" parent="Layout/Scroll" unique_id=1415413883]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 6
+
+[node name="SeeAllSlot" type="Control" parent="Layout" unique_id=-2072745074]
+custom_minimum_size = Vector2(44, 44)
+layout_mode = 2
+size_flags_vertical = 4

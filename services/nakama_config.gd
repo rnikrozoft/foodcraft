@@ -1,6 +1,6 @@
 extends Node
 
-const HOST := "127.0.0.1"
+const HOST_MOBILE := "192.168.0.104"
 const PORT := 7350
 const SERVER_KEY := "foodcraft_dev_key"
 const USE_SSL := false
@@ -35,4 +35,5 @@ func get_fallback_boards() -> Array:
 
 func get_base_url() -> String:
 	var scheme := "https" if USE_SSL else "http"
-	return "%s://%s:%d" % [scheme, HOST, PORT]
+	var host := "127.0.0.1" if OS.get_name() in ["macOS", "Windows", "Linux"] else HOST_MOBILE
+	return "%s://%s:%d" % [scheme, host, PORT]

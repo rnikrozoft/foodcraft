@@ -1,3 +1,4 @@
+@tool
 extends Control
 
 @export var player_name: String = "Food Crafter":

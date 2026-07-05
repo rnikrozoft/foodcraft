@@ -1,17 +1,18 @@
-[gd_scene format=3 uid="uid://c8currdisp001"]
+[gd_scene load_steps=5 format=3 uid="uid://c8currdisp001"]
 
 [ext_resource type="Script" uid="uid://dpl5hgw4tnqch" path="res://components/currency_display.gd" id="1_script"]
 [ext_resource type="PackedScene" uid="uid://c8currrow001" path="res://components/currency_row.tscn" id="2_row"]
-[ext_resource type="Texture2D" uid="uid://dhiqlb7p1bsnd" path="res://assets/Vector_UI_Pack_dobo_ui/Labels/gem_label.png" id="3_gem_bar"]
+[ext_resource type="Texture2D" uid="uid://ntbwlvh8dir2" path="res://assets/Components/UI_Etc/ResourceBar_Icon_Gem_Purple.png" id="3_gem_icon"]
+[ext_resource type="Texture2D" uid="uid://bwpdr4mhq4wfj" path="res://assets/Components/UI_Etc/ResourceBar_Icon_Coin.png" id="4_coin_icon"]
 
 [node name="CurrencyDisplay" type="Control" unique_id=767954790]
-custom_minimum_size = Vector2(263.4, 55.899998)
+custom_minimum_size = Vector2(258, 44)
 layout_mode = 3
 anchors_preset = 0
 offset_left = 440.6
 offset_top = 12.0
-offset_right = 704.0
-offset_bottom = 67.9
+offset_right = 698.6
+offset_bottom = 56.0
 size_flags_horizontal = 4
 size_flags_vertical = 4
 script = ExtResource("1_script")
@@ -29,9 +30,11 @@ theme_override_constants/separation = 6
 alignment = 1
 
 [node name="GemRow" parent="HBox" unique_id=1870990360 instance=ExtResource("2_row")]
-custom_minimum_size = Vector2(128.7, 55.249996)
+custom_minimum_size = Vector2(126, 44)
 layout_mode = 2
-bar_texture = ExtResource("3_gem_bar")
+icon = ExtResource("3_gem_icon")
 
 [node name="CoinRow" parent="HBox" unique_id=496741951 instance=ExtResource("2_row")]
+custom_minimum_size = Vector2(126, 44)
 layout_mode = 2
+icon = ExtResource("4_coin_icon")

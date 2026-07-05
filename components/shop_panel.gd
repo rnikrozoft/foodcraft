@@ -7,8 +7,13 @@ signal purchase_celebrated(display: Dictionary, origin: Vector2, show_full: bool
 enum Tab { GENERAL, INGREDIENTS }
 
 const TAB_META := {
-	Tab.GENERAL: {"title": "ทั่วไป", "icon": "🛒", "subtitle": "เหรียญ ดาว และข้อเสนอพิเศษ"},
-	Tab.INGREDIENTS: {"title": "วัตถุดิบ", "icon": "🥬", "subtitle": "ปลดล็อกวัตถุดิบหลากระดับ"},
+	Tab.GENERAL: {"title": "ทั่วไป", "subtitle": "เหรียญ ดาว และข้อเสนอพิเศษ"},
+	Tab.INGREDIENTS: {"title": "วัตถุดิบ", "subtitle": "ปลดล็อกวัตถุดิบหลากระดับ"},
+}
+
+const TAB_ICONS := {
+	Tab.GENERAL: preload("res://assets/Components/IconMisc/Icon_MenuIcon02_Shop.Png"),
+	Tab.INGREDIENTS: preload("res://assets/Components/Icon_ItemIcons/128/Icon_Egg.png"),
 }
 
 const COIN_PACKS := [
@@ -35,13 +40,29 @@ const RARITY_COLORS := {
 	"legendary": Color(0.95, 0.76, 0.18, 1),
 }
 
-const COIN_TEX := preload("res://assets/Vector_UI_Pack_dobo_ui/Icons/128px/coin_icon_128px.png")
-const STAR_TEX := preload("res://assets/Vector_UI_Pack_dobo_ui/Icons/128px/gem_icon_128px.png")
-const BTN_GREEN := preload("res://assets/Vector_UI_Pack_dobo_ui/Buttons/button_green.png")
-const BTN_YELLOW := preload("res://assets/Vector_UI_Pack_dobo_ui/Buttons/button_yellow.png")
-const BTN_PURPLE := preload("res://assets/Vector_UI_Pack_dobo_ui/Buttons/button_purple.png")
-const TREASURE_TEX := preload("res://assets/Vector_UI_Pack_dobo_ui/Icons/128px/chestRuby_icon_128px.png")
-const LOCK_TEX := preload("res://assets/Vector_UI_Pack_dobo_ui/Icons/128px/key_icon_128px.png")
+const COIN_TEX := preload("res://assets/Components/IconMisc/Icon_ImageIcon_Coin01_l.png")
+const STAR_TEX := preload("res://assets/Components/IconMisc/Icon_ImageIcon_Star01_l.png")
+const TREASURE_TEX := preload("res://assets/Components/IconMisc/Icon_ChestIcon_Gold01_l.png")
+const GIFT_TEX := preload("res://assets/Components/IconMisc/Icon_ImageIcon_Gift_Blue.png")
+const AD_TEX := preload("res://assets/Components/IconMisc/Icon_ImageIcon_Ad_01_l.png")
+const CARD_TEX := preload("res://assets/Components/Label/Label_Round01_White.png")
+const FONT_BOLD := preload("res://assets/fonts/Kanit-Bold.ttf")
+
+# ── FoodCraft warm palette (shared with leaderboard/my recipes) ──
+const COL_CREAM       := Color(0.96, 0.92, 0.84)   # product card bg
+const COL_CREAM_DIM   := Color(0.84, 0.8, 0.72)    # dimmed / owned card
+const COL_GOLD        := Color(1.0, 0.78, 0.25)    # gold action button
+const COL_GREEN       := Color(0.45, 0.68, 0.24)   # price button
+const COL_PURPLE      := Color(0.42, 0.28, 0.58)   # hero / featured banner
+const COL_BROWN_DARK  := Color(0.24, 0.18, 0.12)   # inactive tab
+const COL_TEXT_DARK   := Color(0.3, 0.23, 0.14)    # text on cream/gold
+const COL_TEXT_SUB    := Color(0.55, 0.48, 0.37)   # secondary on cream
+const COL_TEXT_CREAM  := Color(0.97, 0.94, 0.87)   # text on dark/banner
+
+# Button color roles (passed to _make_price_button)
+const BTN_GREEN := COL_GREEN
+const BTN_YELLOW := COL_GOLD
+const BTN_PURPLE := COL_GOLD
 
 const GRID_COLS_COINS := 2
 const GRID_COLS_HINTS := 2
@@ -154,7 +175,7 @@ func _build_tabs() -> void:
 	_tab_buttons.clear()
 	for tab in [Tab.GENERAL, Tab.INGREDIENTS]:
 		var meta: Dictionary = TAB_META[tab]
-		var btn := _make_tab_button(String(meta.get("title", "")), String(meta.get("icon", "")))
+		var btn := _make_tab_button(String(meta.get("title", "")), TAB_ICONS.get(tab))
 		btn.pressed.connect(_on_tab_pressed.bind(tab))
 		_tab_row.add_child(btn)
 		_tab_buttons.append({"tab": tab, "button": btn})
@@ -211,7 +232,7 @@ func _build_general_tab() -> void:
 	special_grid.add_child(_make_special_card(
 		"เหรียญรายวัน",
 		daily_desc,
-		"🎁",
+		GIFT_TEX,
 		daily_btn,
 		BTN_GREEN,
 		_on_daily_coins_pressed,
@@ -221,7 +242,7 @@ func _build_general_tab() -> void:
 	special_grid.add_child(_make_special_card(
 		"ดูโฆษณา",
 		"รับ %d เหรียญจากโฆษณา" % GameData.get_ad_reward_coins(),
-		"📺",
+		AD_TEX,
 		"ดูโฆษณา",
 		BTN_YELLOW,
 		_on_watch_ad_pressed
@@ -271,7 +292,7 @@ func _build_ingredient_tab() -> void:
 
 func _make_shop_auto_banner() -> PanelContainer:
 	var panel := PanelContainer.new()
-	panel.add_theme_stylebox_override("panel", _make_banner_style(Color(0.28, 0.38, 0.52, 1)))
+	panel.add_theme_stylebox_override("panel", _make_banner_style(COL_PURPLE))
 
 	var margin := MarginContainer.new()
 	margin.add_theme_constant_override("margin_left", 14)
@@ -286,21 +307,22 @@ func _make_shop_auto_banner() -> PanelContainer:
 
 	var title := Label.new()
 	title.text = "ร้านวัตถุดิบรายวัน"
+	title.add_theme_font_override("font", FONT_BOLD)
 	title.add_theme_font_size_override("font_size", int(_s(17)))
-	title.add_theme_color_override("font_color", Color(1, 0.95, 0.7, 1))
+	title.add_theme_color_override("font_color", COL_TEXT_CREAM)
 	col.add_child(title)
 
 	var desc := Label.new()
 	desc.text = "สุ่มวัตถุดิบที่ยังไม่มีมาขาย — ร้านเปลี่ยนสินค้าอัตโนมัติทุกเที่ยงคืน (UTC)"
 	desc.autowrap_mode = TextServer.AUTOWRAP_WORD
 	desc.add_theme_font_size_override("font_size", int(_s(12)))
-	desc.add_theme_color_override("font_color", Color(0.9, 0.94, 1, 1))
+	desc.add_theme_color_override("font_color", Color(0.85, 0.78, 0.95, 1))
 	col.add_child(desc)
 
 	var timer := _make_countdown_label(GameData.get_next_shop_reset_sec(), "shop_reset")
 	timer.autowrap_mode = TextServer.AUTOWRAP_WORD
 	timer.add_theme_font_size_override("font_size", int(_s(13)))
-	timer.add_theme_color_override("font_color", Color(0.75, 0.9, 1, 1))
+	timer.add_theme_color_override("font_color", Color(0.95, 0.85, 0.55, 1))
 	col.add_child(timer)
 
 	return panel
@@ -361,11 +383,11 @@ func _make_feature_banner(
 	title: String,
 	desc: String,
 	price: String,
-	btn_tex: Texture2D,
+	btn_color: Color,
 	callback: Callable
 ) -> PanelContainer:
 	var panel := PanelContainer.new()
-	panel.add_theme_stylebox_override("panel", _make_banner_style(Color(0.42, 0.28, 0.62, 1)))
+	panel.add_theme_stylebox_override("panel", _make_banner_style(COL_PURPLE))
 
 	var margin := MarginContainer.new()
 	margin.add_theme_constant_override("margin_left", 14)
@@ -393,20 +415,23 @@ func _make_feature_banner(
 
 	var title_label := Label.new()
 	title_label.text = title
-	title_label.add_theme_font_size_override("font_size", int(_s(17)))
-	title_label.add_theme_color_override("font_color", Color(1, 0.95, 0.7, 1))
+	title_label.add_theme_font_override("font", FONT_BOLD)
+	title_label.add_theme_font_size_override("font_size", int(_s(18)))
+	title_label.add_theme_color_override("font_color", COL_TEXT_CREAM)
 	info.add_child(title_label)
 
 	var desc_label := Label.new()
 	desc_label.text = desc
 	desc_label.autowrap_mode = TextServer.AUTOWRAP_WORD
 	desc_label.add_theme_font_size_override("font_size", int(_s(12)))
-	desc_label.add_theme_color_override("font_color", Color(0.92, 0.86, 1, 1))
+	desc_label.add_theme_color_override("font_color", Color(0.85, 0.78, 0.95, 1))
 	info.add_child(desc_label)
 
 	var btn_col := VBoxContainer.new()
 	btn_col.alignment = BoxContainer.ALIGNMENT_CENTER
-	btn_col.add_child(_make_price_button(price, btn_tex, callback, true))
+	var btn := _make_price_button(price, btn_color, callback, true)
+	btn.custom_minimum_size.x = _s(96)
+	btn_col.add_child(btn)
 	row.add_child(btn_col)
 	return panel
 
@@ -414,9 +439,9 @@ func _make_feature_banner(
 func _make_remove_ads_banner() -> PanelContainer:
 	var panel := PanelContainer.new()
 	if GameData.is_ads_removed():
-		panel.add_theme_stylebox_override("panel", _make_banner_style(Color(0.22, 0.48, 0.34, 1)))
+		panel.add_theme_stylebox_override("panel", _make_banner_style(Color(0.3, 0.46, 0.22, 1)))
 	else:
-		panel.add_theme_stylebox_override("panel", _make_banner_style(Color(0.55, 0.22, 0.28, 1)))
+		panel.add_theme_stylebox_override("panel", _make_banner_style(Color(0.58, 0.26, 0.2, 1)))
 
 	var margin := MarginContainer.new()
 	margin.add_theme_constant_override("margin_left", 14)
@@ -431,8 +456,9 @@ func _make_remove_ads_banner() -> PanelContainer:
 
 	var title := Label.new()
 	title.text = "ลบโฆษณา Google"
+	title.add_theme_font_override("font", FONT_BOLD)
 	title.add_theme_font_size_override("font_size", int(_s(18)))
-	title.add_theme_color_override("font_color", Color(1, 0.95, 0.75, 1))
+	title.add_theme_color_override("font_color", COL_TEXT_CREAM)
 	col.add_child(title)
 
 	var desc := Label.new()
@@ -456,7 +482,7 @@ func _make_remove_ads_banner() -> PanelContainer:
 
 func _make_info_banner(title: String, desc: String) -> PanelContainer:
 	var panel := PanelContainer.new()
-	panel.add_theme_stylebox_override("panel", _make_banner_style(Color(0.2, 0.36, 0.52, 1)))
+	panel.add_theme_stylebox_override("panel", _make_banner_style(Color(0.27, 0.21, 0.14, 1)))
 	var margin := MarginContainer.new()
 	margin.add_theme_constant_override("margin_left", 14)
 	margin.add_theme_constant_override("margin_right", 14)
@@ -468,14 +494,15 @@ func _make_info_banner(title: String, desc: String) -> PanelContainer:
 	margin.add_child(col)
 	var title_label := Label.new()
 	title_label.text = title
+	title_label.add_theme_font_override("font", FONT_BOLD)
 	title_label.add_theme_font_size_override("font_size", int(_s(15)))
-	title_label.add_theme_color_override("font_color", Color(1, 0.92, 0.55, 1))
+	title_label.add_theme_color_override("font_color", Color(1, 0.85, 0.45, 1))
 	col.add_child(title_label)
 	var desc_label := Label.new()
 	desc_label.text = desc
 	desc_label.autowrap_mode = TextServer.AUTOWRAP_WORD
 	desc_label.add_theme_font_size_override("font_size", int(_s(12)))
-	desc_label.add_theme_color_override("font_color", Color(0.9, 0.94, 1, 1))
+	desc_label.add_theme_color_override("font_color", Color(0.85, 0.79, 0.66, 1))
 	col.add_child(desc_label)
 	return panel
 
@@ -484,8 +511,9 @@ func _make_section_header(text: String) -> Label:
 	var label := Label.new()
 	label.text = "— %s —" % text
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	label.add_theme_font_size_override("font_size", int(_s(13)))
-	label.add_theme_color_override("font_color", Color(0.72, 0.58, 0.38, 1))
+	label.add_theme_font_override("font", FONT_BOLD)
+	label.add_theme_font_size_override("font_size", int(_s(14)))
+	label.add_theme_color_override("font_color", Color(0.85, 0.7, 0.4, 1))
 	return label
 
 
@@ -539,7 +567,8 @@ func _make_coin_card(pack: Dictionary) -> PanelContainer:
 	amount.set_meta("shop_amount", true)
 	amount.text = _format_number(coins)
 	amount.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	amount.add_theme_color_override("font_color", Color(0.22, 0.14, 0.08, 1))
+	amount.add_theme_font_override("font", FONT_BOLD)
+	amount.add_theme_color_override("font_color", COL_TEXT_DARK)
 	body.add_child(amount)
 
 	var price := String(pack.get("price", ""))
@@ -567,7 +596,8 @@ func _make_hint_card(pack: Dictionary) -> PanelContainer:
 	amount.set_meta("shop_amount", true)
 	amount.text = "%d ดาว" % stars
 	amount.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	amount.add_theme_color_override("font_color", Color(0.22, 0.14, 0.08, 1))
+	amount.add_theme_font_override("font", FONT_BOLD)
+	amount.add_theme_color_override("font_color", COL_TEXT_DARK)
 	body.add_child(amount)
 
 	var price := String(pack.get("price", ""))
@@ -578,9 +608,9 @@ func _make_hint_card(pack: Dictionary) -> PanelContainer:
 func _make_special_card(
 	title: String,
 	desc: String,
-	emoji: String,
+	icon_tex: Texture2D,
 	price: String,
-	btn_tex: Texture2D,
+	btn_color: Color,
 	callback: Callable,
 	enabled: bool = true,
 	countdown_desc: bool = false
@@ -588,26 +618,24 @@ func _make_special_card(
 	var card := _make_product_card()
 	var panel: PanelContainer = card["panel"]
 	var body: VBoxContainer = card["body"]
-	var emoji_label := Label.new()
-	emoji_label.set_meta("shop_amount", true)
-	emoji_label.text = emoji
-	emoji_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	body.add_child(emoji_label)
+	body.add_child(_make_card_icon_block(icon_tex, 0.85))
 	var title_label := Label.new()
 	title_label.text = title
 	title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title_label.add_theme_font_override("font", FONT_BOLD)
 	title_label.add_theme_font_size_override("font_size", int(_s(15)))
+	title_label.add_theme_color_override("font_color", COL_TEXT_DARK)
 	body.add_child(title_label)
 	var desc_label := Label.new()
 	desc_label.text = desc
 	desc_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	desc_label.autowrap_mode = TextServer.AUTOWRAP_WORD
 	desc_label.add_theme_font_size_override("font_size", int(_s(12)))
-	desc_label.add_theme_color_override("font_color", Color(0.48, 0.36, 0.26, 1))
+	desc_label.add_theme_color_override("font_color", COL_TEXT_SUB)
 	if countdown_desc:
 		desc_label.set_meta("daily_reward_countdown", true)
 	body.add_child(desc_label)
-	var btn := _make_price_button(price, btn_tex, callback, true)
+	var btn := _make_price_button(price, btn_color, callback, true)
 	btn.disabled = not enabled
 	body.add_child(btn)
 	return panel
@@ -718,15 +746,29 @@ func _make_card_icon_block(texture: Texture2D, scale_factor: float) -> CenterCon
 	return center
 
 
-func _make_price_button(text: String, texture: Texture2D, callback: Callable, celebrate := false) -> Button:
+func _make_price_button(text: String, color: Color, callback: Callable, celebrate := false) -> Button:
 	var btn := Button.new()
 	btn.text = text
 	btn.focus_mode = Control.FOCUS_NONE
 	btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	btn.add_theme_stylebox_override("normal", _make_action_button_style(texture, false))
-	btn.add_theme_stylebox_override("hover", _make_action_button_style(texture, true))
-	btn.add_theme_stylebox_override("pressed", _make_action_button_style(texture, true))
-	btn.add_theme_color_override("font_color", Color(0.12, 0.08, 0.04, 1))
+	btn.add_theme_stylebox_override("normal", _make_action_button_style(color, false))
+	btn.add_theme_stylebox_override("hover", _make_action_button_style(color, false))
+	btn.add_theme_stylebox_override("pressed", _make_action_button_style(color, true))
+	btn.add_theme_stylebox_override("disabled", _make_action_button_style(COL_CREAM_DIM, false))
+	btn.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
+	btn.add_theme_font_override("font", FONT_BOLD)
+	if color == COL_GREEN:
+		# White bold text with dark green outline, like the reference price buttons
+		btn.add_theme_color_override("font_color", Color(1, 1, 1, 1))
+		btn.add_theme_color_override("font_hover_color", Color(1, 1, 1, 1))
+		btn.add_theme_color_override("font_pressed_color", Color(1, 1, 1, 1))
+		btn.add_theme_color_override("font_outline_color", Color(0.22, 0.38, 0.1, 0.8))
+		btn.add_theme_constant_override("outline_size", 4)
+	else:
+		btn.add_theme_color_override("font_color", COL_TEXT_DARK)
+		btn.add_theme_color_override("font_hover_color", COL_TEXT_DARK)
+		btn.add_theme_color_override("font_pressed_color", COL_TEXT_DARK)
+	btn.add_theme_color_override("font_disabled_color", Color(0.5, 0.45, 0.38, 1))
 	if celebrate:
 		_connect_purchase_button(btn, callback)
 	else:
@@ -734,34 +776,45 @@ func _make_price_button(text: String, texture: Texture2D, callback: Callable, ce
 	return btn
 
 
-func _make_action_button_style(texture: Texture2D, pressed: bool) -> StyleBoxTexture:
+func _make_action_button_style(color: Color, pressed: bool) -> StyleBoxTexture:
 	var style := StyleBoxTexture.new()
-	style.texture = texture
-	style.texture_margin_left = 12
-	style.texture_margin_top = 8
-	style.texture_margin_right = 12
-	style.texture_margin_bottom = 8
+	style.texture = CARD_TEX
+	style.texture_margin_left = 20
+	style.texture_margin_top = 20
+	style.texture_margin_right = 20
+	style.texture_margin_bottom = 24
 	style.content_margin_left = 8
 	style.content_margin_right = 8
 	style.content_margin_top = 4
-	style.content_margin_bottom = 4
-	style.modulate_color = Color(0.92, 0.92, 0.92, 1) if pressed else Color.WHITE
+	style.content_margin_bottom = 8
+	style.modulate_color = color.darkened(0.18) if pressed else color
 	return style
 
 
 func _make_coin_price_button(cost: int, callback: Callable, celebrate := false) -> Button:
 	var btn := Button.new()
-	btn.text = "🪙 %s" % _format_number(cost)
-	btn.custom_minimum_size = Vector2(_s(96), _s(36))
+	btn.text = _format_number(cost)
+	btn.icon = COIN_TEX
+	btn.icon_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	btn.alignment = HORIZONTAL_ALIGNMENT_CENTER
+	btn.add_theme_constant_override("icon_max_width", int(_s(22)))
+	btn.add_theme_constant_override("h_separation", int(_s(6)))
+	btn.custom_minimum_size = Vector2(_s(100), _s(40))
 	btn.focus_mode = Control.FOCUS_NONE
+	btn.add_theme_font_override("font", FONT_BOLD)
 	btn.add_theme_font_size_override("font_size", int(_s(14)))
-	btn.add_theme_stylebox_override("normal", _make_card_style(false))
-	btn.add_theme_stylebox_override("hover", _make_card_style(false))
-	btn.add_theme_stylebox_override("pressed", _make_card_style(true))
-	btn.add_theme_color_override("font_color", Color(0.2, 0.12, 0.06, 1))
-	if GameData.get_coins() < cost:
-		btn.add_theme_color_override("font_color", Color(0.55, 0.4, 0.3, 1))
-		btn.text = "🔒 %s" % _format_number(cost)
+	var affordable := GameData.get_coins() >= cost
+	if affordable:
+		btn.add_theme_stylebox_override("normal", _make_action_button_style(COL_GOLD, false))
+		btn.add_theme_stylebox_override("hover", _make_action_button_style(COL_GOLD, false))
+		btn.add_theme_stylebox_override("pressed", _make_action_button_style(COL_GOLD, true))
+		btn.add_theme_color_override("font_color", COL_TEXT_DARK)
+	else:
+		btn.add_theme_stylebox_override("normal", _make_card_style(true))
+		btn.add_theme_stylebox_override("hover", _make_card_style(true))
+		btn.add_theme_stylebox_override("pressed", _make_card_style(true))
+		btn.add_theme_color_override("font_color", Color(0.5, 0.45, 0.38, 1))
+	btn.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
 	if celebrate:
 		_connect_purchase_button(btn, callback)
 	else:
@@ -782,13 +835,19 @@ func _play_purchase_burst(display: Dictionary = {}) -> void:
 	purchase_celebrated.emit(display, _pending_burst_origin, not display.is_empty())
 
 
-func _make_tab_button(text: String, icon_text: String) -> Button:
+func _make_tab_button(text: String, icon_tex: Texture2D = null) -> Button:
 	var btn := Button.new()
-	btn.text = "%s %s" % [icon_text, text]
+	btn.text = text
+	if icon_tex:
+		btn.icon = icon_tex
+		btn.icon_alignment = HORIZONTAL_ALIGNMENT_LEFT
+		btn.add_theme_constant_override("icon_max_width", int(_s(26)))
+		btn.add_theme_constant_override("h_separation", int(_s(8)))
+	btn.alignment = HORIZONTAL_ALIGNMENT_CENTER
 	btn.focus_mode = Control.FOCUS_NONE
 	btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	btn.custom_minimum_size.y = _s(TAB_HEIGHT)
-	btn.add_theme_font_size_override("font_size", int(_s(10)))
+	btn.add_theme_font_size_override("font_size", int(_s(16)))
 	btn.clip_text = true
 	btn.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	_apply_tab_style(btn, false)
@@ -796,67 +855,53 @@ func _make_tab_button(text: String, icon_text: String) -> Button:
 
 
 func _apply_tab_style(btn: Button, active: bool) -> void:
-	var box := StyleBoxFlat.new()
-	box.corner_radius_top_left = 10
-	box.corner_radius_top_right = 10
-	box.corner_radius_bottom_left = 10
-	box.corner_radius_bottom_right = 10
-	box.content_margin_top = 4
-	box.content_margin_bottom = 4
-	box.content_margin_left = 2
-	box.content_margin_right = 2
-	if active:
-		box.bg_color = Color(0.98, 0.86, 0.42, 1)
-		box.border_color = Color(0.82, 0.62, 0.18, 1)
-	else:
-		box.bg_color = Color(0.88, 0.8, 0.68, 1)
-		box.border_color = Color(0.68, 0.54, 0.34, 0.55)
-	box.border_width_left = 2
-	box.border_width_top = 2
-	box.border_width_right = 2
-	box.border_width_bottom = 2
+	# Reference style: active tab = bright cream, inactive = dark brown
+	var box := StyleBoxTexture.new()
+	box.texture = CARD_TEX
+	box.texture_margin_left = 20
+	box.texture_margin_top = 20
+	box.texture_margin_right = 20
+	box.texture_margin_bottom = 24
+	box.content_margin_left = 8
+	box.content_margin_right = 8
+	box.content_margin_top = 6
+	box.content_margin_bottom = 10
+	box.modulate_color = COL_CREAM if active else COL_BROWN_DARK
 	btn.add_theme_stylebox_override("normal", box)
 	btn.add_theme_stylebox_override("hover", box)
 	btn.add_theme_stylebox_override("pressed", box)
-	btn.add_theme_color_override(
-		"font_color",
-		Color(0.24, 0.14, 0.08, 1) if active else Color(0.45, 0.34, 0.24, 1)
-	)
+	btn.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
+	var font_col := COL_TEXT_DARK if active else Color(0.78, 0.71, 0.58, 1)
+	btn.add_theme_color_override("font_color", font_col)
+	btn.add_theme_color_override("font_hover_color", font_col)
+	btn.add_theme_color_override("font_pressed_color", font_col)
 
 
-func _make_banner_style(color: Color) -> StyleBoxFlat:
-	var box := StyleBoxFlat.new()
-	box.bg_color = color
-	box.corner_radius_top_left = 16
-	box.corner_radius_top_right = 16
-	box.corner_radius_bottom_left = 16
-	box.corner_radius_bottom_right = 16
-	box.border_width_left = 2
-	box.border_width_top = 2
-	box.border_width_right = 2
-	box.border_width_bottom = 2
-	box.border_color = Color(1, 1, 1, 0.15)
+func _make_banner_style(color: Color) -> StyleBoxTexture:
+	var box := StyleBoxTexture.new()
+	box.texture = CARD_TEX
+	box.texture_margin_left = 20
+	box.texture_margin_top = 20
+	box.texture_margin_right = 20
+	box.texture_margin_bottom = 24
+	box.modulate_color = color
 	return box
 
 
-func _make_card_style(dimmed: bool) -> StyleBoxFlat:
-	var box := StyleBoxFlat.new()
-	box.bg_color = Color(0.97, 0.93, 0.86, 0.85 if dimmed else 1)
-	box.corner_radius_top_left = 14
-	box.corner_radius_top_right = 14
-	box.corner_radius_bottom_left = 14
-	box.corner_radius_bottom_right = 14
-	box.border_width_left = 2
-	box.border_width_top = 2
-	box.border_width_right = 2
-	box.border_width_bottom = 2
-	box.border_color = Color(0.72, 0.58, 0.38, 0.55)
+func _make_card_style(dimmed: bool) -> StyleBoxTexture:
+	var box := StyleBoxTexture.new()
+	box.texture = CARD_TEX
+	box.texture_margin_left = 20
+	box.texture_margin_top = 20
+	box.texture_margin_right = 20
+	box.texture_margin_bottom = 24
+	box.modulate_color = COL_CREAM_DIM if dimmed else COL_CREAM
 	return box
 
 
 func _make_icon_box_style(color: Color) -> StyleBoxFlat:
 	var box := StyleBoxFlat.new()
-	box.bg_color = Color(0.98, 0.92, 0.8, 1)
+	box.bg_color = Color(1, 0.97, 0.9, 1)
 	box.corner_radius_top_left = 10
 	box.corner_radius_top_right = 10
 	box.corner_radius_bottom_left = 10

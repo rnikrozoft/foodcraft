@@ -10,6 +10,7 @@ signal leaderboard_loaded(data: Dictionary)
 signal leaderboards_loaded(boards: Array)
 signal hall_of_fame_loaded(data: Dictionary)
 signal discovery_synced(data: Dictionary)
+signal missions_loaded(data: Dictionary)
 
 const DEVICE_ID_PATH := "user://device_id.txt"
 const HEALTH_CHECK_SEC := 30.0
@@ -188,8 +189,18 @@ func format_rpc_error(data: Dictionary) -> String:
 			return "วัตถุดิบนี้ไม่อยู่ในร้านรอบนี้ — รอร้านเปลี่ยนสินค้าเที่ยงคืน"
 		"already unlocked":
 			return "ปลดล็อกวัตถุดิบนี้แล้ว"
+		"insufficient stars":
+			return "เพชรไม่พอ — เติมเพชรได้ที่ร้านค้า"
+		"no hint available":
+			return "ไม่มีเบาะแสเพิ่มเติมตอนนี้"
 		"daily reward already claimed":
 			return "รับเหรียญรายวันแล้ว — กลับมาพรุ่งนี้นะ"
+		"mission already claimed":
+			return "รับรางวัลภารกิจนี้แล้ว"
+		"mission not complete":
+			return "ภารกิจยังไม่สำเร็จ — ทำต่ออีกนิด!"
+		"unknown mission":
+			return "ไม่พบภารกิจนี้ — ลองรีเฟรชหน้า"
 		"เชื่อมต่อเซิร์ฟเวอร์ไม่ได้", "ไม่ได้เข้าสู่ระบบ", "เซสชันหมดอายุ — กดเชื่อมต่อใหม่":
 			return message
 		"invalid recipe combination":
@@ -216,6 +227,40 @@ func claim_daily_reward() -> Dictionary:
 		if data.has("coins") or data.has("stars"):
 			GameData.apply_wallet_from_server(data)
 		GameData.apply_daily_reward_status_from_server(data)
+	return data
+
+
+func fetch_missions() -> Dictionary:
+	var data := await call_rpc("get_missions", "")
+	if bool(data.get("rpc_error", false)):
+		return data
+	if not data.is_empty():
+		GameData.apply_missions_from_server(data)
+		missions_loaded.emit(data)
+	return data
+
+
+func claim_mission(mission_id: String) -> Dictionary:
+	var payload := JSON.stringify({"mission_id": mission_id})
+	var data := await call_rpc("claim_mission", payload)
+	if bool(data.get("rpc_error", false)):
+		return data
+	if not data.is_empty():
+		if data.has("coins") or data.has("stars"):
+			GameData.apply_wallet_from_server(data)
+		GameData.apply_missions_from_server(data)
+		missions_loaded.emit(data)
+	return data
+
+
+## Spends stars (เพชร) to reveal one craftable-but-undiscovered recipe pair.
+## Returns the RPC dict: {available, a_id, b_id, a_name, b_name, a_emoji, b_emoji, cost, coins, stars}
+func buy_hint() -> Dictionary:
+	var data := await call_rpc("buy_hint", "")
+	if bool(data.get("rpc_error", false)):
+		return data
+	if data.has("coins") or data.has("stars"):
+		GameData.apply_wallet_from_server(data)
 	return data
 
 

@@ -1,3 +1,4 @@
+@tool
 extends Control
 class_name IngredientCard
 
@@ -18,6 +19,7 @@ const MARQUEE_PAUSE := 1.4
 		if is_node_ready():
 			_apply_icon()
 
+@onready var _background: NinePatchRect = $Background
 @onready var _highlight: NinePatchRect = $Highlight
 @onready var _icon: TextureRect = $Icon
 @onready var _title_clip: Control = $TitleClip
@@ -30,6 +32,8 @@ var _marquee_tween: Tween
 func _ready() -> void:
 	_apply_title()
 	_apply_icon()
+	if Engine.is_editor_hint():
+		return
 	_click.pressed.connect(func() -> void: pressed.emit())
 	_title_clip.resized.connect(_update_title_marquee)
 	call_deferred("_update_title_marquee")
@@ -41,7 +45,20 @@ func apply_display(data: Dictionary) -> void:
 
 
 func _apply_icon() -> void:
+	if Engine.is_editor_hint():
+		return
 	FoodIcons.apply_to(_icon, food_id)
+	_apply_rarity()
+
+
+# Softly tints the slot + title by rarity tier so cards aren't all one cream tone.
+func _apply_rarity() -> void:
+	if not is_node_ready() or Engine.is_editor_hint() or food_id.is_empty():
+		return
+	var tier := RarityStyle.tier_for_id(food_id)
+	var accent := RarityStyle.color_for_tier(tier)
+	_background.self_modulate = accent.lerp(Color.WHITE, 0.55)
+	_title.add_theme_color_override("font_color", accent.lerp(Color.WHITE, 0.15))
 
 
 func _apply_title() -> void:

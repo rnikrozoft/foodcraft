@@ -1,0 +1,128 @@
+[gd_scene format=3 uid="uid://c8mission0001"]
+
+[ext_resource type="Script" path="res://components/missions_panel.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://dtj2lyr35mwip" path="res://assets/Components/Frame/PanelFrame02_Round_White_bg.png" id="2_bg"]
+[ext_resource type="FontFile" uid="uid://bflvvu18x7cda" path="res://assets/fonts/Kanit-Bold.ttf" id="3_font_bold"]
+[ext_resource type="Texture2D" uid="uid://bc6e8j5vwxoup" path="res://assets/Components/IconMisc/Icon_PictoIcon_Time.png" id="4_time"]
+
+[node name="MissionsPanel" type="Control"]
+custom_minimum_size = Vector2(688, 640)
+layout_mode = 3
+anchors_preset = 0
+offset_left = 16.0
+offset_top = 108.0
+offset_right = 704.0
+offset_bottom = 1176.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_script")
+
+[node name="Background" type="NinePatchRect" parent="."]
+self_modulate = Color(0.13, 0.105, 0.08, 0.985)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("2_bg")
+patch_margin_left = 24
+patch_margin_top = 24
+patch_margin_right = 24
+patch_margin_bottom = 24
+
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 16
+
+[node name="VBox" type="VBoxContainer" parent="Margin"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+
+[node name="TitleLabel" type="Label" parent="Margin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.55, 0.76, 1.0, 1)
+theme_override_colors/font_outline_color = Color(0.09, 0.07, 0.05, 0.85)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = ExtResource("3_font_bold")
+theme_override_font_sizes/font_size = 32
+text = "ภารกิจรายวัน"
+horizontal_alignment = 1
+
+[node name="SubtitleLabel" type="Label" parent="Margin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.82, 0.75, 0.6, 1)
+theme_override_font_sizes/font_size = 15
+text = "ทำภารกิจครบ รับเหรียญและดาวฟรี!"
+horizontal_alignment = 1
+
+[node name="ResetRow" type="HBoxContainer" parent="Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="ResetIcon" type="TextureRect" parent="Margin/VBox/ResetRow"]
+self_modulate = Color(1, 0.85, 0.55, 0.9)
+custom_minimum_size = Vector2(18, 18)
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("4_time")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ResetLabel" type="Label" parent="Margin/VBox/ResetRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.55, 0.9)
+theme_override_fonts/font = ExtResource("3_font_bold")
+theme_override_font_sizes/font_size = 14
+text = "รีเซ็ตใน --:--:--"
+
+[node name="Scroll" type="ScrollContainer" parent="Margin/VBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+vertical_scroll_mode = 3
+
+[node name="List" type="VBoxContainer" parent="Margin/VBox/Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="PreviewLabel" type="Label" parent="Margin/VBox/Scroll/List"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.82, 0.75, 0.6, 1)
+theme_override_font_sizes/font_size = 16
+text = "รายการภารกิจ (preview)"
+horizontal_alignment = 1
+
+[node name="SummaryLabel" type="Label" parent="Margin/VBox"]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.7, 0.4, 1)
+theme_override_fonts/font = ExtResource("3_font_bold")
+theme_override_font_sizes/font_size = 14
+text = "สำเร็จแล้ว 0/5 วันนี้"
+horizontal_alignment = 1
+
+[node name="StatusLabel" type="Label" parent="Margin/VBox"]
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.9, 0.85, 0.74, 1)
+theme_override_font_sizes/font_size = 18
+text = "กำลังโหลด..."
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3

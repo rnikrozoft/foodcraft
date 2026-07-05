@@ -10,7 +10,12 @@ const GRID_SEP := 12
 const GRID_MIN_COLUMNS := 3
 const EDITOR_PREVIEW_SIZE := Vector2(688, 1088)
 const EDITOR_PREVIEW_POS := Vector2(16, 96)
-const CAT_BTN_TEX := preload("res://assets/Vector_UI_Pack_dobo_ui/Buttons/buttonAdvanced_black.png")
+const CARD_TEX := preload("res://assets/Components/Label/Label_Round01_White.png")
+
+# ── FoodCraft warm palette (shared with leaderboard/shop) ──
+const COL_CREAM     := Color(0.96, 0.92, 0.84)
+const COL_GREEN     := Color(0.45, 0.68, 0.24)
+const COL_TEXT_SUB  := Color(0.55, 0.48, 0.37)
 
 const CATEGORY_TABS := [
 	{"id": "", "label": "ทั้งหมด", "emoji": "🍽"},
@@ -134,9 +139,9 @@ func _build_category_buttons() -> void:
 	for tab in CATEGORY_TABS:
 		var category_id := String(tab.get("id", ""))
 		var btn := Button.new()
-		btn.text = "%s %s" % [String(tab.get("emoji", "")), String(tab.get("label", ""))]
+		btn.text = String(tab.get("label", ""))
 		btn.focus_mode = Control.FOCUS_NONE
-		btn.custom_minimum_size.y = 44.0
+		btn.custom_minimum_size.y = 46.0
 		btn.pressed.connect(_on_category_pressed.bind(category_id))
 		_apply_category_style(btn, false)
 		_category_row.add_child(btn)
@@ -161,25 +166,26 @@ func _apply_category_style(btn: Button, active: bool) -> void:
 	btn.add_theme_stylebox_override("normal", normal_style)
 	btn.add_theme_stylebox_override("hover", normal_style)
 	btn.add_theme_stylebox_override("pressed", pressed_style)
-	btn.add_theme_color_override("font_color", Color(1, 0.95, 0.85, 1))
-	btn.add_theme_color_override("font_hover_color", Color(1, 0.95, 0.85, 1))
-	btn.add_theme_color_override("font_pressed_color", Color(1, 0.95, 0.85, 1))
+	btn.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
+	var font_col := Color(1, 1, 1, 1) if active else COL_TEXT_SUB
+	btn.add_theme_color_override("font_color", font_col)
+	btn.add_theme_color_override("font_hover_color", font_col)
+	btn.add_theme_color_override("font_pressed_color", Color(1, 1, 1, 1))
 	btn.add_theme_font_size_override("font_size", 16)
 
 
 func _make_category_button_style(active: bool) -> StyleBoxTexture:
 	var style := StyleBoxTexture.new()
-	style.texture = CAT_BTN_TEX
-	style.texture_margin_left = 136
-	style.texture_margin_top = 4
-	style.texture_margin_right = 136
-	style.texture_margin_bottom = 4
+	style.texture = CARD_TEX
+	style.texture_margin_left = 20
+	style.texture_margin_top = 20
+	style.texture_margin_right = 20
+	style.texture_margin_bottom = 24
 	style.content_margin_left = 20
 	style.content_margin_right = 20
 	style.content_margin_top = 6
-	style.content_margin_bottom = 6
-	if active:
-		style.modulate_color = Color(1, 0.92, 0.55, 1)
+	style.content_margin_bottom = 10
+	style.modulate_color = COL_GREEN if active else COL_CREAM
 	return style
 
 

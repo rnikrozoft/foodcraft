@@ -11,6 +11,7 @@
 [ext_resource type="PackedScene" uid="uid://c0oosvvfuiboe" path="res://components/my_recipes_panel.tscn" id="9_myrecipes"]
 [ext_resource type="PackedScene" uid="uid://c0t6p786sh3oe" path="res://components/shop_panel.tscn" id="10_shop"]
 [ext_resource type="PackedScene" uid="uid://b7ftrmenu001" path="res://components/footer_menu.tscn" id="11_footer"]
+[ext_resource type="PackedScene" uid="uid://c8mission0001" path="res://components/missions_panel.tscn" id="12_missions"]
 
 [node name="Main" type="Control" unique_id=232349281]
 layout_mode = 3
@@ -23,10 +24,10 @@ script = ExtResource("1_script")
 
 [node name="Background" parent="." unique_id=1157294893 instance=ExtResource("2_star_bg")]
 layout_mode = 1
-bg_color = Color(0.13725491, 0.18039216, 0.29411766, 1)
+bg_color = Color(0.115, 0.09, 0.068, 1)
 star_spacing = Vector2(150, 90)
 star_size = 65
-star_modulate = Color(0.87058824, 0.9137255, 0.99215686, 0.101960786)
+star_modulate = Color(1, 0.85, 0.55, 0.07)
 
 [node name="ScreenVBox" type="VBoxContainer" parent="." unique_id=958644911]
 layout_mode = 1
@@ -117,9 +118,29 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 12
 theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 8
 
 [node name="MyRecipesPanel" parent="ScreenVBox/ContentHost/MyRecipesMargin" unique_id=1907110811 instance=ExtResource("9_myrecipes")]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="MissionsMargin" type="MarginContainer" parent="ScreenVBox/ContentHost"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 8
+
+[node name="MissionsPanel" parent="ScreenVBox/ContentHost/MissionsMargin" instance=ExtResource("12_missions")]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -133,7 +154,9 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 12
 theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 8
 
 [node name="LeaderboardPanel" parent="ScreenVBox/ContentHost/LeaderboardMargin" unique_id=1708040611 instance=ExtResource("8_leaderboard")]
 layout_mode = 2
@@ -149,7 +172,9 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 12
 theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 8
 
 [node name="ShopPanel" parent="ScreenVBox/ContentHost/ShopMargin" unique_id=76463927 instance=ExtResource("10_shop")]
 layout_mode = 2
@@ -168,7 +193,7 @@ theme_override_constants/margin_bottom = 0
 [node name="BottomVBox" type="VBoxContainer" parent="ScreenVBox/BottomMargin" unique_id=921850186]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 100
+theme_override_constants/separation = 0
 
 [node name="PopularIngredientsPanel" parent="ScreenVBox/BottomMargin/BottomVBox" unique_id=1249708824 instance=ExtResource("4_ingredients")]
 layout_mode = 2

@@ -1,98 +1,96 @@
+@tool
 extends Control
 
 signal see_all_pressed
-
 signal ingredient_selected(data: Dictionary)
 
-const CARD_SCENE := preload("res://components/ingredient_card.tscn")
+const CARD_SCENE := preload("res://components/ingredient_grid_card.tscn")
 
-@onready var _title: Label = $Content/Header/Title
-@onready var _see_all: TextureButton = $Content/Header/SeeAll/Arrow
-@onready var _scroll: ScrollContainer = $Content/Scroll
-@onready var _cards_row: HBoxContainer = $Content/Scroll/CardRow
-@onready var _search: LineEdit = $Content/SearchBox/SearchInput
+@onready var _tab_bar: Control = $VBox/TabBar
+@onready var _scroll: ScrollContainer = $VBox/GridPanel/Scroll
+@onready var _grid: HFlowContainer = $VBox/GridPanel/Scroll/Grid
 
 var _cards: Array = []
 var _display_items: Array = []
-var _search_pool: Array = []
+var _active_tab: String = ""
 
 
 func _ready() -> void:
+	if Engine.is_editor_hint():
+		return
 	_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_NEVER
-	_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	_search_pool = GameData.get_craft_pick_items()
-	_search.text_changed.connect(_on_search_changed)
-	_see_all.pressed.connect(func() -> void: see_all_pressed.emit())
+	_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_NEVER
+	_scroll.get_v_scroll_bar().custom_minimum_size.x = 0
+	_tab_bar.tab_selected.connect(_on_tab_selected)
+	_tab_bar.menu_pressed.connect(func() -> void: see_all_pressed.emit())
 	GameData.progress_changed.connect(_on_progress_changed)
 	_refresh()
 
 
 func _on_progress_changed() -> void:
-	_search_pool = GameData.get_craft_pick_items()
-	if _search.text.strip_edges().is_empty():
-		_refresh()
+	_refresh()
 
 
 func _refresh() -> void:
 	var collection := GameData.get_collection_items()
-	if collection.is_empty():
-		_title.text = "วัตถุดิบยอดนิยม"
-		_display_items = GameData.get_panel_ingredients()
-	else:
-		_title.text = "ค้นพบล่าสุด"
-		_display_items = GameData.get_craft_bar_items()
+	_display_items = collection if not collection.is_empty() else GameData.get_panel_ingredients()
+	_rebuild_tabs()
 	_show_items(_display_items)
 
 
-func _input(event: InputEvent) -> void:
-	if not _search.has_focus():
-		return
+func _rebuild_tabs() -> void:
+	var cats := {}
+	for item in _display_items:
+		var c := String(item.get("category", ""))
+		if not c.is_empty() and c != "ingredient":
+			cats[c] = true
+	var cat_list: Array = cats.keys()
+	cat_list.sort()
 
-	var press_pos := Vector2.INF
-	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		press_pos = event.global_position
-	elif event is InputEventScreenTouch and event.pressed:
-		press_pos = event.position
-	else:
-		return
+	if not _active_tab.is_empty() and not cat_list.has(_active_tab):
+		_active_tab = ""
 
-	if not _search.get_global_rect().has_point(press_pos):
-		_search.release_focus()
+	_tab_bar.build_tabs(cat_list)
 
 
-func _on_search_changed(query: String) -> void:
-	var trimmed := query.strip_edges()
-	if trimmed.is_empty():
-		_refresh()
-		return
-
-	var results: Array = []
-	for item in _search_pool:
-		if String(item.get("title", "")).contains(trimmed):
-			results.append(item)
-	_show_items(results)
+func _on_tab_selected(category: String) -> void:
+	_active_tab = category
+	_show_items(_display_items)
 
 
 func _show_items(items: Array) -> void:
-	for child in _cards_row.get_children():
+	for child in _grid.get_children():
 		child.queue_free()
 	_cards.clear()
 
-	for data in items:
+	var filtered: Array = items
+	if not _active_tab.is_empty():
+		filtered = items.filter(func(d: Dictionary) -> bool:
+			return String(d.get("category", "")) == _active_tab
+		)
+
+	const COLS := 5
+
+	for data in filtered:
 		var card = CARD_SCENE.instantiate()
-		card.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-		card.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-		card.title = data.get("title", "")
-		card.food_id = String(data.get("id", ""))
+		card.apply_display(data)
+		card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		card.pressed.connect(_on_card_pressed.bind(data))
-		_cards_row.add_child(card)
+		_grid.add_child(card)
 		_cards.append(card)
 
-	_scroll.scroll_horizontal = 0
+	# Pad last row with invisible spacers so all cards are the same width
+	var remainder := filtered.size() % COLS
+	if remainder != 0:
+		for _i in (COLS - remainder):
+			var spacer := Control.new()
+			spacer.custom_minimum_size = Vector2(110, 120)
+			spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			_grid.add_child(spacer)
+
+	_scroll.scroll_vertical = 0
 
 
 func _on_card_pressed(data: Dictionary) -> void:
 	ingredient_selected.emit(data)
-	for i in _cards.size():
-		if _cards[i].title == data.get("title"):
-			return

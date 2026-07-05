@@ -1,12 +1,12 @@
 [gd_scene format=3 uid="uid://c8profile001"]
 
 [ext_resource type="Script" uid="uid://opdlyi4c8cx3" path="res://components/profile_panel.gd" id="1_script"]
-[ext_resource type="Texture2D" path="res://assets/Vector_UI_Pack_dobo_ui/ItemSlots/itemSlotAdvanced_yellow.png" id="2_avatar_frame"]
-[ext_resource type="Texture2D" path="res://assets/Vector_UI_Pack_dobo_ui/ItemSlots/itemSlot_white.png" id="3_avatar_bg"]
-[ext_resource type="Texture2D" path="res://assets/Vector_UI_Pack_dobo_ui/Modals/profile_image.png" id="4_avatar"]
+[ext_resource type="Texture2D" uid="uid://dtqfwsogp1vh3" path="res://assets/Components/Frame/ItemFrame01_Single_Yellow.png" id="2_avatar_frame"]
+[ext_resource type="Texture2D" uid="uid://hdblb75icdx0" path="res://assets/Components/Frame/ProfileFrame01_Inner_White1.png" id="3_avatar_bg"]
+[ext_resource type="Texture2D" uid="uid://dgocbm8wptc4x" path="res://assets/Components/IconMisc/Icon_ImageIcon_UserThumbnail.png" id="4_avatar"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_exp_bg"]
-bg_color = Color(0.05, 0.07, 0.09, 0.55)
+bg_color = Color(0.07, 0.055, 0.04, 0.75)
 corner_radius_top_left = 6
 corner_radius_top_right = 6
 corner_radius_bottom_right = 6

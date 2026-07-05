@@ -4,8 +4,11 @@ signal progress_changed
 signal wallet_changed
 signal shop_config_changed
 signal catalog_loaded
+signal missions_changed
 
 const MAX_RECENT_DISCOVERIES := 20
+
+var _mission_claimable := 0
 
 var _items_by_id: Dictionary = {}
 var _discoverable_total: int = 0
@@ -114,6 +117,7 @@ func to_display_dict(id: String) -> Dictionary:
 		"id": id,
 		"title": item.get("name_th", id),
 		"category": item.get("category", ""),
+		"type": item.get("type", ""),
 		"tier": int(item.get("tier", 0)),
 	}
 
@@ -137,6 +141,21 @@ func get_panel_ingredients() -> Array:
 		return String(a.get("title", "")) < String(b.get("title", ""))
 	)
 	return results
+
+
+func get_ingredient_types() -> Array:
+	var types := {}
+	for item in _items_by_id.values():
+		if item.get("category") != "ingredient":
+			continue
+		if int(item.get("tier", 0)) != 0:
+			continue
+		var t := String(item.get("type", ""))
+		if not t.is_empty():
+			types[t] = true
+	var result := types.keys()
+	result.sort()
+	return result
 
 
 func craft_result_kind(id: String) -> String:
@@ -280,6 +299,22 @@ func apply_daily_reward_status_from_server(data: Dictionary) -> void:
 		_daily_reward_last_claim = int(data.get("last_claim_unix", _daily_reward_last_claim))
 
 
+func apply_missions_from_server(data: Dictionary) -> void:
+	if data.has("claimable_count"):
+		set_mission_claimable(int(data.get("claimable_count", 0)))
+
+
+func set_mission_claimable(count: int) -> void:
+	if _mission_claimable == count:
+		return
+	_mission_claimable = count
+	missions_changed.emit()
+
+
+func get_mission_claimable() -> int:
+	return _mission_claimable
+
+
 func _shop_unix_now() -> int:
 	return int(Time.get_unix_time_from_system())
 
@@ -398,6 +433,8 @@ func apply_server_state(data: Dictionary) -> void:
 		_unlocked_ingredient_ids = {}
 		for id in _array_from_variant(data.get("unlocked_ingredients", [])):
 			_unlocked_ingredient_ids[String(id)] = true
+	if data.has("mission_claimable"):
+		set_mission_claimable(int(data.get("mission_claimable", 0)))
 	progress_changed.emit()
 	wallet_changed.emit()
 

@@ -1,270 +1,285 @@
-[gd_scene load_steps=8 format=3 uid="uid://byedncsx3e5u7"]
+[gd_scene load_steps=11 format=3 uid="uid://byedncsx3e5u7"]
 
-[ext_resource type="Script" path="res://components/leaderboard_panel.gd" id="1_script"]
-[ext_resource type="Texture2D" path="res://assets/Vector_UI_Pack_dobo_ui/Panels/panel_white.png" id="2_panel"]
-[ext_resource type="Texture2D" path="res://assets/Vector_UI_Pack_dobo_ui/ItemSlots/itemSlot_white.png" id="3_avatar_bg"]
-[ext_resource type="Texture2D" path="res://assets/Vector_UI_Pack_dobo_ui/Modals/profile_image.png" id="4_avatar"]
-[ext_resource type="Texture2D" path="res://assets/Vector_UI_Pack_dobo_ui/Icons/128px/tabClaimed_icon_128px.png" id="5_trophy"]
+[ext_resource type="Script" uid="uid://c0322fq55k5cx" path="res://components/leaderboard_panel.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://dtj2lyr35mwip" path="res://assets/Components/Frame/PanelFrame02_Round_White_bg.png" id="2_bg"]
+[ext_resource type="Texture2D" uid="uid://coojsx75xdq3v" path="res://assets/Components/Label/Label_Round01_White.png" id="3_card"]
+[ext_resource type="Texture2D" uid="uid://c5nykubcdxe5y" path="res://assets/Components/IconMisc/Icon_PictoIcon_Back.png" id="4_back"]
+[ext_resource type="Texture2D" uid="uid://dbn4y101fcgyo" path="res://assets/Components/IconMisc/Icon_ImageIcon_Trophy_l.png" id="5_trophy"]
+[ext_resource type="Texture2D" uid="uid://dgocbm8wptc4x" path="res://assets/Components/IconMisc/Icon_ImageIcon_UserThumbnail.png" id="6_avatar"]
+[ext_resource type="FontFile" uid="uid://bflvvu18x7cda" path="res://assets/fonts/Kanit-Bold.ttf" id="7_font_bold"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_header"]
-bg_color = Color(0.22, 0.14, 0.08, 0.95)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.55, 0.4, 0.22, 1)
-corner_radius_top_left = 14
-corner_radius_top_right = 14
-corner_radius_bottom_right = 14
-corner_radius_bottom_left = 14
-content_margin_left = 8.0
-content_margin_top = 8.0
-content_margin_right = 8.0
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_flat"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_back_normal"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
 content_margin_bottom = 8.0
+texture = ExtResource("3_card")
+texture_margin_left = 20.0
+texture_margin_top = 20.0
+texture_margin_right = 20.0
+texture_margin_bottom = 24.0
+modulate_color = Color(1, 0.78, 0.25, 1)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_board"]
-bg_color = Color(0.97, 0.93, 0.86, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.72, 0.58, 0.38, 1)
-corner_radius_top_left = 16
-corner_radius_top_right = 16
-corner_radius_bottom_right = 16
-corner_radius_bottom_left = 16
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_back_pressed"]
+content_margin_left = 4.0
+content_margin_top = 6.0
+content_margin_right = 4.0
+content_margin_bottom = 6.0
+texture = ExtResource("3_card")
+texture_margin_left = 20.0
+texture_margin_top = 20.0
+texture_margin_right = 20.0
+texture_margin_bottom = 24.0
+modulate_color = Color(0.85, 0.62, 0.12, 1)
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_back"]
-
-[node name="LeaderboardPanel" type="Control"]
-custom_minimum_size = Vector2(688, 1088)
+[node name="LeaderboardPanel" type="Control" unique_id=459875112]
+custom_minimum_size = Vector2(688, 640)
 layout_mode = 3
 anchors_preset = 0
 offset_left = 16.0
-offset_top = 96.0
+offset_top = 108.0
 offset_right = 704.0
-offset_bottom = 1184.0
+offset_bottom = 1176.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("1_script")
 
-[node name="Background" type="NinePatchRect" parent="."]
+[node name="Background" type="NinePatchRect" parent="." unique_id=1721847159]
+self_modulate = Color(0.13, 0.105, 0.08, 0.985)
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 2
-texture = ExtResource("2_panel")
+texture = ExtResource("2_bg")
 patch_margin_left = 24
-patch_margin_top = 20
+patch_margin_top = 24
 patch_margin_right = 24
-patch_margin_bottom = 20
+patch_margin_bottom = 24
 
-[node name="Margin" type="MarginContainer" parent="."]
+[node name="Margin" type="MarginContainer" parent="." unique_id=1685140300]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/margin_left = 14
-theme_override_constants/margin_top = 12
-theme_override_constants/margin_right = 14
-theme_override_constants/margin_bottom = 12
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 16
 
-[node name="VBox" type="VBoxContainer" parent="Margin"]
+[node name="VBox" type="VBoxContainer" parent="Margin" unique_id=1228768338]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/separation = 10
 
-[node name="HeaderPanel" type="PanelContainer" parent="Margin/VBox"]
+[node name="HeaderPanel" type="PanelContainer" parent="Margin/VBox" unique_id=570007067]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_header")
+theme_override_styles/panel = SubResource("StyleBoxEmpty_flat")
 
-[node name="HeaderRow" type="HBoxContainer" parent="Margin/VBox/HeaderPanel"]
+[node name="HeaderRow" type="HBoxContainer" parent="Margin/VBox/HeaderPanel" unique_id=142618416]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 8
+theme_override_constants/separation = 10
 alignment = 1
 
-[node name="BackButton" type="Button" parent="Margin/VBox/HeaderPanel/HeaderRow"]
+[node name="BackButton" type="Button" parent="Margin/VBox/HeaderPanel/HeaderRow" unique_id=1585635567]
 visible = false
-custom_minimum_size = Vector2(44, 44)
+custom_minimum_size = Vector2(56, 52)
 layout_mode = 2
+size_flags_vertical = 4
 focus_mode = 0
-flat = true
-theme_override_styles/normal = SubResource("StyleBoxEmpty_back")
-theme_override_styles/hover = SubResource("StyleBoxEmpty_back")
-theme_override_styles/pressed = SubResource("StyleBoxEmpty_back")
-theme_override_styles/disabled = SubResource("StyleBoxEmpty_back")
-theme_override_styles/focus = SubResource("StyleBoxEmpty_back")
-theme_override_colors/font_color = Color(1, 0.9, 0.55, 1)
-theme_override_font_sizes/font_size = 28
-text = "‹"
+theme_override_styles/normal = SubResource("StyleBoxTexture_back_normal")
+theme_override_styles/hover = SubResource("StyleBoxTexture_back_normal")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_back_pressed")
+theme_override_styles/disabled = SubResource("StyleBoxTexture_back_normal")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_flat")
+icon = ExtResource("4_back")
+icon_alignment = 1
+expand_icon = true
 
-[node name="TitleLabel" type="Label" parent="Margin/VBox/HeaderPanel/HeaderRow"]
+[node name="TitleLabel" type="Label" parent="Margin/VBox/HeaderPanel/HeaderRow" unique_id=518390186]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_colors/font_color = Color(1, 0.92, 0.45, 1)
-theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(0.82, 0.64, 1.0, 1)
+theme_override_colors/font_outline_color = Color(0.09, 0.07, 0.05, 0.85)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = ExtResource("7_font_bold")
+theme_override_font_sizes/font_size = 32
 text = "อันดับ"
 horizontal_alignment = 1
 
-[node name="HeaderSpacer" type="Control" parent="Margin/VBox/HeaderPanel/HeaderRow"]
+[node name="HeaderSpacer" type="Control" parent="Margin/VBox/HeaderPanel/HeaderRow" unique_id=1606104724]
 visible = false
-custom_minimum_size = Vector2(44, 44)
+custom_minimum_size = Vector2(56, 52)
 layout_mode = 2
 
-[node name="TierMenuScroll" type="ScrollContainer" parent="Margin/VBox"]
+[node name="SubtitleLabel" type="Label" parent="Margin/VBox" unique_id=1918273645]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.82, 0.75, 0.6, 1)
+theme_override_font_sizes/font_size = 15
+text = "แข่งขันกับเชฟทั่วโลก ไต่อันดับสู่ตำนาน!"
+horizontal_alignment = 1
+
+[node name="TierMenuScroll" type="ScrollContainer" parent="Margin/VBox" unique_id=395872399]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
 vertical_scroll_mode = 3
 
-[node name="TierMenuList" type="VBoxContainer" parent="Margin/VBox/TierMenuScroll"]
+[node name="TierMenuList" type="VBoxContainer" parent="Margin/VBox/TierMenuScroll" unique_id=532944348]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_constants/separation = 8
+theme_override_constants/separation = 10
 
-[node name="PreviewTierLabel" type="Label" parent="Margin/VBox/TierMenuScroll/TierMenuList"]
+[node name="PreviewTierLabel" type="Label" parent="Margin/VBox/TierMenuScroll/TierMenuList" unique_id=431893641]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.75, 0.7, 0.62, 1)
+theme_override_colors/font_color = Color(0.82, 0.75, 0.6, 1)
 theme_override_font_sizes/font_size = 18
 text = "เลือกอันดับ (preview)"
 horizontal_alignment = 1
 
-[node name="DetailSection" type="VBoxContainer" parent="Margin/VBox"]
+[node name="DetailSection" type="VBoxContainer" parent="Margin/VBox" unique_id=696740091]
 visible = false
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
+theme_override_constants/separation = 10
+
+[node name="BoardTabs" type="HBoxContainer" parent="Margin/VBox/DetailSection" unique_id=1830101799]
+layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="BoardTabs" type="HBoxContainer" parent="Margin/VBox/DetailSection"]
-layout_mode = 2
-theme_override_constants/separation = 6
-
-[node name="BoardPanel" type="PanelContainer" parent="Margin/VBox/DetailSection"]
+[node name="BoardPanel" type="PanelContainer" parent="Margin/VBox/DetailSection" unique_id=1106798985]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_board")
+theme_override_styles/panel = SubResource("StyleBoxEmpty_flat")
 
-[node name="BoardMargin" type="MarginContainer" parent="Margin/VBox/DetailSection/BoardPanel"]
+[node name="BoardMargin" type="MarginContainer" parent="Margin/VBox/DetailSection/BoardPanel" unique_id=1582005113]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_constants/margin_left = 10
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 10
-theme_override_constants/margin_bottom = 10
+theme_override_constants/margin_left = 0
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_right = 0
+theme_override_constants/margin_bottom = 0
 
-[node name="BoardVBox" type="VBoxContainer" parent="Margin/VBox/DetailSection/BoardPanel/BoardMargin"]
+[node name="BoardVBox" type="VBoxContainer" parent="Margin/VBox/DetailSection/BoardPanel/BoardMargin" unique_id=129559483]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 8
 
-[node name="DescLabel" type="Label" parent="Margin/VBox/DetailSection/BoardPanel/BoardMargin/BoardVBox"]
+[node name="DescLabel" type="Label" parent="Margin/VBox/DetailSection/BoardPanel/BoardMargin/BoardVBox" unique_id=1403939536]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.45, 0.35, 0.25, 1)
-theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.85, 0.79, 0.66, 1)
+theme_override_font_sizes/font_size = 15
 horizontal_alignment = 1
 autowrap_mode = 3
 
-[node name="Podium" type="HBoxContainer" parent="Margin/VBox/DetailSection/BoardPanel/BoardMargin/BoardVBox"]
+[node name="Podium" type="HBoxContainer" parent="Margin/VBox/DetailSection/BoardPanel/BoardMargin/BoardVBox" unique_id=522630156]
+visible = false
 layout_mode = 2
 theme_override_constants/separation = 8
 alignment = 1
 
-[node name="Scroll" type="ScrollContainer" parent="Margin/VBox/DetailSection/BoardPanel/BoardMargin/BoardVBox"]
+[node name="Scroll" type="ScrollContainer" parent="Margin/VBox/DetailSection/BoardPanel/BoardMargin/BoardVBox" unique_id=1547012317]
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
 vertical_scroll_mode = 3
 
-[node name="Rows" type="VBoxContainer" parent="Margin/VBox/DetailSection/BoardPanel/BoardMargin/BoardVBox/Scroll"]
+[node name="Rows" type="VBoxContainer" parent="Margin/VBox/DetailSection/BoardPanel/BoardMargin/BoardVBox/Scroll" unique_id=1585063057]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 0
+theme_override_constants/separation = 10
 
-[node name="StatusLabel" type="Label" parent="Margin/VBox/DetailSection/BoardPanel/BoardMargin/BoardVBox"]
+[node name="StatusLabel" type="Label" parent="Margin/VBox/DetailSection/BoardPanel/BoardMargin/BoardVBox" unique_id=1159835939]
 visible = false
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_colors/font_color = Color(0.45, 0.38, 0.32, 1)
-theme_override_font_sizes/font_size = 17
+theme_override_colors/font_color = Color(0.9, 0.85, 0.74, 1)
+theme_override_font_sizes/font_size = 18
 text = "กำลังโหลด..."
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
 
-[node name="OwnerPanel" type="PanelContainer" parent="Margin/VBox"]
+[node name="OwnerPanel" type="PanelContainer" parent="Margin/VBox" unique_id=1460065082]
 visible = false
 layout_mode = 2
 
-[node name="OwnerRow" type="HBoxContainer" parent="Margin/VBox/OwnerPanel"]
+[node name="OwnerRow" type="HBoxContainer" parent="Margin/VBox/OwnerPanel" unique_id=1268231125]
 layout_mode = 2
-theme_override_constants/separation = 10
+theme_override_constants/separation = 12
 
-[node name="OwnerRank" type="Label" parent="Margin/VBox/OwnerPanel/OwnerRow"]
-custom_minimum_size = Vector2(36, 0)
+[node name="OwnerRank" type="Label" parent="Margin/VBox/OwnerPanel/OwnerRow" unique_id=465403829]
+custom_minimum_size = Vector2(44, 0)
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 17
+theme_override_colors/font_color = Color(0.3, 0.23, 0.14, 1)
+theme_override_fonts/font = ExtResource("7_font_bold")
+theme_override_font_sizes/font_size = 20
 text = "#-"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="OwnerAvatar" type="TextureRect" parent="Margin/VBox/OwnerPanel/OwnerRow"]
-custom_minimum_size = Vector2(44, 44)
+[node name="OwnerAvatar" type="TextureRect" parent="Margin/VBox/OwnerPanel/OwnerRow" unique_id=736267318]
+custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
-texture = ExtResource("4_avatar")
+texture = ExtResource("6_avatar")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="OwnerInfo" type="VBoxContainer" parent="Margin/VBox/OwnerPanel/OwnerRow"]
+[node name="OwnerInfo" type="VBoxContainer" parent="Margin/VBox/OwnerPanel/OwnerRow" unique_id=436312188]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 0
+alignment = 1
 
-[node name="OwnerName" type="Label" parent="Margin/VBox/OwnerPanel/OwnerRow/OwnerInfo"]
+[node name="OwnerName" type="Label" parent="Margin/VBox/OwnerPanel/OwnerRow/OwnerInfo" unique_id=747278906]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 17
+theme_override_colors/font_color = Color(0.3, 0.23, 0.14, 1)
+theme_override_fonts/font = ExtResource("7_font_bold")
+theme_override_font_sizes/font_size = 18
 text = "ฉัน"
 
-[node name="OwnerSubtitle" type="Label" parent="Margin/VBox/OwnerPanel/OwnerRow/OwnerInfo"]
+[node name="OwnerSubtitle" type="Label" parent="Margin/VBox/OwnerPanel/OwnerRow/OwnerInfo" unique_id=1477984223]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.85, 0.92, 1, 0.85)
+theme_override_colors/font_color = Color(0.45, 0.36, 0.22, 0.9)
 theme_override_font_sizes/font_size = 13
 text = "อันดับของคุณ"
 
-[node name="OwnerScoreBox" type="HBoxContainer" parent="Margin/VBox/OwnerPanel/OwnerRow"]
+[node name="OwnerScoreBox" type="HBoxContainer" parent="Margin/VBox/OwnerPanel/OwnerRow" unique_id=823186778]
 layout_mode = 2
-theme_override_constants/separation = 4
+theme_override_constants/separation = 6
 alignment = 2
 
-[node name="OwnerTrophy" type="TextureRect" parent="Margin/VBox/OwnerPanel/OwnerRow/OwnerScoreBox"]
-custom_minimum_size = Vector2(22, 22)
+[node name="OwnerTrophy" type="TextureRect" parent="Margin/VBox/OwnerPanel/OwnerRow/OwnerScoreBox" unique_id=691058353]
+custom_minimum_size = Vector2(26, 26)
 layout_mode = 2
+size_flags_vertical = 4
 texture = ExtResource("5_trophy")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="OwnerScore" type="Label" parent="Margin/VBox/OwnerPanel/OwnerRow/OwnerScoreBox"]
+[node name="OwnerScore" type="Label" parent="Margin/VBox/OwnerPanel/OwnerRow/OwnerScoreBox" unique_id=731634528]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.3, 0.23, 0.14, 1)
+theme_override_fonts/font = ExtResource("7_font_bold")
+theme_override_font_sizes/font_size = 20
 text = "0"
 horizontal_alignment = 2
+vertical_alignment = 1
 
-[node name="FooterLabel" type="Label" parent="Margin/VBox"]
+[node name="FooterLabel" type="Label" parent="Margin/VBox" unique_id=1171969109]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.65, 0.62, 0.55, 1)
+theme_override_colors/font_color = Color(0.6, 0.53, 0.42, 0.8)
 theme_override_font_sizes/font_size = 13
 text = "— อัปเดตทุก 10 นาที"
 horizontal_alignment = 1

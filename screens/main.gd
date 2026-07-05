@@ -4,7 +4,7 @@ const DISCOVERY_BURST_SCENE := preload("res://components/discovery_burst.tscn")
 const REWARD_FLY_SCENE := preload("res://components/reward_fly_effect.tscn")
 const SLIDE_DURATION := 0.3
 
-enum Page { CRAFT, RECIPES, LEADERBOARD, SHOP }
+enum Page { CRAFT, RECIPES, MISSIONS, LEADERBOARD, SHOP }
 
 @onready var _content_host: Control = $ScreenVBox/ContentHost
 @onready var _craft_page: Control = $ScreenVBox/ContentHost/CraftPage
@@ -15,6 +15,8 @@ enum Page { CRAFT, RECIPES, LEADERBOARD, SHOP }
 @onready var _currency_display: Control = $ScreenVBox/Header/HeaderMargin/HeaderHBox/CurrencyDisplay
 @onready var _my_recipes_page: MarginContainer = $ScreenVBox/ContentHost/MyRecipesMargin
 @onready var _my_recipes_panel: Control = $ScreenVBox/ContentHost/MyRecipesMargin/MyRecipesPanel
+@onready var _missions_page: MarginContainer = $ScreenVBox/ContentHost/MissionsMargin
+@onready var _missions_panel: Control = $ScreenVBox/ContentHost/MissionsMargin/MissionsPanel
 @onready var _leaderboard_page: MarginContainer = $ScreenVBox/ContentHost/LeaderboardMargin
 @onready var _leaderboard_panel: Control = $ScreenVBox/ContentHost/LeaderboardMargin/LeaderboardPanel
 @onready var _shop_page: MarginContainer = $ScreenVBox/ContentHost/ShopMargin
@@ -38,6 +40,7 @@ func _ready() -> void:
 	_reward_fly = REWARD_FLY_SCENE.instantiate()
 	add_child(_reward_fly)
 
+	_apply_safe_area()
 	_content_host.resized.connect(_layout_pages)
 	_layout_pages()
 
@@ -59,21 +62,45 @@ func _ready() -> void:
 	NakamaService.connection_restored.connect(_on_connection_restored)
 
 	_my_recipes_panel.visible = false
+	_missions_panel.visible = false
 	_leaderboard_panel.visible = false
 	_shop_panel.visible = false
 	_craft_page.visible = true
 	_ingredients_panel.visible = true
+
+	GameData.missions_changed.connect(_update_mission_badge)
+	_update_mission_badge()
 
 	_update_discovery_panel()
 	_update_profile_panel()
 	_update_currency_display()
 
 
+func _apply_safe_area() -> void:
+	var safe := DisplayServer.get_display_safe_area()
+	var screen := DisplayServer.screen_get_size()
+	if screen.y <= 0:
+		return
+	var viewport_size := get_viewport().get_visible_rect().size
+	var scale_y := viewport_size.y / float(screen.y)
+	var top_inset := int(safe.position.y * scale_y)
+	var bottom_inset := int((screen.y - safe.position.y - safe.size.y) * scale_y)
+	var header_margin: MarginContainer = $ScreenVBox/Header/HeaderMargin
+	header_margin.add_theme_constant_override("margin_top", 8 + top_inset)
+	# Grow the header slot by the same inset, otherwise its content
+	# (profile / currency) overflows into ContentHost and covers the
+	# top of whatever page is showing (e.g. under a notch / Dynamic Island).
+	var header: Control = $ScreenVBox/Header
+	header.custom_minimum_size.y = 96 + top_inset
+	if bottom_inset > 0:
+		_footer_menu.add_theme_constant_override("margin_bottom", bottom_inset)
+
+
 func _layout_pages() -> void:
 	if _transitioning:
 		return
 	var host_size := _content_host.size
-	for page in [_craft_page, _my_recipes_page, _leaderboard_page, _shop_page]:
+	for page in [_craft_page, _my_recipes_page, _missions_page, _leaderboard_page, _shop_page]:
 		page.size = host_size
 		page.position = Vector2.ZERO
 
@@ -150,6 +177,8 @@ func _tab_to_page(tab_index: int) -> Page:
 	match tab_index:
 		1:
 			return Page.RECIPES
+		2:
+			return Page.MISSIONS
 		3:
 			return Page.LEADERBOARD
 		4:
@@ -162,6 +191,8 @@ func _page_node(page: Page) -> Control:
 	match page:
 		Page.RECIPES:
 			return _my_recipes_page
+		Page.MISSIONS:
+			return _missions_page
 		Page.LEADERBOARD:
 			return _leaderboard_page
 		Page.SHOP:
@@ -188,6 +219,8 @@ func _go_to_page(page: Page, pick_for_craft: bool = false) -> void:
 		_shop_panel.prepare_panel(_resolve_shop_tab())
 	elif page == Page.LEADERBOARD:
 		_leaderboard_panel.prepare_panel()
+	elif page == Page.MISSIONS:
+		_missions_panel.prepare_panel()
 	elif page == Page.RECIPES:
 		_my_recipes_panel.prepare_panel(pick_for_craft)
 
@@ -217,6 +250,8 @@ func _activate_page(page: Page, pick_for_craft: bool) -> void:
 	match page:
 		Page.RECIPES:
 			_my_recipes_panel.show_panel(pick_for_craft)
+		Page.MISSIONS:
+			_missions_panel.show_panel()
 		Page.LEADERBOARD:
 			_leaderboard_panel.show_panel()
 		Page.SHOP:
@@ -229,6 +264,8 @@ func _deactivate_page(page: Page) -> void:
 	match page:
 		Page.RECIPES:
 			_my_recipes_panel.hide_panel()
+		Page.MISSIONS:
+			_missions_panel.hide_panel()
 		Page.LEADERBOARD:
 			_leaderboard_panel.hide_panel()
 		Page.SHOP:
@@ -255,6 +292,11 @@ func _update_profile_panel() -> void:
 func _on_session_ready(_profile: Dictionary) -> void:
 	_update_profile_panel()
 	_update_currency_display()
+	NakamaService.fetch_missions()
+
+
+func _update_mission_badge() -> void:
+	_footer_menu.set_tab_badge(2, GameData.get_mission_claimable())
 
 
 func _on_discovery_synced(_data: Dictionary) -> void:

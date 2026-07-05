@@ -3,6 +3,7 @@ extends Control
 
 const LOCK_ICON := preload("res://assets/Vector_UI_Pack_dobo_ui/Icons/128px/tabSelected_icon_128px.png")
 const UNLOCK_ICON := preload("res://assets/Vector_UI_Pack_dobo_ui/Icons/128px/tab_icon_128px.png")
+const EFFECT_TEX := preload("res://assets/Vector_UI_Pack_dobo_ui/Effects/effect_blue.png")
 const EDITOR_PREVIEW_SIZE := Vector2(720, 520)
 const EDITOR_PREVIEW_POS := Vector2(0, 184)
 
@@ -18,8 +19,10 @@ signal reward_granted(reward: Dictionary, origin: Vector2)
 @onready var _result_glow: NinePatchRect = $Center/VBox/ResultSlot/Glow
 @onready var _new_badge: TextureRect = $Center/VBox/ResultSlot/NewBadge
 @onready var _status: Label = $Center/VBox/StatusWrap/StatusLabel
-@onready var _arrow: Label = $Center/VBox/ArrowLabel
-@onready var _result_empty: Label = $Center/VBox/ResultSlot/EmptyHint
+@onready var _hint_button: Button = $Center/VBox/HintButton
+
+# Display-only; the server (HINT_COST_STARS) is the source of truth for the charge.
+const HINT_COST_STARS := 2
 
 var _slot_data: Array = [{}, {}]
 var _slot_locked: Array[bool] = [false, false]
@@ -29,6 +32,7 @@ var _slot_b_icon: TextureRect
 var _result_shake_tween: Tween
 var _input_shake_tween: Tween
 var _slot_bounce_tweens: Dictionary = {}
+var _slot_effect_tweens: Dictionary = {}
 
 
 func _enter_tree() -> void:
@@ -40,9 +44,37 @@ func _ready() -> void:
 	_slot_b_icon = _slot_b.get_node("BounceRoot/Icon") as TextureRect
 	_slot_a.get_node("LockButton").pressed.connect(_on_slot_a_lock_toggled)
 	_slot_b.get_node("LockButton").pressed.connect(_on_slot_b_lock_toggled)
+	_hint_button.pressed.connect(_on_hint_pressed)
 	_clear_slot(_slot_a, 0)
 	_clear_slot(_slot_b, 1)
 	_reset_result()
+
+
+func _on_hint_pressed() -> void:
+	if _craft_busy:
+		return
+	if not NakamaService.is_online:
+		_set_status("ขาดการเชื่อมต่อ — กดเชื่อมต่อใหม่บนหน้าจอ")
+		return
+	if GameData.get_stars() < HINT_COST_STARS:
+		_set_status("เพชรไม่พอ — เติมเพชรได้ที่ร้านค้า")
+		return
+
+	_hint_button.disabled = true
+	var data := await NakamaService.buy_hint()
+	_hint_button.disabled = false
+
+	if bool(data.get("rpc_error", false)):
+		_set_status(NakamaService.format_rpc_error(data))
+		return
+	if not bool(data.get("available", false)):
+		_set_status("ไม่มีเบาะแสเพิ่ม — ของที่มีตอนนี้ค้นพบครบแล้ว ลองปลดล็อกวัตถุดิบใหม่ที่ร้านค้า")
+		return
+
+	var a_name := String(data.get("a_name", ""))
+	var b_name := String(data.get("b_name", ""))
+	AudioManager.play_pop()
+	_set_status("เบาะแส — ลองผสม: %s + %s" % [a_name, b_name])
 
 
 func add_ingredient(data: Dictionary) -> bool:
@@ -65,6 +97,7 @@ func add_ingredient(data: Dictionary) -> bool:
 	else:
 		return false
 
+	AudioManager.play_pop()
 	_check_recipe()
 	return true
 
@@ -104,12 +137,14 @@ func _set_slot(slot: Control, index: int, data: Dictionary) -> void:
 	slot.get_node("LockButton").visible = true
 	_update_lock_button(slot, index)
 	_bounce_slot_content(slot)
+	_start_slot_effect(slot)
 
 
 func _clear_slot(slot: Control, index: int) -> void:
 	if _slot_locked[index]:
 		return
 	_stop_slot_bounce(slot)
+	_stop_slot_effect(slot)
 	_slot_locked[index] = false
 	_slot_data[index] = {}
 	var icon := slot.get_node("BounceRoot/Icon") as TextureRect
@@ -217,6 +252,7 @@ func _show_craft_result(result_id: String, _from_ids: PackedStringArray, data: D
 		reward_granted.emit(reward, get_result_burst_origin())
 	if is_new:
 		new_recipe_discovered.emit(display)
+	AudioManager.play_pop()
 	recipe_crafted.emit(result_id, is_new)
 
 
@@ -361,6 +397,44 @@ func _stop_input_shake() -> void:
 
 func get_result_burst_origin() -> Vector2:
 	return _result_slot.get_global_rect().get_center()
+
+
+func _start_slot_effect(slot: Control) -> void:
+	_stop_slot_effect(slot)
+	var bounce_root := slot.get_node("BounceRoot") as Control
+	var effect := TextureRect.new()
+	effect.name = "EffectSprite"
+	effect.texture = EFFECT_TEX
+	effect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	effect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	effect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	# Center at same position as the food icon (icon center is at anchor 50%,50% offset -80,-85,80,30)
+	effect.set_anchors_preset(Control.PRESET_CENTER)
+	var half := 90.0
+	var icon_center_y := (-85.0 + 30.0) / 2.0  # = -27.5
+	effect.offset_left   = -half
+	effect.offset_top    = icon_center_y - half
+	effect.offset_right  = half
+	effect.offset_bottom = icon_center_y + half
+	effect.pivot_offset  = Vector2(half, half)
+	bounce_root.add_child(effect)
+	bounce_root.move_child(effect, 0)  # behind icon and title
+	var tween := create_tween().set_loops()
+	tween.tween_property(effect, "rotation", TAU, 26.0).from(0.0)
+	_slot_effect_tweens[slot] = {"node": effect, "tween": tween}
+
+
+func _stop_slot_effect(slot: Control) -> void:
+	if not _slot_effect_tweens.has(slot):
+		return
+	var entry: Dictionary = _slot_effect_tweens[slot]
+	var t: Tween = entry.get("tween")
+	if t and t.is_valid():
+		t.kill()
+	var n: TextureRect = entry.get("node")
+	if n and is_instance_valid(n):
+		n.queue_free()
+	_slot_effect_tweens.erase(slot)
 
 
 func _apply_editor_preview() -> void:

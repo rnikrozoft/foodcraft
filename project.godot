@@ -23,6 +23,10 @@ NakamaConfig="*res://services/nakama_config.gd"
 NakamaService="*res://services/nakama_service.gd"
 SceneTransition="*res://components/scene_transition.tscn"
 ReconnectOverlay="*res://components/reconnect_overlay.tscn"
+AudioManager="*res://services/audio_manager.gd"
+LineConfig="*res://services/line_config.gd"
+LineAuth="*res://services/line_auth.gd"
+RarityStyle="*res://services/rarity_style.gd"
 
 [display]
 
@@ -45,3 +49,4 @@ theme/custom="res://assets/theme/game_theme.tres"
 [rendering]
 
 rendering_device/driver.windows="d3d12"
+textures/vram_compression/import_etc2_astc=true
