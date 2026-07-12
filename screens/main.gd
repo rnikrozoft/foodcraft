@@ -47,7 +47,6 @@ func _ready() -> void:
 	_ingredients_panel.ingredient_selected.connect(_on_ingredient_selected)
 	_ingredients_panel.see_all_pressed.connect(_on_see_all_pressed)
 	_my_recipes_panel.ingredient_picked.connect(_on_my_recipes_ingredient_picked)
-	_craft_zone.recipe_crafted.connect(_on_recipe_crafted)
 	_craft_zone.new_recipe_discovered.connect(_on_new_recipe_discovered)
 	_craft_zone.reward_granted.connect(_on_reward_granted)
 	_footer_menu.tab_changed.connect(_on_tab_changed)
@@ -55,7 +54,6 @@ func _ready() -> void:
 	_currency_display.add_gems_pressed.connect(_on_add_gems_pressed)
 	_shop_panel.purchase_completed.connect(_update_currency_display)
 	_shop_panel.purchase_celebrated.connect(_on_shop_purchase_celebrated)
-	GameData.progress_changed.connect(_update_discovery_panel)
 	GameData.wallet_changed.connect(_update_currency_display)
 	NakamaService.session_ready.connect(_on_session_ready)
 	NakamaService.discovery_synced.connect(_on_discovery_synced)
@@ -71,7 +69,6 @@ func _ready() -> void:
 	GameData.missions_changed.connect(_update_mission_badge)
 	_update_mission_badge()
 
-	_update_discovery_panel()
 	_update_profile_panel()
 	_update_currency_display()
 
@@ -107,11 +104,6 @@ func _layout_pages() -> void:
 
 func _on_ingredient_selected(data: Dictionary) -> void:
 	_craft_zone.add_ingredient(data)
-
-
-func _on_recipe_crafted(_result_id: String, _is_new: bool) -> void:
-	_update_discovery_panel()
-
 
 func _on_reward_granted(reward: Dictionary, origin: Vector2) -> void:
 	_pending_reward = reward
@@ -271,11 +263,6 @@ func _deactivate_page(page: Page) -> void:
 		Page.SHOP:
 			_shop_panel.hide_panel()
 
-
-func _update_discovery_panel() -> void:
-	_discovery_panel.set_progress(GameData.get_discovered_count(), GameData.get_total_discoverable())
-
-
 func _update_currency_display() -> void:
 	_currency_display.set_coins(GameData.get_coins())
 	_currency_display.set_gems(GameData.get_stars())
@@ -308,7 +295,6 @@ func _on_connection_restored() -> void:
 
 
 func _refresh_after_server_sync() -> void:
-	_update_discovery_panel()
 	_update_profile_panel()
 	_update_currency_display()
 	if _current_page == Page.SHOP:

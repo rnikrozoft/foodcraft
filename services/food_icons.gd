@@ -1,15 +1,40 @@
 extends Node
 
-const FOOD_COUNT := 36
-const FOOD_PATH := "res://assets/foods/%d.png"
+const FOOD_PATHS: Array[String] = [
+	"res://assets/foods/thai_sticker_01.png",
+	"res://assets/foods/thai_sticker_02.png",
+	"res://assets/foods/thai_sticker_03.png",
+	"res://assets/foods/thai_sticker_04.png",
+	"res://assets/foods/thai_sticker_05.png",
+	"res://assets/foods/thai_sticker_06.png",
+	"res://assets/foods/thai_sticker_07.png",
+	"res://assets/foods/thai_sticker_08.png",
+	"res://assets/foods/thai_sticker_09.png",
+	"res://assets/foods/thai_sticker_10.png",
+	"res://assets/foods/thai_sticker_11.png",
+	"res://assets/foods/thai_sticker_12.png",
+	"res://assets/foods/vietnamese_sticker_01.png",
+	"res://assets/foods/vietnamese_sticker_02.png",
+	"res://assets/foods/vietnamese_sticker_03.png",
+	"res://assets/foods/vietnamese_sticker_04.png",
+	"res://assets/foods/vietnamese_sticker_05.png",
+	"res://assets/foods/vietnamese_sticker_06.png",
+	"res://assets/foods/vietnamese_sticker_07.png",
+	"res://assets/foods/vietnamese_sticker_08.png",
+	"res://assets/foods/vietnamese_sticker_09.png",
+	"res://assets/foods/vietnamese_sticker_10.png",
+	"res://assets/foods/vietnamese_sticker_11.png",
+	"res://assets/foods/vietnamese_sticker_12.png",
+]
+const FOOD_COUNT := 24
 
 var _textures: Array[Texture2D] = []
 var _sprite_num_by_id: Dictionary = {}
 
 
 func _ready() -> void:
-	for i in range(1, FOOD_COUNT + 1):
-		_textures.append(load(FOOD_PATH % i) as Texture2D)
+	for path in FOOD_PATHS:
+		_textures.append(load(path) as Texture2D)
 
 
 func register_catalog(item_ids: Array) -> void:
