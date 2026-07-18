@@ -1,7 +1,7 @@
 extends CanvasLayer
 
-const COIN_TEXTURE := preload("res://assets/Components/UI_Etc/ResourceBar_Icon_Coin.png")
-const STAR_TEXTURE := preload("res://assets/Components/UI_Etc/ResourceBar_Icon_Gem_Purple.png")
+const COIN_TEXTURE := preload("res://assets/ui_etc/ResourceBar_Icon_Coin.png")
+const STAR_TEXTURE := preload("res://assets/ui_etc/ResourceBar_Icon_Gem_Purple.png")
 
 const MIN_PARTICLES := 4
 const MAX_PARTICLES := 12
@@ -29,6 +29,8 @@ func play(reward: Dictionary, from_global: Vector2, to_global: Vector2) -> void:
 		_spawn_fly_particle(texture, from_global, to_global, delay)
 
 	await get_tree().create_timer(longest).timeout
+	if reward_type == "coin":
+		AudioManager.play_coin()
 
 
 func _spawn_fly_particle(texture: Texture2D, from_global: Vector2, to_global: Vector2, delay: float) -> void:

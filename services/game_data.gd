@@ -13,6 +13,12 @@ var _mission_claimable := 0
 var _items_by_id: Dictionary = {}
 var _discoverable_total: int = 0
 var _discovered_ids: Dictionary = {}
+# item id -> unix timestamp of when it was first discovered/unlocked (server
+# is the source of truth; see PlayerState.DiscoveredAt on the backend).
+var _discovered_at: Dictionary = {}
+# item id -> how many more distinct recipe results it can still lead to that
+# aren't discovered yet (server-computed so exact recipe pairs stay hidden).
+var _craftable_counts: Dictionary = {}
 var _recent_discovered_ids: Array = []
 var _discovery_points: int = 0
 var _craft_count: int = 0
@@ -108,6 +114,14 @@ func get_item(id: String) -> Dictionary:
 	return _items_by_id.get(id, {})
 
 
+func get_discovered_at(id: String) -> int:
+	return int(_discovered_at.get(id, 0))
+
+
+func get_craftable_count(id: String) -> int:
+	return int(_craftable_counts.get(id, 0))
+
+
 func to_display_dict(id: String) -> Dictionary:
 	var item := get_item(id)
 	if item.is_empty():
@@ -119,6 +133,8 @@ func to_display_dict(id: String) -> Dictionary:
 		"category": item.get("category", ""),
 		"type": item.get("type", ""),
 		"tier": int(item.get("tier", 0)),
+		"discovered_at": get_discovered_at(id),
+		"craftable_count": get_craftable_count(id),
 	}
 
 
@@ -273,12 +289,43 @@ func apply_shop_state_from_server(data: Dictionary) -> void:
 		_unlocked_ingredient_ids = {}
 		for id in _array_from_variant(data.get("unlocked_ingredients", [])):
 			_unlocked_ingredient_ids[String(id)] = true
+	_merge_discovered_at(data)
+	_merge_craftable_counts(data)
 	_shop_cached_offers = []
 	var server_offers := _array_from_variant(data.get("offers", []))
 	if not server_offers.is_empty():
 		_shop_cached_offers = server_offers
 	wallet_changed.emit()
 	progress_changed.emit()
+
+
+# Merges the server's "discovered_at" map (item id -> unix timestamp) into the
+# local cache. Never removes entries, only adds/updates — the server is the
+# source of truth per id, but different endpoints may only send a partial map.
+func _merge_discovered_at(data: Dictionary) -> void:
+	if not data.has("discovered_at"):
+		return
+	var raw = data.get("discovered_at", {})
+	if typeof(raw) != TYPE_DICTIONARY:
+		return
+	for id in raw.keys():
+		_discovered_at[String(id)] = int(raw[id])
+
+
+# Replaces the local "craftable_counts" cache wholesale with the server's map
+# (item id -> remaining undiscovered recipes). Unlike discovered_at this is a
+# full replace, not a merge: the server always sends its complete, current
+# map, and counts need to go DOWN as the player discovers more things.
+func _merge_craftable_counts(data: Dictionary) -> void:
+	if not data.has("craftable_counts"):
+		return
+	var raw = data.get("craftable_counts", {})
+	if typeof(raw) != TYPE_DICTIONARY:
+		return
+	var updated: Dictionary = {}
+	for id in raw.keys():
+		updated[String(id)] = int(raw[id])
+	_craftable_counts = updated
 
 
 func apply_wallet_from_server(data: Dictionary) -> void:
@@ -424,6 +471,8 @@ func apply_server_state(data: Dictionary) -> void:
 			_discovered_ids[String(id)] = true
 		if _recent_discovered_ids.is_empty() and not _discovered_ids.is_empty():
 			_backfill_recent_discoveries()
+	_merge_discovered_at(data)
+	_merge_craftable_counts(data)
 	if data.has("discovery_points"):
 		_discovery_points = int(data.get("discovery_points", 0))
 	if data.has("craft_count"):

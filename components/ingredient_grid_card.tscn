@@ -1,7 +1,11 @@
 [gd_scene format=3 uid="uid://ingrdgridcd1"]
 
 [ext_resource type="Script" uid="uid://b5ke8tseg1721" path="res://components/ingredient_grid_card.gd" id="1_script"]
-[ext_resource type="Texture2D" uid="uid://bvad8w2smcv71" path="res://assets/Components/UI_Etc/Toggle02_CheckBox_Off.png" id="2_l4mfg"]
+[ext_resource type="Texture2D" uid="uid://cq2rnova4o56h" path="res://assets/frames/custom/BasicFrame_Square02_White1.png" id="2_l4mfg"]
+[ext_resource type="Texture2D" uid="uid://vwj264a2qewm" path="res://assets/frames/custom/BasicFrame_Circle_80_White.png" id="3_x5yuf"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_mvgs0"]
+texture = ExtResource("3_x5yuf")
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_click"]
 
@@ -12,6 +16,8 @@ anchors_preset = 0
 script = ExtResource("1_script")
 
 [node name="Bg" type="NinePatchRect" parent="." unique_id=419093079]
+modulate = Color(0.7588623, 0.09173655, 0.17378694, 1)
+self_modulate = Color(1, 1, 1, 0.34509805)
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -59,6 +65,28 @@ text = "ข้าว"
 horizontal_alignment = 1
 vertical_alignment = 1
 text_overrun_behavior = 3
+
+[node name="CraftableBadge" type="PanelContainer" parent="." unique_id=2030047460]
+z_index = 2
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -25.0
+offset_top = 2.0
+offset_right = -6.0
+offset_bottom = 21.0
+grow_horizontal = 0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_mvgs0")
+
+[node name="CraftableBadgeLabel" type="Label" parent="CraftableBadge" unique_id=2030047461]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 12
+text = "0"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="ClickArea" type="Button" parent="." unique_id=2030047465]
 layout_mode = 1

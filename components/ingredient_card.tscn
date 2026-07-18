@@ -1,7 +1,11 @@
 [gd_scene format=3 uid="uid://n2qscsph5gj2"]
 
 [ext_resource type="Script" uid="uid://t0l2ttj7s0og" path="res://components/ingredient_card.gd" id="1_script"]
-[ext_resource type="Texture2D" uid="uid://coojsx75xdq3v" path="res://assets/Components/Label/Label_Round01_White.png" id="2_lvnuv"]
+[ext_resource type="Texture2D" uid="uid://coojsx75xdq3v" path="res://assets/labels/Label_Round01_White.png" id="2_lvnuv"]
+[ext_resource type="Texture2D" uid="uid://cjira8fit3dd0" path="res://assets/frames/custom/BasicFrame_Oval_108_White.png" id="3_bltqo"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_f6oww"]
+texture = ExtResource("3_bltqo")
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_transparent"]
 
@@ -14,13 +18,13 @@ size_flags_vertical = 4
 script = ExtResource("1_script")
 
 [node name="Background" type="NinePatchRect" parent="." unique_id=2014911732]
+self_modulate = Color(0.96, 0.92, 0.84, 1)
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-self_modulate = Color(0.96, 0.92, 0.84, 1)
 texture = ExtResource("2_lvnuv")
 patch_margin_left = 20
 patch_margin_top = 20
@@ -61,10 +65,31 @@ mouse_filter = 2
 layout_mode = 0
 offset_top = 1.0
 offset_bottom = 29.0
-theme_override_colors/font_color = Color(0.3, 0.23, 0.14, 1)
-theme_override_colors/font_outline_color = Color(1, 0.98, 0.92, 0.75)
-theme_override_constants/outline_size = 3
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/font_size = 20
+vertical_alignment = 1
+
+[node name="CraftableBadge" type="PanelContainer" parent="." unique_id=985333501]
+z_index = 2
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -24.0
+offset_top = 3.0
+offset_right = -3.0
+offset_bottom = 25.0
+grow_horizontal = 0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_f6oww")
+
+[node name="CraftableBadgeLabel" type="Label" parent="CraftableBadge" unique_id=985333502]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 12
+text = "0"
+horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="ClickArea" type="Button" parent="." unique_id=985333506]

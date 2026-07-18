@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://ingrdtabbar1"]
 
 [ext_resource type="Script" uid="uid://c8h0fvdatcjon" path="res://components/ingredient_tab_bar.gd" id="1_script"]
-[ext_resource type="Texture2D" uid="uid://c1dwoutk8nugu" path="res://assets/Components/UI_Etc/Toggle02_CheckBox_On.png" id="2_bg"]
+[ext_resource type="Texture2D" uid="uid://c1dwoutk8nugu" path="res://assets/ui_etc/Toggle02_CheckBox_On.png" id="2_bg"]
 
 [node name="IngredientTabBar" type="Control" unique_id=1504808166]
 custom_minimum_size = Vector2(360, 54)

@@ -1,9 +1,10 @@
 [gd_scene format=3 uid="uid://fc2nxda8ii5o"]
 
 [ext_resource type="Script" uid="uid://d1vseigp20tse" path="res://components/craft_zone.gd" id="1_script"]
-[ext_resource type="Texture2D" uid="uid://ddd22n7myey6x" path="res://assets/Components/Frame/ItemFrame01_Single_Brown.png" id="2_smfp0"]
-[ext_resource type="Texture2D" uid="uid://xdhn1fw4di31" path="res://assets/Vector_UI_Pack_dobo_ui/Icons/256px/warningCircle_icon_256px.png" id="4_smfp0"]
-[ext_resource type="Texture2D" uid="uid://db58s12tpf4al" path="res://assets/Vector_UI_Pack_dobo_ui/Icons/128px/tickV1_icon_128px.png" id="5_id12s"]
+[ext_resource type="Texture2D" uid="uid://ddd22n7myey6x" path="res://assets/frames/custom/ItemFrame01_Single_Brown.png" id="2_smfp0"]
+[ext_resource type="Texture2D" uid="uid://dtj2lyr35mwip" path="res://assets/frames/custom/PanelFrame02_Round_White_bg.png" id="3_slotscard"]
+[ext_resource type="Texture2D" uid="uid://xdhn1fw4di31" path="res://assets/icons/general/256px/warningCircle_icon_256px.png" id="4_smfp0"]
+[ext_resource type="Texture2D" uid="uid://db58s12tpf4al" path="res://assets/icons/general/128px/tickV1_icon_128px.png" id="5_id12s"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_lock"]
 
@@ -58,18 +59,52 @@ grow_vertical = 2
 theme_override_constants/separation = 20
 metadata/_edit_use_anchors_ = true
 
-[node name="InputRow" type="HBoxContainer" parent="VBox" unique_id=141718027]
-layout_mode = 2
-theme_override_constants/separation = 20
-alignment = 1
-
-[node name="SlotA" type="Control" parent="VBox/InputRow" unique_id=285701037]
-custom_minimum_size = Vector2(230, 230)
+[node name="SlotsCard" type="Control" parent="VBox" unique_id=1000000010]
+custom_minimum_size = Vector2(520, 490)
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 
-[node name="Background" type="NinePatchRect" parent="VBox/InputRow/SlotA" unique_id=1491842304]
+[node name="Background" type="NinePatchRect" parent="VBox/SlotsCard" unique_id=1000000011]
+self_modulate = Color(0.9490196, 0.9607843, 0.9882353, 0.09803922)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("3_slotscard")
+patch_margin_left = 20
+patch_margin_top = 20
+patch_margin_right = 20
+patch_margin_bottom = 24
+
+[node name="Inner" type="VBoxContainer" parent="VBox/SlotsCard" unique_id=1000000012]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="InputRow" type="HBoxContainer" parent="VBox/SlotsCard/Inner" unique_id=141718027]
+layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="SlotA" type="Control" parent="VBox/SlotsCard/Inner/InputRow" unique_id=285701037]
+custom_minimum_size = Vector2(220, 220)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="Background" type="NinePatchRect" parent="VBox/SlotsCard/Inner/InputRow/SlotA" unique_id=1491842304]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -82,7 +117,7 @@ patch_margin_top = 14
 patch_margin_right = 16
 patch_margin_bottom = 14
 
-[node name="BounceRoot" type="Control" parent="VBox/InputRow/SlotA" unique_id=1988771201]
+[node name="BounceRoot" type="Control" parent="VBox/SlotsCard/Inner/InputRow/SlotA" unique_id=1988771201]
 clip_contents = true
 layout_mode = 1
 anchors_preset = 15
@@ -90,10 +125,10 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-pivot_offset = Vector2(115, 115)
+pivot_offset = Vector2(110, 110)
 mouse_filter = 2
 
-[node name="Icon" type="TextureRect" parent="VBox/InputRow/SlotA/BounceRoot" unique_id=1876032982]
+[node name="Icon" type="TextureRect" parent="VBox/SlotsCard/Inner/InputRow/SlotA/BounceRoot" unique_id=1876032982]
 visible = false
 layout_mode = 1
 anchors_preset = 8
@@ -111,7 +146,7 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Title" type="Label" parent="VBox/InputRow/SlotA/BounceRoot" unique_id=720611493]
+[node name="Title" type="Label" parent="VBox/SlotsCard/Inner/InputRow/SlotA/BounceRoot" unique_id=720611493]
 visible = false
 layout_mode = 1
 anchors_preset = -1
@@ -134,7 +169,7 @@ autowrap_mode = 3
 clip_text = true
 text_overrun_behavior = 3
 
-[node name="LockButton" type="Button" parent="VBox/InputRow/SlotA" unique_id=639220775]
+[node name="LockButton" type="Button" parent="VBox/SlotsCard/Inner/InputRow/SlotA" unique_id=639220775]
 visible = false
 layout_mode = 1
 anchors_preset = 1
@@ -154,13 +189,13 @@ theme_override_styles/focus = SubResource("StyleBoxEmpty_lock")
 flat = true
 expand_icon = true
 
-[node name="SlotB" type="Control" parent="VBox/InputRow" unique_id=1209405755]
-custom_minimum_size = Vector2(230, 230)
+[node name="SlotB" type="Control" parent="VBox/SlotsCard/Inner/InputRow" unique_id=1209405755]
+custom_minimum_size = Vector2(220, 220)
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 
-[node name="Background" type="NinePatchRect" parent="VBox/InputRow/SlotB" unique_id=264006173]
+[node name="Background" type="NinePatchRect" parent="VBox/SlotsCard/Inner/InputRow/SlotB" unique_id=264006173]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -173,7 +208,7 @@ patch_margin_top = 14
 patch_margin_right = 16
 patch_margin_bottom = 14
 
-[node name="BounceRoot" type="Control" parent="VBox/InputRow/SlotB" unique_id=1988771202]
+[node name="BounceRoot" type="Control" parent="VBox/SlotsCard/Inner/InputRow/SlotB" unique_id=1988771202]
 clip_contents = true
 layout_mode = 1
 anchors_preset = 15
@@ -181,10 +216,10 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-pivot_offset = Vector2(115, 115)
+pivot_offset = Vector2(110, 110)
 mouse_filter = 2
 
-[node name="Icon" type="TextureRect" parent="VBox/InputRow/SlotB/BounceRoot" unique_id=939883565]
+[node name="Icon" type="TextureRect" parent="VBox/SlotsCard/Inner/InputRow/SlotB/BounceRoot" unique_id=939883565]
 visible = false
 layout_mode = 1
 anchors_preset = 8
@@ -202,7 +237,7 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Title" type="Label" parent="VBox/InputRow/SlotB/BounceRoot" unique_id=410371176]
+[node name="Title" type="Label" parent="VBox/SlotsCard/Inner/InputRow/SlotB/BounceRoot" unique_id=410371176]
 visible = false
 layout_mode = 1
 anchors_preset = 12
@@ -225,7 +260,7 @@ autowrap_mode = 3
 clip_text = true
 text_overrun_behavior = 3
 
-[node name="LockButton" type="Button" parent="VBox/InputRow/SlotB" unique_id=838626371]
+[node name="LockButton" type="Button" parent="VBox/SlotsCard/Inner/InputRow/SlotB" unique_id=838626371]
 visible = false
 layout_mode = 1
 anchors_preset = 1
@@ -246,13 +281,13 @@ icon = ExtResource("5_id12s")
 flat = true
 expand_icon = true
 
-[node name="ResultSlot" type="Control" parent="VBox" unique_id=525037510]
-custom_minimum_size = Vector2(230, 230)
+[node name="ResultSlot" type="Control" parent="VBox/SlotsCard/Inner" unique_id=525037510]
+custom_minimum_size = Vector2(220, 220)
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 
-[node name="Background" type="NinePatchRect" parent="VBox/ResultSlot" unique_id=850199371]
+[node name="Background" type="NinePatchRect" parent="VBox/SlotsCard/Inner/ResultSlot" unique_id=850199371]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -265,7 +300,7 @@ patch_margin_top = 14
 patch_margin_right = 16
 patch_margin_bottom = 14
 
-[node name="Icon" type="TextureRect" parent="VBox/ResultSlot" unique_id=192854079]
+[node name="Icon" type="TextureRect" parent="VBox/SlotsCard/Inner/ResultSlot" unique_id=192854079]
 visible = false
 layout_mode = 1
 anchors_preset = 8
@@ -283,7 +318,7 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Title" type="Label" parent="VBox/ResultSlot" unique_id=1539168830]
+[node name="Title" type="Label" parent="VBox/SlotsCard/Inner/ResultSlot" unique_id=1539168830]
 visible = false
 layout_mode = 1
 anchors_preset = 12
@@ -306,7 +341,7 @@ autowrap_mode = 3
 clip_text = true
 text_overrun_behavior = 3
 
-[node name="NewBadge" type="TextureRect" parent="VBox/ResultSlot" unique_id=278059419]
+[node name="NewBadge" type="TextureRect" parent="VBox/SlotsCard/Inner/ResultSlot" unique_id=278059419]
 visible = false
 layout_mode = 1
 anchors_preset = 1

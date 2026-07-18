@@ -10,7 +10,7 @@ const GRID_SEP := 12
 const GRID_MIN_COLUMNS := 3
 const EDITOR_PREVIEW_SIZE := Vector2(688, 1088)
 const EDITOR_PREVIEW_POS := Vector2(16, 96)
-const CARD_TEX := preload("res://assets/Components/Label/Label_Round01_White.png")
+const CARD_TEX := preload("res://assets/labels/Label_Round01_White.png")
 
 # ── FoodCraft warm palette (shared with leaderboard/shop) ──
 const COL_CREAM     := Color(0.96, 0.92, 0.84)
@@ -27,10 +27,17 @@ const CATEGORY_TABS := [
 	{"id": "ingredient", "label": "วัตถุดิบ", "emoji": "🧄"},
 ]
 
+const SORT_TABS := [
+	{"id": "tier", "label": "ความหายาก"},
+	{"id": "newest", "label": "ล่าสุด"},
+	{"id": "oldest", "label": "เก่าสุด"},
+]
+
 @onready var _discovery_badge: Control = $Margin/VBox/HeaderRow/DiscoveryBadge
+@onready var _sort_button: MenuButton = $Margin/VBox/SearchRow/SortButton
 @onready var _category_scroll: ScrollContainer = $Margin/VBox/CategoryScroll
 @onready var _category_row: HBoxContainer = $Margin/VBox/CategoryScroll/CategoryRow
-@onready var _search: LineEdit = $Margin/VBox/SearchBox/SearchInput
+@onready var _search: LineEdit = $Margin/VBox/SearchRow/SearchBox/SearchInput
 @onready var _scroll: ScrollContainer = $Margin/VBox/Scroll
 @onready var _grid: GridContainer = $Margin/VBox/Scroll/Grid
 @onready var _status: Label = $Margin/VBox/StatusLabel
@@ -40,6 +47,7 @@ var _cards: Array = []
 var _pick_mode := false
 var _active_category := ""
 var _category_buttons: Dictionary = {}
+var _sort_mode := "tier"
 
 
 func _enter_tree() -> void:
@@ -50,6 +58,7 @@ func _ready() -> void:
 	_category_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_NEVER
 	_category_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	_build_category_buttons()
+	_build_sort_menu()
 	_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_NEVER
 	_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	_scroll.resized.connect(_layout_grid_cards)
@@ -129,7 +138,37 @@ func _apply_filter(query: String) -> void:
 			if String(item.get("title", "")).contains(query):
 				searched.append(item)
 		items = searched
-	_show_grid(items)
+	_show_grid(_sort_items(items))
+
+
+func _sort_items(items: Array) -> Array:
+	var sorted := items.duplicate()
+	match _sort_mode:
+		"newest":
+			sorted.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
+				var at := int(a.get("discovered_at", 0))
+				var bt := int(b.get("discovered_at", 0))
+				if at != bt:
+					return at > bt
+				return String(a.get("title", "")) < String(b.get("title", ""))
+			)
+		"oldest":
+			sorted.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
+				var at := int(a.get("discovered_at", 0))
+				var bt := int(b.get("discovered_at", 0))
+				if at != bt:
+					return at < bt
+				return String(a.get("title", "")) < String(b.get("title", ""))
+			)
+		_:  # "tier" — most rare first
+			sorted.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
+				var tier_a := int(a.get("tier", 0))
+				var tier_b := int(b.get("tier", 0))
+				if tier_a != tier_b:
+					return tier_a > tier_b
+				return String(a.get("title", "")) < String(b.get("title", ""))
+			)
+	return sorted
 
 
 func _build_category_buttons() -> void:
@@ -187,6 +226,34 @@ func _make_category_button_style(active: bool) -> StyleBoxTexture:
 	style.content_margin_bottom = 10
 	style.modulate_color = COL_GREEN if active else COL_CREAM
 	return style
+
+
+func _build_sort_menu() -> void:
+	_apply_category_style(_sort_button, false)
+	_sort_button.focus_mode = Control.FOCUS_NONE
+	_sort_button.custom_minimum_size = Vector2(0, 46)
+	_sort_button.text = "เรียง: " + _sort_label_for_mode(_sort_mode)
+	var popup := _sort_button.get_popup()
+	popup.clear()
+	for i in range(SORT_TABS.size()):
+		popup.add_item(String(SORT_TABS[i].get("label", "")), i)
+	if not popup.id_pressed.is_connected(_on_sort_selected):
+		popup.id_pressed.connect(_on_sort_selected)
+
+
+func _on_sort_selected(id: int) -> void:
+	if id < 0 or id >= SORT_TABS.size():
+		return
+	_sort_mode = String(SORT_TABS[id].get("id", "tier"))
+	_sort_button.text = "เรียง: " + _sort_label_for_mode(_sort_mode)
+	_apply_filter(_search.text.strip_edges())
+
+
+func _sort_label_for_mode(mode: String) -> String:
+	for tab in SORT_TABS:
+		if String(tab.get("id", "")) == mode:
+			return String(tab.get("label", ""))
+	return ""
 
 
 func _show_grid(items: Array) -> void:

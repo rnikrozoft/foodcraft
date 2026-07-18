@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://c0t6p786sh3oe"]
 
 [ext_resource type="Script" path="res://components/shop_panel.gd" id="1_script"]
-[ext_resource type="Texture2D" uid="uid://dtj2lyr35mwip" path="res://assets/Components/Frame/PanelFrame02_Round_White_bg.png" id="2_bg"]
+[ext_resource type="Texture2D" uid="uid://dtj2lyr35mwip" path="res://assets/frames/custom/PanelFrame02_Round_White_bg.png" id="2_bg"]
 [ext_resource type="FontFile" uid="uid://bflvvu18x7cda" path="res://assets/fonts/Kanit-Bold.ttf" id="3_font_bold"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_header"]

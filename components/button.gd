@@ -3,19 +3,19 @@ extends Control
 
 signal pressed
 
-@export var tex_normal: Texture2D = preload("res://assets/Vector_UI_Pack_dobo_ui/Buttons/button_green.png"):
+@export var tex_normal: Texture2D = preload("res://assets/buttons/custom/button_green.png"):
 	set(value):
 		tex_normal = value
 		if is_node_ready():
 			_update_visual()
 
-@export var tex_hover: Texture2D = preload("res://assets/Vector_UI_Pack_dobo_ui/Buttons/buttonPressed.png"):
+@export var tex_hover: Texture2D = preload("res://assets/buttons/custom/buttonPressed.png"):
 	set(value):
 		tex_hover = value
 		if is_node_ready():
 			_update_visual()
 
-@export var tex_disabled: Texture2D = preload("res://assets/Vector_UI_Pack_dobo_ui/Buttons/button_black.png"):
+@export var tex_disabled: Texture2D = preload("res://assets/buttons/custom/button_black.png"):
 	set(value):
 		tex_disabled = value
 		if is_node_ready():
@@ -124,19 +124,25 @@ func _apply_patch_margins(texture: Texture2D) -> void:
 
 	var left_cap := 0
 	for x in range(w / 2):
+		var top_y := h
 		for y in range(h):
 			if img.get_pixel(x, y).a > 0.5:
-				if y == flat_top_y:
-					left_cap = x
+				top_y = y
 				break
+		if top_y == flat_top_y:
+			left_cap = x
+			break
 
 	var right_cap := 0
 	for x in range(w - 1, w / 2, -1):
+		var top_y := h
 		for y in range(h):
 			if img.get_pixel(x, y).a > 0.5:
-				if y == flat_top_y:
-					right_cap = w - 1 - x
+				top_y = y
 				break
+		if top_y == flat_top_y:
+			right_cap = w - 1 - x
+			break
 
 	_background.patch_margin_left = left_cap
 	_background.patch_margin_top = top_flat

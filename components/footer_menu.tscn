@@ -1,14 +1,14 @@
 [gd_scene format=3 uid="uid://b7ftrmenu001"]
 
 [ext_resource type="Script" uid="uid://c0cth0x3vuffl" path="res://components/footer_menu.gd" id="1_script"]
-[ext_resource type="Texture2D" uid="uid://dtj2lyr35mwip" path="res://assets/Components/Frame/PanelFrame02_Round_White_bg.png" id="2_pbw0h"]
+[ext_resource type="Texture2D" uid="uid://dtj2lyr35mwip" path="res://assets/frames/custom/PanelFrame02_Round_White_bg.png" id="2_pbw0h"]
 [ext_resource type="PackedScene" uid="uid://d8ftr2tab001" path="res://components/footer_tab.tscn" id="2_tab"]
-[ext_resource type="Texture2D" uid="uid://c0x3qurk8h7n5" path="res://assets/Components/Frame/StageFrame_Line.png" id="3_pbw0h"]
-[ext_resource type="Texture2D" uid="uid://kkkpiu8w84aq" path="res://assets/Components/Icon_ItemIcons/Original/Icon_Potion02_Green.png" id="5_pbw0h"]
-[ext_resource type="Texture2D" uid="uid://bj6m522ofiso" path="res://assets/Components/Icon_ItemIcons/Original/Icon_Book.Png" id="6_dec0a"]
-[ext_resource type="Texture2D" uid="uid://c27ncecnuunkm" path="res://assets/Components/Icon_ItemIcons/Original/Icon_Quest.Png" id="7_vc234"]
-[ext_resource type="Texture2D" uid="uid://x4p56u41yxss" path="res://assets/Components/Icon_ItemIcons/Original/Icon_Ranking.Png" id="8_iboym"]
-[ext_resource type="Texture2D" uid="uid://b01tp833ggtkb" path="res://assets/Components/Icon_ItemIcons/Original/Icon_Shop.Png" id="9_np3jd"]
+[ext_resource type="Texture2D" uid="uid://c0x3qurk8h7n5" path="res://assets/frames/custom/StageFrame_Line.png" id="3_pbw0h"]
+[ext_resource type="Texture2D" uid="uid://kkkpiu8w84aq" path="res://assets/icons/item_icons/Original/Icon_Potion02_Green.png" id="5_pbw0h"]
+[ext_resource type="Texture2D" uid="uid://bj6m522ofiso" path="res://assets/icons/item_icons/Original/Icon_Book.Png" id="6_dec0a"]
+[ext_resource type="Texture2D" uid="uid://c27ncecnuunkm" path="res://assets/icons/item_icons/Original/Icon_Quest.Png" id="7_vc234"]
+[ext_resource type="Texture2D" uid="uid://x4p56u41yxss" path="res://assets/icons/item_icons/Original/Icon_Ranking.Png" id="8_iboym"]
+[ext_resource type="Texture2D" uid="uid://b01tp833ggtkb" path="res://assets/icons/item_icons/Original/Icon_Shop.Png" id="9_np3jd"]
 
 [node name="FooterMenu" type="Control" unique_id=1245679271]
 custom_minimum_size = Vector2(0, 104)

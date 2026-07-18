@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://biqeeeombdtc8" path="res://screens/home.gd" id="1_script"]
 [ext_resource type="PackedScene" uid="uid://pmu66lcl8yd8" path="res://components/button.tscn" id="2_button"]
-[ext_resource type="Texture2D" uid="uid://dyrnjkrjtjqrv" path="res://assets/Vector_UI_Pack_dobo_ui/Buttons/button_black.png" id="3_tbfvp"]
+[ext_resource type="Texture2D" uid="uid://dyrnjkrjtjqrv" path="res://assets/buttons/custom/button_black.png" id="3_tbfvp"]
 
 [node name="Home" type="Control" unique_id=1747418955]
 layout_mode = 3

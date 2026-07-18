@@ -1,16 +1,16 @@
 @tool
 extends Control
 
-const CARD_TEX := preload("res://assets/Components/Label/Label_Round01_White.png")
-const SLOT_TEX := preload("res://assets/Components/Frame/ItemFrame01_Single_Yellow.png")
-const COIN_TEX := preload("res://assets/Components/IconMisc/Icon_ImageIcon_Coin01_s.png")
-const STAR_TEX := preload("res://assets/Components/IconMisc/Icon_ImageIcon_Star01_s.png")
+const CARD_TEX := preload("res://assets/labels/Label_Round01_White.png")
+const SLOT_TEX := preload("res://assets/frames/custom/ItemFrame01_Single_Yellow.png")
+const COIN_TEX := preload("res://assets/icons/misc/Icon_ImageIcon_Coin01_s.png")
+const STAR_TEX := preload("res://assets/icons/misc/Icon_ImageIcon_Star01_s.png")
 const FONT_BOLD := preload("res://assets/fonts/Kanit-Bold.ttf")
 
 const TYPE_ICONS := {
-	"craft": preload("res://assets/Components/Icon_ItemIcons/128/Icon_Potion02_Green.png"),
-	"discover": preload("res://assets/Components/Icon_ItemIcons/128/Icon_Food_Meat.png"),
-	"ingredient": preload("res://assets/Components/Icon_ItemIcons/128/Icon_Egg.png"),
+	"craft": preload("res://assets/icons/item_icons/128/Icon_Potion02_Green.png"),
+	"discover": preload("res://assets/icons/item_icons/128/Icon_Food_Meat.png"),
+	"ingredient": preload("res://assets/icons/item_icons/128/Icon_Egg.png"),
 }
 
 # ── FoodCraft warm palette (shared with leaderboard/shop/my recipes) ──

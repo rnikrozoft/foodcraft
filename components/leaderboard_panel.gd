@@ -12,23 +12,23 @@ const TIER_META := {
 }
 
 const TIER_ICONS := {
-	1: preload("res://assets/Components/IconMisc/Icon_ImageIcon_Ranking.png"),
-	2: preload("res://assets/Components/IconMisc/Icon_ImageIcon_Energy.png"),
-	3: preload("res://assets/Components/Icon_ItemIcons/128/Icon_Food_Meat.png"),
-	4: preload("res://assets/Components/IconMisc/Icon_ImageIcon_Crown_Gold.Png"),
-	5: preload("res://assets/Components/IconMisc/Icon_ImageIcon_Star01_l.png"),
+	1: preload("res://assets/icons/misc/Icon_ImageIcon_Ranking.png"),
+	2: preload("res://assets/icons/misc/Icon_ImageIcon_Energy.png"),
+	3: preload("res://assets/icons/item_icons/128/Icon_Food_Meat.png"),
+	4: preload("res://assets/icons/misc/Icon_ImageIcon_Crown_Gold.Png"),
+	5: preload("res://assets/icons/misc/Icon_ImageIcon_Star01_l.png"),
 }
 
-const AVATAR_TEX := preload("res://assets/Components/IconMisc/Icon_ImageIcon_UserThumbnail.png")
-const TROPHY_TEX := preload("res://assets/Components/IconMisc/Icon_ImageIcon_Trophy_l.png")
+const AVATAR_TEX := preload("res://assets/icons/misc/Icon_ImageIcon_UserThumbnail.png")
+const TROPHY_TEX := preload("res://assets/icons/misc/Icon_ImageIcon_Trophy_l.png")
 
-const CARD_TEX      := preload("res://assets/Components/Label/Label_Round01_White.png")
-const ITEM_SLOT_TEX := preload("res://assets/Components/Frame/ItemFrame01_Single_Yellow.png")
-const CHEVRON_TEX   := preload("res://assets/Components/IconMisc/Icon_PictoIcon_Next01.png")
+const CARD_TEX      := preload("res://assets/labels/Label_Round01_White.png")
+const ITEM_SLOT_TEX := preload("res://assets/frames/custom/ItemFrame01_Single_Yellow.png")
+const CHEVRON_TEX   := preload("res://assets/icons/misc/Icon_PictoIcon_Next01.png")
 
-const MEDAL_GOLD_TEX   := preload("res://assets/Components/IconMisc/Icon_ImageIcon_Medal_Gold.png")
-const MEDAL_SILVER_TEX := preload("res://assets/Components/IconMisc/Icon_ImageIcon_Medal_Silver.png")
-const MEDAL_BRONZE_TEX := preload("res://assets/Components/IconMisc/Icon_ImageIcon_Medal_Bronze.png")
+const MEDAL_GOLD_TEX   := preload("res://assets/icons/misc/Icon_ImageIcon_Medal_Gold.png")
+const MEDAL_SILVER_TEX := preload("res://assets/icons/misc/Icon_ImageIcon_Medal_Silver.png")
+const MEDAL_BRONZE_TEX := preload("res://assets/icons/misc/Icon_ImageIcon_Medal_Bronze.png")
 
 const FONT_BOLD := preload("res://assets/fonts/Kanit-Bold.ttf")
 

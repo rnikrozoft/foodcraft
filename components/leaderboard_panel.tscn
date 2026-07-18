@@ -1,11 +1,11 @@
 [gd_scene load_steps=11 format=3 uid="uid://byedncsx3e5u7"]
 
 [ext_resource type="Script" uid="uid://c0322fq55k5cx" path="res://components/leaderboard_panel.gd" id="1_script"]
-[ext_resource type="Texture2D" uid="uid://dtj2lyr35mwip" path="res://assets/Components/Frame/PanelFrame02_Round_White_bg.png" id="2_bg"]
-[ext_resource type="Texture2D" uid="uid://coojsx75xdq3v" path="res://assets/Components/Label/Label_Round01_White.png" id="3_card"]
-[ext_resource type="Texture2D" uid="uid://c5nykubcdxe5y" path="res://assets/Components/IconMisc/Icon_PictoIcon_Back.png" id="4_back"]
-[ext_resource type="Texture2D" uid="uid://dbn4y101fcgyo" path="res://assets/Components/IconMisc/Icon_ImageIcon_Trophy_l.png" id="5_trophy"]
-[ext_resource type="Texture2D" uid="uid://dgocbm8wptc4x" path="res://assets/Components/IconMisc/Icon_ImageIcon_UserThumbnail.png" id="6_avatar"]
+[ext_resource type="Texture2D" uid="uid://dtj2lyr35mwip" path="res://assets/frames/custom/PanelFrame02_Round_White_bg.png" id="2_bg"]
+[ext_resource type="Texture2D" uid="uid://coojsx75xdq3v" path="res://assets/labels/Label_Round01_White.png" id="3_card"]
+[ext_resource type="Texture2D" uid="uid://c5nykubcdxe5y" path="res://assets/icons/misc/Icon_PictoIcon_Back.png" id="4_back"]
+[ext_resource type="Texture2D" uid="uid://dbn4y101fcgyo" path="res://assets/icons/misc/Icon_ImageIcon_Trophy_l.png" id="5_trophy"]
+[ext_resource type="Texture2D" uid="uid://dgocbm8wptc4x" path="res://assets/icons/misc/Icon_ImageIcon_UserThumbnail.png" id="6_avatar"]
 [ext_resource type="FontFile" uid="uid://bflvvu18x7cda" path="res://assets/fonts/Kanit-Bold.ttf" id="7_font_bold"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_flat"]

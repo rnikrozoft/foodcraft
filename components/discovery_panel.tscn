@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://c8discpanel01"]
 
 [ext_resource type="Script" uid="uid://dpm8mhmlepsfs" path="res://components/discovery_panel.gd" id="1_script"]
-[ext_resource type="Texture2D" uid="uid://bocfgmea60y4u" path="res://assets/Components/Slider/Slider_Icon01_Icon1.png" id="2_6q2lr"]
+[ext_resource type="Texture2D" uid="uid://bocfgmea60y4u" path="res://assets/sliders/custom/Slider_Icon01_Icon1.png" id="2_6q2lr"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bg"]
 bg_color = Color(0.12, 0.11, 0.14, 0.92)

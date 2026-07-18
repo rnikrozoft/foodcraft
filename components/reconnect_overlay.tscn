@@ -1,11 +1,11 @@
 [gd_scene format=3 uid="uid://b702bfmubn3d3"]
 
 [ext_resource type="Script" uid="uid://cv3gsqag5ufwg" path="res://components/reconnect_overlay.gd" id="1_script"]
-[ext_resource type="Texture2D" uid="uid://b22wloy3cc78o" path="res://assets/Vector_UI_Pack_dobo_ui/Containers/cardContainer_cream.png" id="2_6eicq"]
-[ext_resource type="Texture2D" uid="uid://vigtbagm7nx5" path="res://assets/Vector_UI_Pack_dobo_ui/Icons/128px/warningCircle_icon_128px.png" id="3_icon"]
+[ext_resource type="Texture2D" uid="uid://vigtbagm7nx5" path="res://assets/icons/general/128px/warningCircle_icon_128px.png" id="3_icon"]
 [ext_resource type="PackedScene" uid="uid://pmu66lcl8yd8" path="res://components/button.tscn" id="4_button"]
-[ext_resource type="Texture2D" uid="uid://5wh3oe5ynl3x" path="res://assets/Vector_UI_Pack_dobo_ui/Buttons/buttonAdvanced_green.png" id="5_qord0"]
-[ext_resource type="Texture2D" uid="uid://rw7wx4kiukjp" path="res://assets/Vector_UI_Pack_dobo_ui/Buttons/button_red.png" id="6_orange"]
+[ext_resource type="Texture2D" uid="uid://rw7wx4kiukjp" path="res://assets/buttons/custom/button_red.png" id="6_orange"]
+[ext_resource type="Texture2D" uid="uid://d24kk4nysu0gw" path="res://assets/headers/notebook_pink.png" id="7_header"]
+[ext_resource type="Texture2D" uid="uid://bkl2xgqwuhi60" path="res://assets/modals/notebookModal_v1.png" id="8_body"]
 
 [node name="ReconnectOverlay" type="CanvasLayer" unique_id=1615728829]
 layer = 115
@@ -28,21 +28,57 @@ grow_vertical = 2
 mouse_filter = 2
 
 [node name="Card" type="Control" parent="Center" unique_id=955101041]
-custom_minimum_size = Vector2(340, 420)
+custom_minimum_size = Vector2(560, 600)
 layout_mode = 2
 
-[node name="PanelBg" type="NinePatchRect" parent="Center/Card" unique_id=1532221249]
+[node name="BodyBg" type="NinePatchRect" parent="Center/Card" unique_id=1532221249]
 layout_mode = 1
-anchors_preset = 15
+anchors_preset = -1
+anchor_top = 0.07
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("2_6eicq")
-patch_margin_left = 32
-patch_margin_top = 32
-patch_margin_right = 32
-patch_margin_bottom = 32
+texture = ExtResource("8_body")
+region_rect = Rect2(0, 200, 919, 1073)
+patch_margin_left = 55
+patch_margin_top = 12
+patch_margin_right = 55
+patch_margin_bottom = 55
+metadata/_edit_use_anchors_ = true
+
+[node name="HeaderBg" type="NinePatchRect" parent="Center/Card" unique_id=1532221250]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.008928572
+anchor_right = 0.99285716
+anchor_bottom = 0.25666666
+grow_horizontal = 2
+texture = ExtResource("7_header")
+patch_margin_left = 176
+patch_margin_top = 20
+patch_margin_right = 176
+patch_margin_bottom = 20
+metadata/_edit_use_anchors_ = true
+
+[node name="TitleLabel" type="Label" parent="Center/Card/HeaderBg" unique_id=1288040473]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.32667875
+anchor_top = 0.41558442
+anchor_right = 0.67332125
+anchor_bottom = 0.77922076
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0.42, 0.2, 0.16, 1)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 28
+text = "ขาดการเชื่อมต่อ"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+metadata/_edit_use_anchors_ = true
 
 [node name="Margin" type="MarginContainer" parent="Center/Card" unique_id=665879017]
 layout_mode = 1
@@ -52,7 +88,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/margin_left = 28
-theme_override_constants/margin_top = 36
+theme_override_constants/margin_top = 155
 theme_override_constants/margin_right = 28
 theme_override_constants/margin_bottom = 32
 
@@ -60,15 +96,6 @@ theme_override_constants/margin_bottom = 32
 layout_mode = 2
 theme_override_constants/separation = 14
 alignment = 1
-
-[node name="TitleLabel" type="Label" parent="Center/Card/Margin/VBox" unique_id=1288040473]
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_outline_color = Color(0.42, 0.2, 0.16, 1)
-theme_override_constants/outline_size = 8
-theme_override_font_sizes/font_size = 28
-text = "ขาดการเชื่อมต่อ"
-horizontal_alignment = 1
 
 [node name="Icon" type="TextureRect" parent="Center/Card/Margin/VBox" unique_id=1890298026]
 custom_minimum_size = Vector2(132, 132)
@@ -81,18 +108,20 @@ stretch_mode = 5
 [node name="MessageLabel" type="Label" parent="Center/Card/Margin/VBox" unique_id=426679854]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.52, 0.28, 0.22, 1)
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 20
 text = "ตรวจสอบอินเทอร์เน็ตแล้วลองเชื่อมต่อใหม่"
 horizontal_alignment = 1
 autowrap_mode = 3
 
 [node name="RetryCenter" type="CenterContainer" parent="Center/Card/Margin/VBox" unique_id=229608799]
-custom_minimum_size = Vector2(0, 76)
+custom_minimum_size = Vector2(0, 84)
 layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="RetryButton" parent="Center/Card/Margin/VBox/RetryCenter" unique_id=1666430369 instance=ExtResource("4_button")]
-custom_minimum_size = Vector2(248, 72)
+custom_minimum_size = Vector2(340, 80)
 layout_mode = 2
-tex_normal = ExtResource("5_qord0")
 tex_hover = ExtResource("6_orange")
+
+[node name="Label" parent="Center/Card/Margin/VBox/RetryCenter/RetryButton" index="2"]
+text = "เชื่อมต่อใหม่"

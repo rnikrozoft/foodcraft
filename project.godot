@@ -26,7 +26,7 @@ ReconnectOverlay="*res://components/reconnect_overlay.tscn"
 AudioManager="*res://services/audio_manager.gd"
 LineConfig="*res://services/line_config.gd"
 LineAuth="*res://services/line_auth.gd"
-RarityStyle="*res://services/rarity_style.gd"
+RarityStyle="*res://services/rarity_style.tscn"
 
 [display]
 

@@ -4,21 +4,21 @@ extends Control
 signal tab_selected(category: String)  # "" = show all
 signal menu_pressed                     # navigate to My Recipes
 
-const TEX_RESET_NORMAL := preload("res://assets/Components/IconMisc/Icon_MenuIcon01_Menu_n.Png")
-const TEX_RESET_ACTIVE := preload("res://assets/Components/IconMisc/Icon_MenuIcon01_Menu_s.Png")
-const TEX_SEE_ALL      := preload("res://assets/Components/IconMisc/Icon_MenuIcon01_List_n.Png")
-const TEX_SEE_ALL_ACT  := preload("res://assets/Components/IconMisc/Icon_MenuIcon01_List_s.Png")
+const TEX_RESET_NORMAL := preload("res://assets/icons/misc/Icon_MenuIcon01_Menu_n.Png")
+const TEX_RESET_ACTIVE := preload("res://assets/icons/misc/Icon_MenuIcon01_Menu_s.Png")
+const TEX_SEE_ALL      := preload("res://assets/icons/misc/Icon_MenuIcon01_List_n.Png")
+const TEX_SEE_ALL_ACT  := preload("res://assets/icons/misc/Icon_MenuIcon01_List_s.Png")
 
 const CATEGORY_FLAG := {
-	"thai":     preload("res://assets/Components/Icon_Flag/Icon_Flag_Tha.Png"),
-	"japanese": preload("res://assets/Components/Icon_Flag/Icon_Flag_Jpn.Png"),
-	"chinese":  preload("res://assets/Components/Icon_Flag/Icon_Flag_Chn.Png"),
-	"western":  preload("res://assets/Components/Icon_Flag/Icon_Flag_Eng.Png"),
-	"italian":  preload("res://assets/Components/Icon_Flag/Icon_Flag_Ita.Png"),
-	"korean":   preload("res://assets/Components/Icon_Flag/Icon_Flag_Kor.Png"),
-	"french":   preload("res://assets/Components/Icon_Flag/Icon_Flag_Fra.Png"),
-	"german":   preload("res://assets/Components/Icon_Flag/Icon_Flag_Deu.Png"),
-	"spanish":  preload("res://assets/Components/Icon_Flag/Icon_Flag_Esp.Png"),
+	"thai":     preload("res://assets/icons/flags/Icon_Flag_Tha.Png"),
+	"japanese": preload("res://assets/icons/flags/Icon_Flag_Jpn.Png"),
+	"chinese":  preload("res://assets/icons/flags/Icon_Flag_Chn.Png"),
+	"western":  preload("res://assets/icons/flags/Icon_Flag_Eng.Png"),
+	"italian":  preload("res://assets/icons/flags/Icon_Flag_Ita.Png"),
+	"korean":   preload("res://assets/icons/flags/Icon_Flag_Kor.Png"),
+	"french":   preload("res://assets/icons/flags/Icon_Flag_Fra.Png"),
+	"german":   preload("res://assets/icons/flags/Icon_Flag_Deu.Png"),
+	"spanish":  preload("res://assets/icons/flags/Icon_Flag_Esp.Png"),
 }
 
 @onready var _scroll: ScrollContainer = $Layout/Scroll

@@ -216,11 +216,22 @@ func _go_to_page(page: Page, pick_for_craft: bool = false) -> void:
 	elif page == Page.RECIPES:
 		_my_recipes_panel.prepare_panel(pick_for_craft)
 
+	# Containers inside a hidden page don't get re-sorted while visible=false —
+	# Godot only flushes their queued layout pass once it's shown again, which
+	# lands a frame late and shows up as a brief clip/pop before things settle
+	# (worst offender: CraftZone, which is clip_contents=true and shrink-to-fit
+	# height). Refresh this page's size, position it off-screen, and let the
+	# queued sort resolve for a frame while it's still off-screen — so any
+	# stale/mid-layout frame happens where the player can't see it, before the
+	# slide-in tween reveals it.
+	to_node.size = _content_host.size
 	to_node.position.x = direction * width
 	from_node.position.x = 0.0
 	to_node.visible = true
-
+	to_node.queue_sort()
 	_transitioning = true
+	await get_tree().process_frame
+
 	if _page_tween != null and _page_tween.is_valid():
 		_page_tween.kill()
 	_page_tween = create_tween().set_parallel(true).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)

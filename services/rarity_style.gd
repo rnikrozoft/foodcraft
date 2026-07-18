@@ -1,18 +1,32 @@
 extends Node
-## Central rarity/tier palette. Maps a food item's tier (0-5) to a colored item
-## frame and an accent color so cards across craft / discovery / recipes / shop
-## share one consistent, colorful rarity language instead of a single brown tone.
+## Central rarity/tier palette. Every tier shares the SAME card frame image;
+## the tier is communicated purely through color instead of a different frame
+## per tier: Bg.self_modulate stays a fixed translucent white wash, and
+## Bg.modulate carries the tier's hue on top of it (tier 0 = no hue, plain
+## white wash only).
 ##
-## Ramp: 0 brown (base) → 1 green → 2 blue → 3 purple → 4 gold → 5 red.
+## Ramp: 0 plain (base) → 1 green → 2 blue → 3 purple → 4 orange → 5 red.
+##
+## To swap the shared frame image, open services/rarity_style.tscn, select the
+## root node, and drag a texture onto the "Frame Texture" slot in the
+## Inspector — no code editing needed.
 
-const _FRAMES := {
-	0: preload("res://assets/Components/Frame/ItemFrame01_Single_Brown.png"),
-	1: preload("res://assets/Components/Frame/ItemFrame01_Single_Green.png"),
-	2: preload("res://assets/Components/Frame/ItemFrame01_Single_Blue.png"),
-	3: preload("res://assets/Components/Frame/ItemFrame01_Single_Purple.png"),
-	4: preload("res://assets/Components/Frame/ItemFrame01_Single_Yellow.png"),
-	5: preload("res://assets/Components/Frame/ItemFrame01_Single_Red.png"),
-}
+## Shared frame texture used by every tier.
+@export var frame_texture: Texture2D = preload("res://assets/frames/custom/BasicFrame_Square02_White1.png")
+
+## Applied to Bg.self_modulate on every tier — a constant translucent white wash.
+const BG_SELF_MODULATE := Color("ffffff58")
+
+## Index i holds the Bg.modulate tint for tier i (0-5). Tier 0 stays plain
+## white (no hue tint, just the self_modulate wash above).
+@export var tier_modulate: Array[Color] = [
+	Color("ffffffff"),
+	Color("53ab80"),
+	Color("076eb0"),
+	Color("a51bad"),
+	Color("ad4303"),
+	Color("c2172c"),
+]
 
 # Soft accent colors used for item names / small highlights (kept readable on dark bg).
 const _ACCENTS := {
@@ -31,8 +45,19 @@ func _clamp_tier(tier: int) -> int:
 	return clampi(tier, 0, MAX_TIER)
 
 
-func frame_for_tier(tier: int) -> Texture2D:
-	return _FRAMES[_clamp_tier(tier)]
+func frame_for_tier(_tier: int) -> Texture2D:
+	return frame_texture
+
+
+func bg_self_modulate() -> Color:
+	return BG_SELF_MODULATE
+
+
+func bg_modulate_for_tier(tier: int) -> Color:
+	var i := _clamp_tier(tier)
+	if i >= tier_modulate.size():
+		return Color.WHITE
+	return tier_modulate[i]
 
 
 func color_for_tier(tier: int) -> Color:

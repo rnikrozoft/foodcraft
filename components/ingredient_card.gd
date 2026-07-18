@@ -20,11 +20,12 @@ const MARQUEE_PAUSE := 1.4
 			_apply_icon()
 
 @onready var _background: NinePatchRect = $Background
-@onready var _highlight: NinePatchRect = $Highlight
 @onready var _icon: TextureRect = $Icon
 @onready var _title_clip: Control = $TitleClip
 @onready var _title: Label = $TitleClip/Title
 @onready var _click: Button = $ClickArea
+@onready var _craftable_badge: PanelContainer = $CraftableBadge
+@onready var _craftable_badge_label: Label = $CraftableBadge/CraftableBadgeLabel
 
 var _marquee_tween: Tween
 
@@ -49,15 +50,31 @@ func _apply_icon() -> void:
 		return
 	FoodIcons.apply_to(_icon, food_id)
 	_apply_rarity()
+	_apply_craftable_badge()
 
 
-# Softly tints the slot + title by rarity tier so cards aren't all one cream tone.
+# Top-right badge: how many more distinct recipes this item can still lead
+# to that aren't discovered yet (server-computed; see RarityStyle usage above
+# for the general "read state, skip in editor" pattern this mirrors).
+func _apply_craftable_badge() -> void:
+	if not is_node_ready() or Engine.is_editor_hint() or food_id.is_empty():
+		return
+	var count := GameData.get_craftable_count(food_id)
+	_craftable_badge.visible = count > 0
+	if count > 0:
+		_craftable_badge_label.text = str(count) if count < 100 else "99+"
+
+
+# Tints the card by rarity tier: same constant translucent white wash + per-
+# tier hue used everywhere else (see RarityStyle), so cards aren't all one
+# cream tone.
 func _apply_rarity() -> void:
 	if not is_node_ready() or Engine.is_editor_hint() or food_id.is_empty():
 		return
 	var tier := RarityStyle.tier_for_id(food_id)
+	_background.self_modulate = RarityStyle.bg_self_modulate()
+	_background.modulate = RarityStyle.bg_modulate_for_tier(tier)
 	var accent := RarityStyle.color_for_tier(tier)
-	_background.self_modulate = accent.lerp(Color.WHITE, 0.55)
 	_title.add_theme_color_override("font_color", accent.lerp(Color.WHITE, 0.15))
 
 

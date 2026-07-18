@@ -2,7 +2,7 @@ extends CanvasLayer
 
 @onready var _backdrop: ColorRect = $Backdrop
 @onready var _card: Control = $Center/Card
-@onready var _title: Label = $Center/Card/Margin/VBox/TitleLabel
+@onready var _title: Label = $Center/Card/HeaderBg/TitleLabel
 @onready var _message: Label = $Center/Card/Margin/VBox/MessageLabel
 @onready var _retry_button: Control = $Center/Card/Margin/VBox/RetryCenter/RetryButton
 
@@ -29,7 +29,7 @@ func _fit_viewport() -> void:
 
 
 func _on_connection_lost(reason: String) -> void:
-	_title.text = "ขาดการ\nเชื่อมต่อ"
+	_title.text = "ขาดการเชื่อมต่อ"
 	_message.text = reason if not reason.is_empty() else "ตรวจสอบอินเทอร์เน็ตแล้วลองเชื่อมต่อใหม่"
 	_set_retry_enabled(true)
 	visible = true

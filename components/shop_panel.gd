@@ -12,8 +12,8 @@ const TAB_META := {
 }
 
 const TAB_ICONS := {
-	Tab.GENERAL: preload("res://assets/Components/IconMisc/Icon_MenuIcon02_Shop.Png"),
-	Tab.INGREDIENTS: preload("res://assets/Components/Icon_ItemIcons/128/Icon_Egg.png"),
+	Tab.GENERAL: preload("res://assets/icons/misc/Icon_MenuIcon02_Shop.Png"),
+	Tab.INGREDIENTS: preload("res://assets/icons/item_icons/128/Icon_Egg.png"),
 }
 
 const COIN_PACKS := [
@@ -40,12 +40,12 @@ const RARITY_COLORS := {
 	"legendary": Color(0.95, 0.76, 0.18, 1),
 }
 
-const COIN_TEX := preload("res://assets/Components/IconMisc/Icon_ImageIcon_Coin01_l.png")
-const STAR_TEX := preload("res://assets/Components/IconMisc/Icon_ImageIcon_Star01_l.png")
-const TREASURE_TEX := preload("res://assets/Components/IconMisc/Icon_ChestIcon_Gold01_l.png")
-const GIFT_TEX := preload("res://assets/Components/IconMisc/Icon_ImageIcon_Gift_Blue.png")
-const AD_TEX := preload("res://assets/Components/IconMisc/Icon_ImageIcon_Ad_01_l.png")
-const CARD_TEX := preload("res://assets/Components/Label/Label_Round01_White.png")
+const COIN_TEX := preload("res://assets/icons/misc/Icon_ImageIcon_Coin01_l.png")
+const STAR_TEX := preload("res://assets/icons/misc/Icon_ImageIcon_Star01_l.png")
+const TREASURE_TEX := preload("res://assets/icons/misc/Icon_ChestIcon_Gold01_l.png")
+const GIFT_TEX := preload("res://assets/icons/misc/Icon_ImageIcon_Gift_Blue.png")
+const AD_TEX := preload("res://assets/icons/misc/Icon_ImageIcon_Ad_01_l.png")
+const CARD_TEX := preload("res://assets/labels/Label_Round01_White.png")
 const FONT_BOLD := preload("res://assets/fonts/Kanit-Bold.ttf")
 
 # ── FoodCraft warm palette (shared with leaderboard/my recipes) ──

@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://d8ftr2tab001"]
 
 [ext_resource type="Script" uid="uid://djsxfuxh5ih8x" path="res://components/footer_tab.gd" id="1_script"]
-[ext_resource type="Texture2D" uid="uid://dfauaoq7vxoh4" path="res://assets/Components/Button/Button_Square03_White.png" id="2_bg"]
-[ext_resource type="Texture2D" uid="uid://kkkpiu8w84aq" path="res://assets/Components/Icon_ItemIcons/Original/Icon_Potion02_Green.png" id="3_preview"]
+[ext_resource type="Texture2D" uid="uid://dfauaoq7vxoh4" path="res://assets/buttons/custom/Button_Square03_White.png" id="2_bg"]
+[ext_resource type="Texture2D" uid="uid://kkkpiu8w84aq" path="res://assets/icons/item_icons/Original/Icon_Potion02_Green.png" id="3_preview"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_badge"]
 content_margin_left = 5.0
@@ -41,35 +41,33 @@ patch_margin_top = 24
 patch_margin_right = 24
 patch_margin_bottom = 24
 
-[node name="VBox" type="VBoxContainer" parent="." unique_id=334455667]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 4.0
-offset_top = 4.0
-offset_right = -4.0
-offset_bottom = -4.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-theme_override_constants/separation = 0
-
-[node name="Icon" type="TextureRect" parent="VBox" unique_id=1056927685]
+[node name="Icon" type="TextureRect" parent="." unique_id=1056927685]
 modulate = Color(0.82, 0.76, 0.64, 1)
-custom_minimum_size = Vector2(0, 44)
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -22.0
+offset_top = 22.0
+offset_right = 22.0
+offset_bottom = 66.0
+grow_horizontal = 2
 mouse_filter = 2
+pivot_offset = Vector2(22, 22)
 texture = ExtResource("3_preview")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="TitleLabel" type="Label" parent="VBox" unique_id=991234501]
-modulate = Color(1, 1, 1, 0.75)
-layout_mode = 2
-size_flags_horizontal = 3
+[node name="TitleLabel" type="Label" parent="." unique_id=991234501]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -26.0
+grow_horizontal = 2
+grow_vertical = 0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 0.7)
 theme_override_constants/outline_size = 3
@@ -77,6 +75,8 @@ theme_override_font_sizes/font_size = 13
 text = "Tab"
 horizontal_alignment = 1
 vertical_alignment = 1
+clip_text = true
+text_overrun_behavior = 3
 
 [node name="Badge" type="PanelContainer" parent="." unique_id=772341902]
 visible = false

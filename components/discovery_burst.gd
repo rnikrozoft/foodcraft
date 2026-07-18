@@ -52,6 +52,7 @@ func play_celebration(display: Dictionary, _burst_origin: Vector2, header_text: 
 	_title.text = display.get("title", "")
 
 	visible = true
+	AudioManager.play_discover()
 	_start_back_rotation()
 
 	await _play_intro_phase()

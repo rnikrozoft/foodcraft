@@ -1,9 +1,9 @@
 @tool
 extends Control
 
-const LOCK_ICON := preload("res://assets/Vector_UI_Pack_dobo_ui/Icons/128px/tabSelected_icon_128px.png")
-const UNLOCK_ICON := preload("res://assets/Vector_UI_Pack_dobo_ui/Icons/128px/tab_icon_128px.png")
-const EFFECT_TEX := preload("res://assets/Vector_UI_Pack_dobo_ui/Effects/effect_blue.png")
+const LOCK_ICON := preload("res://assets/icons/general/128px/tabSelected_icon_128px.png")
+const UNLOCK_ICON := preload("res://assets/icons/general/128px/tab_icon_128px.png")
+const EFFECT_TEX := preload("res://assets/effects/effect_blue.png")
 const EDITOR_PREVIEW_SIZE := Vector2(720, 694)
 const EDITOR_PREVIEW_POS := Vector2(0, 184)
 
@@ -11,13 +11,12 @@ signal recipe_crafted(result_id: String, is_new: bool)
 signal new_recipe_discovered(display: Dictionary)
 signal reward_granted(reward: Dictionary, origin: Vector2)
 
-@onready var _slot_a: Control = $VBox/InputRow/SlotA
-@onready var _slot_b: Control = $VBox/InputRow/SlotB
-@onready var _result_slot: Control = $VBox/ResultSlot
-@onready var _result_icon: TextureRect = $VBox/ResultSlot/Icon
-@onready var _result_title: Label = $VBox/ResultSlot/Title
-@onready var _result_glow: NinePatchRect = $VBox/ResultSlot/Glow
-@onready var _new_badge: TextureRect = $VBox/ResultSlot/NewBadge
+@onready var _slot_a: Control = $VBox/SlotsCard/Inner/InputRow/SlotA
+@onready var _slot_b: Control = $VBox/SlotsCard/Inner/InputRow/SlotB
+@onready var _result_slot: Control = $VBox/SlotsCard/Inner/ResultSlot
+@onready var _result_icon: TextureRect = $VBox/SlotsCard/Inner/ResultSlot/Icon
+@onready var _result_title: Label = $VBox/SlotsCard/Inner/ResultSlot/Title
+@onready var _new_badge: TextureRect = $VBox/SlotsCard/Inner/ResultSlot/NewBadge
 @onready var _status: Label = $VBox/StatusWrap/StatusLabel
 @onready var _hint_button: Button = $VBox/HintButton
 

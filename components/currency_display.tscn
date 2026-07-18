@@ -2,8 +2,8 @@
 
 [ext_resource type="Script" uid="uid://dpl5hgw4tnqch" path="res://components/currency_display.gd" id="1_script"]
 [ext_resource type="PackedScene" uid="uid://c8currrow001" path="res://components/currency_row.tscn" id="2_row"]
-[ext_resource type="Texture2D" path="res://assets/Vector_UI_Pack_dobo_ui/Labels/gem_label.png" id="5_gem_bar"]
-[ext_resource type="Texture2D" path="res://assets/Vector_UI_Pack_dobo_ui/Labels/coin_label.png" id="6_coin_bar"]
+[ext_resource type="Texture2D" path="res://assets/labels/gem_label.png" id="5_gem_bar"]
+[ext_resource type="Texture2D" path="res://assets/labels/coin_label.png" id="6_coin_bar"]
 
 [node name="CurrencyDisplay" type="Control" unique_id=767954790]
 custom_minimum_size = Vector2(258, 44)
