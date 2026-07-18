@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://d3qgf74on2dif"]
+
+[ext_resource type="Script" uid="uid://dnehks1cs85mn" path="res://services/rarity_style.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://cq2rnova4o56h" path="res://assets/frames/custom/BasicFrame_Square02_White1.png" id="2_frame"]
+
+[node name="RarityStyle" type="Node" unique_id=202191220]
+script = ExtResource("1_script")
+frame_texture = ExtResource("2_frame")
